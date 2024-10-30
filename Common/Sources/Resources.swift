@@ -10,6 +10,8 @@ import SwiftUI
 public enum Resources {
     public enum Images {
         public static let appleLogin = Image("AppleLogin")
+        public static let kakaoLogin = Image("KakaoLogin")
+        public static let emailLogin = Image("EmailButton")
         public static let camera = Image("Camera")
         public static let dummy = Image("Dummy")
         public static let noPhotoA = Image("No Photo A")
@@ -53,6 +55,7 @@ public enum Resources {
         public static let textSecondary = Color("TextSecondary")
         public static let seperator = Color("Seperator")
         public static let viewAlpha = Color("ViewAlpha")
+        public static let pointColor = Color(.blue)
     }
    
     public enum Fonts {

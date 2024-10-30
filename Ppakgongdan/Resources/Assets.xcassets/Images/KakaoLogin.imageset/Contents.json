@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "AppleLogin.png",
+      "filename" : "KakaoLogin.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "AppleLogin@2x.png",
+      "filename" : "KakaoLogin@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "AppleLogin@3x.png",
+      "filename" : "KakaoLogin@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

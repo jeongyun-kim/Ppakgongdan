@@ -16,7 +16,7 @@ let project = Project(
             destinations: [.iPhone], // 지원 기기 설정
             product: .framework,
             bundleId: "com.jeongyun.local",
-            deploymentTargets: .iOS("16.0"), // 지원 최소 버전 설정,
+            deploymentTargets: .iOS("17.0"), // 지원 최소 버전 설정,
             infoPlist: .extendingDefault(with: [:])
         )
     ]
