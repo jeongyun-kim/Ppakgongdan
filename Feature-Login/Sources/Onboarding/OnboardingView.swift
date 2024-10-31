@@ -7,11 +7,15 @@
 
 import SwiftUI
 import Common
+import ComposableArchitecture
 
 public struct OnboardingView: View {
-    @State private var presentLogin = false
+    @Bindable private var store: StoreOf<OnboardingReducer>
     
-    public init() { }
+    public init(store: StoreOf<OnboardingReducer>) {
+        self.store = store
+    }
+    
     public var body: some View {
         ZStack(alignment: .top) {
             VStack {
@@ -25,12 +29,12 @@ public struct OnboardingView: View {
                     .padding(.horizontal, 12)
                 Spacer()
                 nextButton("시작하기") {
-                    presentLogin.toggle()
+                    store.send(.present)
                 }
             }
             .padding(.bottom, 11)
         }
-        .sheet(isPresented: $presentLogin) {
+        .sheet(isPresented: $store.isPresenting) {
             sheetView()
         }
     }
@@ -52,7 +56,7 @@ public struct OnboardingView: View {
                 }
             HStack(spacing: 4) {
                 Text("또는")
-                Text(" 새로 회원가입 하기")
+                Text("새로 회원가입 하기")
                     .foregroundStyle(Resources.Colors.pointColor)
             }
             .font(Resources.Fonts.title2)

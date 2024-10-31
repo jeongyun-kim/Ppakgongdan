@@ -11,10 +11,8 @@ import Feature_Login
 public struct FeatureView: View {
     public init() { }
     public var body: some View {
-        OnboardingView()
+        OnboardingView(store: .init(initialState: OnboardingReducer.State(), reducer: {
+            OnboardingReducer()
+        }))
     }
-}
-
-#Preview {
-    FeatureView()
 }
