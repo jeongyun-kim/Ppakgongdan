@@ -2,6 +2,7 @@ import ProjectDescription
 
 let project = Project(
     name: "Ppakgongdan",
+    settings: .settings(base: ["DEVELOPMENT_TEAM": "L348QC8MG7"]),
     targets: [
         .target(
             name: "Ppakgongdan",
@@ -22,6 +23,9 @@ let project = Project(
             ),
             sources: ["Ppakgongdan/Sources/**"],
             resources: ["Ppakgongdan/Resources/**"],
+            entitlements: .dictionary([
+                "com.apple.developer.applesignin": ["Default"]
+            ]),
             dependencies: [
                 .project(target: "Feature", path: "Feature")
             ]

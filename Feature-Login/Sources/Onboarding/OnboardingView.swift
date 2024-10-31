@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 import Common
 import ComposableArchitecture
 
@@ -44,6 +45,7 @@ public struct OnboardingView: View {
             nextButton()
                 .overlay {
                     Resources.Images.appleLogin
+                    appleLoginButton()
                 }
             nextButton()
                 .overlay {
@@ -66,4 +68,15 @@ public struct OnboardingView: View {
         .presentationDragIndicator(.visible)
     }
     
+    private func appleLoginButton() -> some View {
+        SignInWithAppleButton(
+            onRequest: { request in
+                request.requestedScopes = [.fullName, .email]
+            },
+            onCompletion: { result in
+                store.send(.appleLoginBtnTapped(result))
+            }
+        )
+        .blendMode(.overlay)
+    }
 }
