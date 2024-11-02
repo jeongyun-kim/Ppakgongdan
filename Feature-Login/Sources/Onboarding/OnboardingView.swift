@@ -50,6 +50,9 @@ public struct OnboardingView: View {
             nextButton()
                 .overlay {
                     Resources.Images.kakaoLogin
+                        .onTapGesture {
+                            store.send(.kakaoLoginBtnTapped)
+                        }
                 }
             nextButton()
                 .overlay {

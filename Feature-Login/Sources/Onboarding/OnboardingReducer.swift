@@ -8,6 +8,7 @@
 import AuthenticationServices
 import Utils
 import ComposableArchitecture
+import KakaoSDKUser
 
 @Reducer
 public struct OnboardingReducer {
@@ -24,6 +25,7 @@ public struct OnboardingReducer {
         case binding(BindingAction<State>)
         case present
         case appleLoginBtnTapped(Result<ASAuthorization, any Error>)
+        case kakaoLoginBtnTapped
     }
     
     public var body: some Reducer<State, Action> {
@@ -45,7 +47,6 @@ public struct OnboardingReducer {
                         let fullName = appleIDCredential.fullName
                         let name =  (fullName?.familyName ?? "빡공단원") + (fullName?.givenName ?? "")
                         let email = appleIDCredential.email ?? ""
-                        let token = String(data: appleIDCredential.identityToken!, encoding: .utf8)
                         ud.isApple = true
                         ud.email = email
                     default:
@@ -54,6 +55,21 @@ public struct OnboardingReducer {
                 case .failure(let error):
                     print(error.localizedDescription)
                     print("error")
+                }
+                return .none
+            case .kakaoLoginBtnTapped:
+                // 카카오톡으로 로그인 가능하다면
+                guard UserApi.isKakaoTalkLoginAvailable() else {
+                    // 안되면 카카오계정으로 로그인
+                    UserApi.shared.loginWithKakaoAccount { oauthToken, error in
+                        guard let oauthToken else { return }
+                        
+                    }
+                    return .none }
+                // 카카오톡으로 로그인
+                UserApi.shared.loginWithKakaoTalk { oauthToken, error in
+                    guard let oauthToken else { return }
+                    
                 }
                 return .none
             }
