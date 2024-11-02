@@ -28,7 +28,8 @@ let project = Project(
             sources: ["Sources/**"],
             dependencies: [
                 .package(product: "Alamofire"),
-                .package(product: "Moya")
+                .package(product: "Moya"),
+                .project(target: "Utils", path: "../Utils")
             ]
         )
     ]

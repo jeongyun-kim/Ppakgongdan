@@ -2,25 +2,29 @@
 //  Project.swift
 //  CommonManifests
 //
-//  Created by 김정윤 on 10/29/24.
+//  Created by 김정윤 on 11/2/24.
 //
 
 import Foundation
 import ProjectDescription
 
 let project = Project(
-    name: "Feature-Login", // 프로젝트 명
+    name: "Utils", // 프로젝트 명
+    packages: [
+        .remote(url: "https://github.com/pointfreeco/swift-composable-architecture.git",
+                requirement: .upToNextMajor(from: "1.15.0"))
+    ],
     targets: [ // 프로젝트의 타겟
         .target(
-            name: "Feature-Login",
+            name: "Utils",
             destinations: [.iPhone], // 지원 기기 설정
             product: .framework,
-            bundleId: "com.jeongyun.feature.login",
+            bundleId: "com.jeongyun.utils",
             deploymentTargets: .iOS("17.0"), // 지원 최소 버전 설정,
-            infoPlist: .extendingDefault(with: ["NSAppTransportSecurity":["NSAllowsArbitraryLoads":true]]),
+            infoPlist: .extendingDefault(with: [:]),
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "NetworkKit", path: "../Network")
+                .package(product: "ComposableArchitecture")
             ]
         )
     ]

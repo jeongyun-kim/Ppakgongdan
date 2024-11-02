@@ -7,7 +7,7 @@
 
 import SwiftUI
 import AuthenticationServices
-import Common
+import UI
 import ComposableArchitecture
 
 public struct OnboardingView: View {

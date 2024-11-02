@@ -27,7 +27,8 @@ let project = Project(
                 "com.apple.developer.applesignin": ["Default"]
             ]),
             dependencies: [
-                .project(target: "Feature", path: "Feature")
+                .project(target: "Feature", path: "Feature"),
+                .project(target: "UI", path: "UI")
             ]
         )
     ]
