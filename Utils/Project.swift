@@ -12,7 +12,9 @@ let project = Project(
     name: "Utils", // 프로젝트 명
     packages: [
         .remote(url: "https://github.com/pointfreeco/swift-composable-architecture.git",
-                requirement: .upToNextMajor(from: "1.15.0"))
+                requirement: .upToNextMajor(from: "1.15.0")),
+        .remote(url: "https://github.com/kakao/kakao-ios-sdk.git",
+                requirement: .upToNextMajor(from: "2.23.0"))
     ],
     targets: [ // 프로젝트의 타겟
         .target(
@@ -24,7 +26,8 @@ let project = Project(
             infoPlist: .extendingDefault(with: [:]),
             sources: ["Sources/**"],
             dependencies: [
-                .package(product: "ComposableArchitecture")
+                .package(product: "ComposableArchitecture"),
+                .package(product: "KakaoOpenSDK")
             ]
         )
     ]
