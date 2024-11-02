@@ -14,7 +14,11 @@ let project = Project(
         .remote(url: "https://github.com/pointfreeco/swift-composable-architecture.git",
                 requirement: .upToNextMajor(from: "1.15.0")),
         .remote(url: "https://github.com/kakao/kakao-ios-sdk.git",
-                requirement: .upToNextMajor(from: "2.23.0"))
+                requirement: .upToNextMajor(from: "2.23.0")),
+        .remote(url: "https://github.com/Alamofire/Alamofire.git",
+                requirement: .upToNextMajor(from: "5.10.1")),
+        .remote(url: "https://github.com/Moya/Moya.git",
+                requirement: .upToNextMajor(from: "15.0.0"))
     ],
     targets: [ // 프로젝트의 타겟
         .target(
@@ -26,8 +30,10 @@ let project = Project(
             infoPlist: .extendingDefault(with: [:]),
             sources: ["Sources/**"],
             dependencies: [
+                .package(product: "Alamofire"),
+                .package(product: "Moya"),
                 .package(product: "ComposableArchitecture"),
-                .package(product: "KakaoOpenSDK")
+                .package(product: "KakaoSDK")
             ]
         )
     ]

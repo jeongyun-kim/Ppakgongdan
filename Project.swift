@@ -18,7 +18,12 @@ let project = Project(
                     ],
                     "NSAppTransportSecurity":["NSAllowsArbitraryLoads":true],
                     // 세로모드 고정
-                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
+                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+                    "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink"],
+                    "CFBundleURLTypes": .array([.dictionary([
+                           "CFBundleTypeRole": .string("Editor"),
+                           "CFBundleURLSchemes": ["kakao9ffe6e7ff0b45352b0fe79e26a82ee8c"]
+                       ])])
                 ]
             ),
             sources: ["Ppakgongdan/Sources/**"],
