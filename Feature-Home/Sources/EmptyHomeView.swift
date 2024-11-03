@@ -1,14 +1,14 @@
 //
-//  HomeView.swift
+//  EmptyHomeView.swift
 //  Feature-Home
 //
-//  Created by 김정윤 on 11/3/24.
+//  Created by 김정윤 on 11/4/24.
 //
 
 import SwiftUI
 import UI
 
-public struct HomeView: View {
+public struct EmptyHomeView: View {
     public init() { }
     public var body: some View {
         ZStack(alignment: .top) {
@@ -18,7 +18,7 @@ public struct HomeView: View {
                         .resizable()
                         .frame(width: 32, height: 32)
                         .cornerRadius(8)
-                    Text("No StudyGroup")
+                    Text("빡공단")
                         .font(Resources.Fonts.title1)
                         .frame(height: 35)
                         .padding(.leading, 8)
@@ -38,11 +38,11 @@ public struct HomeView: View {
                 Divider()
                     .background(Resources.Colors.seperator)
                 
-                Text("스터디그룹을 찾을 수 없어요 :(")
+                Text("스터디그룹을 찾을 수 없어요")
                     .font(Resources.Fonts.title1)
                     .padding(.top, 35)
                     .padding(.bottom, 24)
-                Text("관리자에게 초대를 요청하거나, 다른 이메일로 시도하거나\n새로운 스터디그룹을 생성해주세요.")
+                Text("관리자에게 초대를 요청하거나, 다른 이메일로 시도하거나\n새로운 스터디그룹을 생성해주세요")
                     .font(Resources.Fonts.body)
                     .frame(height: 40)
                     .multilineTextAlignment(.center)
@@ -50,8 +50,7 @@ public struct HomeView: View {
                     
                 Resources.Images.emptyHomeImage
                     .resizable()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 368)
+                    .frame(width: 368, height: 368)
                 
                 Spacer()
                 
@@ -61,3 +60,4 @@ public struct HomeView: View {
         }
     }
 }
+

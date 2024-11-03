@@ -16,7 +16,7 @@ public struct FeatureView: View {
     @AppStorage(UDKey.isUser.rawValue) private var isUser = UserDefaultsManager.shared.isUser
     
     public var body: some View {
-        HomeView()
+        EmptyHomeView()
             .fullScreenCover(isPresented: .constant(!isUser)) {
                 OnboardingView(store: .init(initialState: OnboardingReducer.State(), reducer: {
                     OnboardingReducer()

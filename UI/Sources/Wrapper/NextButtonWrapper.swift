@@ -25,7 +25,7 @@ private struct NextButtonWrapper: ViewModifier {
                     .fill(Resources.Colors.primaryColor)
                     .frame(width: 323, height: 44)
                 Text(title)
-                    .font(Resources.Fonts.bodyBold)
+                    .font(Resources.Fonts.title2)
                     .foregroundStyle(Resources.Colors.white)
             }
         }

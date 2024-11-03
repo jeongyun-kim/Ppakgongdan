@@ -40,6 +40,8 @@ public enum Resources {
         public static let thin = Image("thin")
         public static let threeDots = Image("three dots")
         public static let workspace = Image("workspace")
+        public static let logo = Image("logo")
+        public static let emptyHomeImage = Image("EmptyHomeImage")
     }
     
     public enum Colors {
@@ -62,7 +64,7 @@ public enum Resources {
         public static let title1: Font = .system(size: 22, weight: .bold)
         public static let title2: Font = .system(size: 14, weight: .bold)
         public static let bodyBold: Font = .system(size: 13, weight: .bold)
-        public static let body: Font = .system(size: 22, weight: .regular)
+        public static let body: Font = .system(size: 13, weight: .regular)
         public static let caption: Font = .system(size: 12, weight: .regular)
     }
 }
