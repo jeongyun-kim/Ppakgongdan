@@ -4,6 +4,8 @@ import KakaoSDKAuth
 
 @main
 struct PpakgongdanApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     init() {
         // 앱 실행 시, KakaoSDK 초기화
         KakaoSDK.initSDK(appKey: KakaoAPI.key)

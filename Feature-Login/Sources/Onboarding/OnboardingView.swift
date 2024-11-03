@@ -12,6 +12,7 @@ import ComposableArchitecture
 
 public struct OnboardingView: View {
     @Bindable private var store: StoreOf<OnboardingReducer>
+    @AppStorage("isUser") var isUser = UserDefaults.standard.bool(forKey: "isUser")
     
     public init(store: StoreOf<OnboardingReducer>) {
         self.store = store

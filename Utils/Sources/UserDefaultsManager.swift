@@ -9,7 +9,7 @@ import Foundation
 
 public class UserDefaultsManager {
     public static let shared = UserDefaultsManager()
-    private init() { }
+    public init() { }
     
     @propertyWrapper struct UD<T> {
         var key: String
@@ -30,12 +30,13 @@ public class UserDefaultsManager {
         }
     }
 
-    @UD(key: "accessToken", defaultValue: "") public var accessToken
-    @UD(key: "refreshToken", defaultValue: "") public var refreshToken
-    @UD(key: "isUser", defaultValue: false) public var isUser
-    @UD(key: "isApple", defaultValue: false) public var isApple
-    @UD(key: "isKakao", defaultValue: false) public var isKakao
-    @UD(key: "email", defaultValue: "") public var email
+    @UD(key: UDKey.deviceToken.rawValue, defaultValue: "") public var deviceToken
+    @UD(key: UDKey.accessToken.rawValue, defaultValue: "") public var accessToken
+    @UD(key: UDKey.refreshToken.rawValue, defaultValue: "") public var refreshToken
+    @UD(key: UDKey.isUser.rawValue, defaultValue: false) public var isUser
+    @UD(key: UDKey.isApple.rawValue, defaultValue: false) public var isApple
+    @UD(key: UDKey.isKakao.rawValue, defaultValue: false) public var isKakao
+    @UD(key: UDKey.email.rawValue, defaultValue: "") public var email
     
     func deleteAllData() {
         for key in UserDefaults.standard.dictionaryRepresentation().keys {

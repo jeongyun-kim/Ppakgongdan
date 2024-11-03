@@ -7,10 +7,12 @@
 
 import SwiftUI
 import Feature_Login
-import Utils
 import ComposableArchitecture
+import Utils
 
 public struct FeatureView: View {
+    @AppStorage(UDKey.isUser.rawValue) private var isUser = UserDefaultsManager.shared.isUser
+    
     public init() { }
     public var body: some View {
         OnboardingView(store: .init(initialState: OnboardingReducer.State(), reducer: {

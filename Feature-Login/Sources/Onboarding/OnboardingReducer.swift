@@ -6,14 +6,15 @@
 //
 
 import AuthenticationServices
-import Utils
 import ComposableArchitecture
 import KakaoSDKUser
+import NetworkKit
+import Utils
 
 @Reducer
 public struct OnboardingReducer {
-    private let ud = UserDefaultsManager.shared
     public init() { }
+    private let ud = UserDefaultsManager.shared
     
     @ObservableState
     public struct State: Equatable {
@@ -35,8 +36,10 @@ public struct OnboardingReducer {
             case .present:
                 state.isPresenting.toggle()
                 return .none
+                
             case .binding(_):
                 return .none
+            
             case .appleLoginBtnTapped(let result):
                 switch result {
                 case .success(let result):
@@ -57,21 +60,28 @@ public struct OnboardingReducer {
                     print("error")
                 }
                 return .none
+                
             case .kakaoLoginBtnTapped:
                 // 카카오톡으로 로그인 가능하다면
-                guard UserApi.isKakaoTalkLoginAvailable() else {
-                    // 안되면 카카오계정으로 로그인
-                    UserApi.shared.loginWithKakaoAccount { oauthToken, error in
-                        guard let oauthToken else { return }
-                        
-                    }
-                    return .none }
+                guard UserApi.isKakaoTalkLoginAvailable() else { return .none }
                 // 카카오톡으로 로그인
                 UserApi.shared.loginWithKakaoTalk { oauthToken, error in
                     guard let oauthToken else { return }
-                    
+                    Task {
+                        var query = KakaoLoginQuery(oauthToken: "", deviceToken: "")
+                        query.oauthToken = oauthToken.accessToken
+                        query.deviceToken = ud.deviceToken
+                        do {
+                            let result = try await NetworkService.shared.postKakaoLogin(query)
+                            print("👍 Post KakaoLogin Success: \(result)")
+                            ud.isKakao = true
+                            ud.isUser = true
+                        } catch {
+                            print("❗️Error: ", error)
+                        }
+                    }
                 }
-                return .none
+                return .send(.present)
             }
         }
     }

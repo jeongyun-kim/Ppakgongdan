@@ -29,7 +29,8 @@ let project = Project(
             sources: ["Ppakgongdan/Sources/**"],
             resources: ["Ppakgongdan/Resources/**"],
             entitlements: .dictionary([
-                "com.apple.developer.applesignin": ["Default"]
+                "com.apple.developer.applesignin": ["Default"],
+                "aps-environment": "development"
             ]),
             dependencies: [
                 .project(target: "Feature", path: "Feature"),
