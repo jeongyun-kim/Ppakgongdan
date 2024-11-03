@@ -27,6 +27,7 @@ public struct OnboardingReducer {
         case present
         case appleLoginBtnTapped(Result<ASAuthorization, any Error>)
         case kakaoLoginBtnTapped
+        case loginFailed
     }
     
     public var body: some Reducer<State, Action> {
@@ -39,31 +40,44 @@ public struct OnboardingReducer {
                 
             case .binding(_):
                 return .none
+                
+            case .loginFailed:
+                print("Failed Login")
+                return .none
             
             case .appleLoginBtnTapped(let result):
                 switch result {
                 case .success(let result):
-                    print("Apple Login Successful")
                     switch result.credential{
                     case let appleIDCredential as ASAuthorizationAppleIDCredential:
                         // 계정 정보 가져오기
+                        guard let tokenData = appleIDCredential.identityToken else { return .send(.loginFailed) }
+                        guard let idToken = String(data: tokenData, encoding: .utf8) else { return .send(.loginFailed) }
                         let fullName = appleIDCredential.fullName
-                        let name =  (fullName?.familyName ?? "빡공단원") + (fullName?.givenName ?? "")
+                        let nickname = (fullName?.familyName ?? "빡공단원") + (fullName?.givenName ?? "")
                         let email = appleIDCredential.email ?? ""
-                        ud.isApple = true
-                        ud.email = email
+                        Task {
+                            do {
+                                let query = AppleLoginQuery(idToken: idToken, nickname: nickname, deviceToken: ud.deviceToken)
+                                let result = try await NetworkService.shared.postAppleLogin(query)
+                                print("👍 Post AppleLogin Success: \(result)")
+                                saveAppleDatas(email: email, data: result)
+                            } catch {
+                                print("❗️Error: ", error)
+                            }
+                        }
                     default:
                         break
                     }
                 case .failure(let error):
-                    print(error.localizedDescription)
-                    print("error")
+                    print("❗️Error: ", error)
+                    return .send(.loginFailed)
                 }
                 return .none
                 
             case .kakaoLoginBtnTapped:
                 // 카카오톡으로 로그인 가능하다면
-                guard UserApi.isKakaoTalkLoginAvailable() else { return .none }
+                guard UserApi.isKakaoTalkLoginAvailable() else { return .send(.loginFailed) }
                 // 카카오톡으로 로그인
                 UserApi.shared.loginWithKakaoTalk { oauthToken, error in
                     guard let oauthToken else { return }
@@ -74,8 +88,7 @@ public struct OnboardingReducer {
                         do {
                             let result = try await NetworkService.shared.postKakaoLogin(query)
                             print("👍 Post KakaoLogin Success: \(result)")
-                            ud.isKakao = true
-                            ud.isUser = true
+                            saveKakaoDatas(data: result)
                         } catch {
                             print("❗️Error: ", error)
                         }
@@ -84,5 +97,20 @@ public struct OnboardingReducer {
                 return .send(.present)
             }
         }
+    }
+    
+    private func saveAppleDatas(email: String, data: LoginModel) {
+        ud.isApple = true
+        ud.isUser = true
+        ud.email = email
+        ud.accessToken = data.token.accessToken
+        ud.refreshToken = data.token.refreshToken
+    }
+    
+    private func saveKakaoDatas(data: LoginModel) {
+        ud.accessToken = data.token.accessToken
+        ud.refreshToken = data.token.refreshToken
+        ud.isKakao = true
+        ud.isUser = true
     }
 }

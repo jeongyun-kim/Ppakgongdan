@@ -10,6 +10,7 @@ import Moya
 
 enum UserRouter {
     case kakaoLogin(query: KakaoLoginQuery)
+    case appleLogin(query: AppleLoginQuery)
 }
 
 extension UserRouter: TargetType {
@@ -19,14 +20,18 @@ extension UserRouter: TargetType {
     
     var path: String {
         switch self {
-        case .kakaoLogin(let query):
+        case .kakaoLogin:
             return "/v1/users/login/kakao"
+        case .appleLogin:
+            return "/v1/users/login/apple"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .kakaoLogin(let query):
+        case .kakaoLogin:
+            return .post
+        case .appleLogin:
             return .post
         }
     }
@@ -34,6 +39,8 @@ extension UserRouter: TargetType {
     var task: Moya.Task {
         switch self {
         case .kakaoLogin(let query):
+            return .requestJSONEncodable(query)
+        case .appleLogin(let query):
             return .requestJSONEncodable(query)
         }
     }
