@@ -15,7 +15,7 @@ public struct LoginModel: Decodable {
     let phone: String?
     let provider: String
     let createdAt: String
-    let token: Token
+    public let token: Token
     
     enum CodingKeys: String, CodingKey {
         case userId = "user_id"
@@ -30,6 +30,6 @@ public struct LoginModel: Decodable {
 }
 
 public struct Token: Decodable {
-    let accessToken: String
-    let refreshToken: String
+    public let accessToken: String
+    public let refreshToken: String
 }
