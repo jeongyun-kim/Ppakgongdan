@@ -20,7 +20,8 @@ let project = Project(
             infoPlist: .extendingDefault(with: [:]),
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "Feature-Login", path: "../Feature-Login")
+                .project(target: "Feature-Login", path: "../Feature-Login"),
+                .project(target: "Feature-Home", path: "../Feature-Home")
             ]
         )
     ]
