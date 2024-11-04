@@ -12,22 +12,24 @@ private struct NavigationBarWrapper: ViewModifier {
     let leadingImage: String?
     let trailligImage: String?
     let title: String?
+    let action: (() -> Void)?
     
-    init(leadingImage: String? = nil, trailligImage: String? = nil, title: String? = nil) {
+    init(leadingImage: String? = nil, trailligImage: String? = nil, title: String? = nil, action: (() -> Void)?) {
         self.leadingImage = leadingImage
         self.trailligImage = trailligImage
         self.title = title
+        self.action = action
     }
     
     func body(content: Content) -> some View {
         content
             .toolbar {
-                ToolbarItem(placement: .topBarLeading, content: { leadingView(image: leadingImage, title: title) })
-                ToolbarItem(placement: .topBarTrailing, content: { traillingView(image: trailligImage) })
+                ToolbarItem(placement: .topBarLeading, content: { leadingView() })
+                ToolbarItem(placement: .topBarTrailing, content: { traillingView() })
             }
     }
     
-    private func leadingView(image: String? = nil, title: String? = nil) -> some View {
+    private func leadingView() -> some View {
         HStack(spacing: 0) {
             Resources.Images.logo
                 .resizable()
@@ -37,10 +39,13 @@ private struct NavigationBarWrapper: ViewModifier {
                 .font(Resources.Fonts.title1)
                 .frame(height: 35)
                 .padding(.leading, 8)
+                .onTapGesture {
+                    action?()
+                }
         }
     }
     
-    private func traillingView(image: String? = nil) -> some View {
+    private func traillingView() -> some View {
         Circle()
             .frame(width: 32, height: 32)
             .overlay {
@@ -53,7 +58,7 @@ private struct NavigationBarWrapper: ViewModifier {
 }
 
 extension View {
-    public func navigationBar(leadingImage: String? = nil, trailingImage: String? = nil, title: String? = nil) -> some View {
-        modifier(NavigationBarWrapper(leadingImage: leadingImage, trailligImage: trailingImage, title: title))
+    public func navigationBar(leadingImage: String? = nil, trailingImage: String? = nil, title: String? = nil, action: (() -> Void)? = nil) -> some View {
+        modifier(NavigationBarWrapper(leadingImage: leadingImage, trailligImage: trailingImage, title: title, action: action))
     }
 }
