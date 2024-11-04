@@ -11,15 +11,15 @@ public struct LazyNavigationViewWrapper<Content: View>: View { // 감싸줄 뷰 
     // 감싸줄 뷰 빌드
     private let build: () -> Content
     
-    public init(@ViewBuilder content: () -> Content) {
+    public init(@ViewBuilder content: @escaping () -> Content) {
         self.build = content
     }
     
-    var body: some View {
+    public var body: some View {
         build()
     }
     
-    init(_ build: @autoclosure @escaping () -> Content) {
+    public init(_ build: @autoclosure @escaping () -> Content) {
         self.build = build
     }
 }
