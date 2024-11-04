@@ -26,7 +26,7 @@ public struct HomeView: View {
                 store.send(.presentListView)
             }
             .sheet(isPresented: $store.presentCreateView) {
-                CreateStudyGroupView()
+                CreateStudyGroupView(isPresentCreateView: $store.presentCreateView)
             }
         }
     }

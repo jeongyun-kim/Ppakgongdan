@@ -18,7 +18,7 @@ public enum Resources {
         public static let noPhotoB = Image("No Photo B")
         public static let noPhotoC = Image("No Photo C")
         public static let sesacBot = Image("SesacBot")
-        public static let stateDefault = Image("State_Default")
+        public static let newMessage = Image("New_Message_Button")
         public static let chevronDown = Image("chevron_down")
         public static let chevronLeft = Image("chevron_left")
         public static let chevronRight = Image("chevron_right")
@@ -66,5 +66,9 @@ public enum Resources {
         public static let bodyBold: Font = .system(size: 13, weight: .bold)
         public static let body: Font = .system(size: 13, weight: .regular)
         public static let caption: Font = .system(size: 12, weight: .regular)
+    }
+    
+    public enum Corners {
+        public static let normal: CGFloat = 8
     }
 }
