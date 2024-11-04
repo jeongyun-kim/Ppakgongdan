@@ -17,13 +17,13 @@ public struct FeatureView: View {
     
     public var body: some View {
         EmptyHomeView()
-            .fullScreenCover(isPresented: .constant(!isUser)) {
-                OnboardingView(store: .init(initialState: OnboardingReducer.State(), reducer: {
-                    OnboardingReducer()
-                }))
-            }
-            .transaction { transaction in
-                transaction.disablesAnimations = true
-            }
+//            .fullScreenCover(isPresented: .constant(!isUser)) {
+//                OnboardingView(store: .init(initialState: OnboardingReducer.State(), reducer: {
+//                    OnboardingReducer()
+//                }))
+//            }
+//            .transaction { transaction in
+//                transaction.disablesAnimations = true
+//            }
     }
 }
