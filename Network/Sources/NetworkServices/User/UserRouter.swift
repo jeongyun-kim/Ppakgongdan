@@ -15,7 +15,7 @@ enum UserRouter {
 
 extension UserRouter: TargetType {
     var baseURL: URL {
-        return URL(string: APIKey.baseURL)!
+        return APIKey.baseURL
     }
     
     var path: String {
