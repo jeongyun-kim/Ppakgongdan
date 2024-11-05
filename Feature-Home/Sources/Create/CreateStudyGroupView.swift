@@ -8,6 +8,7 @@
 import SwiftUI
 import UI
 import ComposableArchitecture
+import PhotosUI
 
 public struct CreateStudyGroupView: View {
     public init(store: StoreOf<CreateStudyGroupReducer>) {
@@ -15,7 +16,7 @@ public struct CreateStudyGroupView: View {
     }
     
     @Bindable private var store: StoreOf<CreateStudyGroupReducer>
-
+    
     public var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
@@ -23,13 +24,13 @@ public struct CreateStudyGroupView: View {
                     customDivider()
                         .padding(.bottom, 24)
                     
-                    profileImageView()
+                    groupImageView()
                     
                     verticalTextFieldView("스터디그룹 이름",
                                           placeHolder: "스터디그룹 이름을 입력하세요(필수)",
                                           text: $store.studyGroupName)
                     .padding(.bottom, 24)
-                    .onChange(of: store.studyGroupName) { 
+                    .onChange(of: store.studyGroupName) {
                         store.send(.changedStudyGroupName)
                     }
                     
@@ -46,30 +47,51 @@ public struct CreateStudyGroupView: View {
             }
             .frame(maxWidth: .infinity)
             .background(Resources.Colors.bgPrimary)
-            .navigationBarForPresent(title: "스터디그룹 생성") 
+            .navigationBarForPresent(title: "스터디그룹 생성")
         }
         .onTapGesture {
             self.endTextEditing()
         }
     }
-    
-    private func profileImageView() -> some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Resources.Colors.primaryColor)
-            .frame(width: 70, height: 70)
-            .overlay {
-                Resources.Images.workspace
-                    .resizable()
-                    .frame(width: 48, height: 60)
-                    .offset(y: 4)
-                Resources.Images.camera
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .offset(x: 29, y: 27)
+}
+
+// MARK: UI
+extension CreateStudyGroupView {
+    // MARK: 스터디그룹 이미지 뷰
+    private func groupImageView() -> some View {
+        PhotosPicker(selection: $store.selectedImage, matching: .images) {
+            ZStack {
+                RoundedRectangle(cornerRadius: Resources.Corners.normal)
+                    .fill(Resources.Colors.primaryColor)
+                    .frame(width: 70, height: 70)
+                    .overlay {
+                        groupImage()
+                            .resizable()
+                            .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
+                        Resources.Images.camera
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .offset(x: 29, y: 27)
+                    }
             }
             .padding(.bottom, 16)
+        }
+        .onChange(of: store.selectedImage) {
+            store.send(.changedSelectedImage)
+        }
     }
     
+    // MARK: 스터디그룹 이미지
+    private func groupImage() -> Image {
+        if let selectedImage = store.state.groupImage {
+            return selectedImage
+        }
+        else {
+            return Resources.Images.defaultGroupImage
+        }
+    }
+    
+    // MARK: 타이틀-텍스트필드
     private func verticalTextFieldView(_ title: String, placeHolder: String, text: Binding<String>) -> some View {
         VStack(spacing: 8) {
             titleTextView(title)
@@ -77,6 +99,7 @@ public struct CreateStudyGroupView: View {
         }
     }
     
+    // MARK: 타이틀
     private func titleTextView(_ title: String) -> some View {
         Text(title)
             .frame(maxWidth: .infinity, alignment: .leading)

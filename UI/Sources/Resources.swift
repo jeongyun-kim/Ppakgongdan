@@ -42,6 +42,7 @@ public enum Resources {
         public static let workspace = Image("workspace")
         public static let logo = Image("logo")
         public static let emptyHomeImage = Image("EmptyHomeImage")
+        public static let defaultGroupImage = Image("Group")
     }
     
     public enum Colors {
