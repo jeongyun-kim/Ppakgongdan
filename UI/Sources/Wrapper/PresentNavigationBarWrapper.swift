@@ -8,6 +8,7 @@
 import SwiftUI
 
 private struct PresentNavigationBarWrapper: ViewModifier {
+    @Environment(\.dismiss) private var dismiss
     let title: String
     let size: CGFloat = 20
     
@@ -21,6 +22,9 @@ private struct PresentNavigationBarWrapper: ViewModifier {
                 ToolbarItem(placement: .topBarLeading) {
                     Resources.Images.close
                         .frame(width: 20, height: 20)
+                        .onTapGesture {
+                            dismiss()
+                        }
                 }
             }
             .toolbarBackground(Resources.Colors.white, for: .navigationBar)
