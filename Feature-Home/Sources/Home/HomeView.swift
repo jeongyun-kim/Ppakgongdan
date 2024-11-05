@@ -26,7 +26,10 @@ public struct HomeView: View {
                 store.send(.presentListView)
             }
             .sheet(isPresented: $store.presentCreateView) {
-                CreateStudyGroupView(isPresentCreateView: $store.presentCreateView)
+                CreateStudyGroupView(store: .init(initialState: CreateStudyGroupReducer.State(), reducer: {
+                    CreateStudyGroupReducer()
+                }))
+                .presentationDragIndicator(.visible)
             }
         }
     }

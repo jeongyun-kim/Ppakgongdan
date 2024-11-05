@@ -7,17 +7,15 @@
 
 import SwiftUI
 import UI
+import ComposableArchitecture
 
 public struct CreateStudyGroupView: View {
-    public init(isPresentCreateView: Binding<Bool>) {
-        _isPresentCreateView = isPresentCreateView
+    public init(store: StoreOf<CreateStudyGroupReducer>) {
+        self.store = store
     }
     
-    @Binding var isPresentCreateView: Bool
-    @State private var studyGroupName: String = ""
-    @State private var studyGroupDesc: String = ""
-    @State private var isDisabled = true
-    
+    @Bindable private var store: StoreOf<CreateStudyGroupReducer>
+
     public var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
@@ -29,15 +27,18 @@ public struct CreateStudyGroupView: View {
                     
                     verticalTextFieldView("스터디그룹 이름",
                                           placeHolder: "스터디그룹 이름을 입력하세요(필수)",
-                                          text: $studyGroupName)
+                                          text: $store.studyGroupName)
                     .padding(.bottom, 24)
+                    .onChange(of: store.studyGroupName) { 
+                        store.send(.changedStudyGroupName)
+                    }
                     
                     verticalTextFieldView("스터디그룹 설명",
                                           placeHolder: "스터디그룹 설명을 입력하세요(옵션)",
-                                          text: $studyGroupDesc)
+                                          text: $store.studyGroupDesc)
                     .padding(.bottom, 58)
                     
-                    nextButton("완료", isDisabled: $isDisabled)
+                    nextButton("완료", isDisabled: $store.isDisabled)
                     
                     Spacer()
                 }
@@ -45,7 +46,7 @@ public struct CreateStudyGroupView: View {
             }
             .frame(maxWidth: .infinity)
             .background(Resources.Colors.bgPrimary)
-            .navigationBarForPresent(title: "스터디그룹 생성")
+            .navigationBarForPresent(title: "스터디그룹 생성") 
         }
         .onTapGesture {
             self.endTextEditing()
