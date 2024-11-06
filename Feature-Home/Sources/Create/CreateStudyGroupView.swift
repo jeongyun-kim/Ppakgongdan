@@ -48,9 +48,10 @@ public struct CreateStudyGroupView: View {
             .frame(maxWidth: .infinity)
             .background(Resources.Colors.bgPrimary)
             .navigationBarForPresent(title: "스터디그룹 생성")
-        }
-        .onTapGesture {
-            self.endTextEditing()
+            .onTapGesture(count: 99) { }
+            .onTapGesture {
+                self.endTextEditing()
+            }
         }
     }
 }
