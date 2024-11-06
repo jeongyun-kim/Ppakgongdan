@@ -12,7 +12,7 @@ import Utils
 
 extension NetworkService {
     var homeProvider: MoyaProvider<HomeRouter> {
-        return MoyaProvider<HomeRouter>()
+        return MoyaProvider<HomeRouter>(session: Session(interceptor: AuthInterceptor.shared))
     }
     
     public func getMyWorkspaces() async throws -> [Workspace] {

@@ -48,6 +48,10 @@ extension UserRouter: TargetType {
     var headers: [String : String]? {
         return [APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json]
     }
+    
+    var validationType: ValidationType {
+        return .successCodes
+    }
 }
 
 

@@ -45,4 +45,8 @@ extension HomeRouter: TargetType {
             APIKey.auth: UserDefaultsManager.shared.accessToken
         ]
     }
+    
+    var validationType: ValidationType {
+        return .successCodes
+    }
 }

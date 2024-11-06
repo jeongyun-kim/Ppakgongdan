@@ -10,7 +10,7 @@ import Moya
 
 extension NetworkService: UserNetwork {
     var userProvider: MoyaProvider<UserRouter> {
-        return MoyaProvider<UserRouter>()
+        return MoyaProvider<UserRouter>(session: Session(interceptor: AuthInterceptor.shared))
     }
     
     // 카카오 로그인 - 비동기 작업 + 에러 던질거라고 명시

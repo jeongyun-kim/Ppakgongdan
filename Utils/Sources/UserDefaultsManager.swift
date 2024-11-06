@@ -38,7 +38,7 @@ public class UserDefaultsManager {
     @UD(key: UDKey.isKakao.rawValue, defaultValue: false) public var isKakao
     @UD(key: UDKey.email.rawValue, defaultValue: "") public var email
     
-    func deleteAllData() {
+    public func deleteAllData() {
         for key in UserDefaults.standard.dictionaryRepresentation().keys {
             UserDefaults.standard.removeObject(forKey: key)
         }
