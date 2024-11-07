@@ -17,25 +17,28 @@ final class AuthInterceptor: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
         var request = urlRequest
         request.setValue(UserDefaultsManager.shared.accessToken, forHTTPHeaderField: APIKey.auth)
-        print(#function)
         completion(.success(request))
     }
     
-    func retry(_ request: Request, for session: Session, dueTo error: any Error, completion: @escaping (RetryResult) -> Void) async {
-        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 400 else {
+    func retry(_ request: Request, for session: Session, dueTo error: any Error, completion: @escaping (RetryResult) -> Void) {
+        guard let response = request.task?.response as? HTTPURLResponse else {
+            completion(.doNotRetryWithError(error))
+            return
+        }
+        
+        guard response.statusCode == 400 else {
             completion(.doNotRetry)
             return
         }
-    
-        do {
-            let result = try await NetworkService.shared.refreshToken()
-            UserDefaultsManager.shared.accessToken = result.accessToken
-            completion(.retry)
-            print(#function, "success")
-        } catch {
-            completion(.doNotRetryWithError(error))
-            print(#function, "fail")
-            UserDefaultsManager.shared.deleteAllData()
+
+        NetworkService.shared.getRefreshToken { result in
+            switch result {
+            case .success(let value):
+                UserDefaultsManager.shared.accessToken = value.accessToken
+                completion(.retry)
+            case .failure(let error):
+                completion(.doNotRetryWithError(error))
+            }
         }
     }
 }

@@ -42,4 +42,3 @@ extension AuthRouter: TargetType {
         return .successCodes
     }
 }
-
