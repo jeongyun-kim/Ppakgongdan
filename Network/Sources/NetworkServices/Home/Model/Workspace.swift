@@ -8,12 +8,12 @@
 import Foundation
 
 public struct Workspace: Decodable {
-    let workspaceId: String
-    let name: String
-    let description: String?
-    let coverImage: String?
-    let ownerId: String
-    let createdAt: String
+    public let workspaceId: String
+    public let name: String
+    public let description: String?
+    public let coverImage: String
+    public let ownerId: String
+    public let createdAt: String
     
     enum CodingKeys: String, CodingKey {
         case workspaceId = "workspace_id"

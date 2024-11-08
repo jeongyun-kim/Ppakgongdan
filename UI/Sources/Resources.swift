@@ -43,6 +43,7 @@ public enum Resources {
         public static let logo = Image("logo")
         public static let emptyHomeImage = Image("EmptyHomeImage")
         public static let defaultGroupImage = Image("Group")
+        public static let UIdefaultGroupImage = UIImage(named: "Group")
     }
     
     public enum Colors {
