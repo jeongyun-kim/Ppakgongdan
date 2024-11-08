@@ -10,7 +10,7 @@ import Foundation
 public struct Workspace: Decodable {
     let workspaceId: String
     let name: String
-    let description: String
+    let description: String?
     let coverImage: String?
     let ownerId: String
     let createdAt: String

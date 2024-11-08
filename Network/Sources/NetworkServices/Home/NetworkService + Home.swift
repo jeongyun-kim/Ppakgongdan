@@ -19,4 +19,11 @@ extension NetworkService {
         let result = await homeProvider.request(.getMyWorkspaces)
         return try decodeResults(result, modelType: [Workspace].self)
     }
+    
+    public func createWorkspace(name: String, desc: String, image: Data) async throws -> Workspace {
+        print(#function)
+        let query = CreateWorkSpace(name: name, description: desc, image: image)
+        let result = await homeProvider.request(.createWorkspace(query))
+        return try decodeResults(result, modelType: Workspace.self)
+    }
 }
