@@ -24,3 +24,33 @@ public struct Workspace: Decodable {
         case createdAt
     }
 }
+
+extension Workspace {
+    public func toStudyGroup() -> StudyGroup {
+        return StudyGroup(groupId: self.workspaceId,
+                          groupName: self.name,
+                          groupDesc: self.description ?? "",
+                          coverImage: self.coverImage,
+                          ownerId: self.ownerId,
+                          createdAt: self.createdAt)
+    }
+}
+
+public struct StudyGroup: Equatable {
+    public init(groupId: String, groupName: String, groupDesc: String, coverImage: String, ownerId: String, createdAt: String) {
+        self.groupId = groupId
+        self.groupName = groupName
+        self.groupDesc = groupDesc
+        self.coverImage = coverImage
+        self.ownerId = ownerId
+        self.createdAt = createdAt
+    }
+    
+    public let groupId: String
+    public let groupName: String
+    public let groupDesc: String
+    public let coverImage: String
+    public let ownerId: String
+    public let createdAt: String
+}
+
