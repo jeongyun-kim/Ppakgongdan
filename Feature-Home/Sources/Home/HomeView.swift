@@ -31,6 +31,10 @@ public struct HomeView: View {
                 }))
                 .presentationDragIndicator(.visible)
             }
+            .onAppear {
+                store.send(.getMyStudyGroups)
+            }
+            .showReloginAlert(isPresenting: $store.isPresentingAlert)
         }
     }
     
