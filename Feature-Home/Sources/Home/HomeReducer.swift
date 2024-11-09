@@ -10,24 +10,26 @@ import Utils
 import ComposableArchitecture
 
 public struct HomeReducer: Reducer {
-    public init() {}
+    public init() { }
     
     @ObservableState
     public struct State: Equatable {
-        public init() { }
-        var presentCreateView = false
-        var presentListView = false
+        public init(group: StudyGroup? = nil) {
+            _group = Shared(group)
+        }
+        
+        var isPresentCreateView = false
+        var isPresentListView = false
         var isPresentingAlert = false
-        var isEmptyHomeView = true
+        @Shared var group: StudyGroup?
     }
     
     public enum Action: BindableAction {
-        case presentCrateView
-        case presentListView
-        case toggleAlert
-        case getMyStudyGroups
-        case changeView(Bool)
         case binding(BindingAction<State>)
+        case presentCrateView // 그룹 생성뷰 띄울지 말지
+        case presentListView // 그룹 리스트뷰 표출 여부
+        case showReloginAlert // 토큰 갱신 알림
+        case viewDidDisappear // 뷰 사라짐
     }
     
     public var body: some Reducer<State, Action> {
@@ -38,32 +40,23 @@ public struct HomeReducer: Reducer {
                 return .none
                 
             case .presentCrateView:
-                state.presentCreateView.toggle()
+                state.isPresentCreateView.toggle()
                 return .none
                 
             case .presentListView:
-                state.presentListView.toggle()
+                state.isPresentListView.toggle()
                 return .none
                 
-            case .toggleAlert:
+            case .showReloginAlert:
                 state.isPresentingAlert.toggle()
                 return .none
                 
-            case .changeView(let isEmpty):
-                state.isEmptyHomeView = isEmpty
+            case .viewDidDisappear:
+                guard let group = state.group else { return .none }
+                UserDefaultsManager.shared.recentGroupId = group.groupId
                 return .none
-                
-            case .getMyStudyGroups:
-                return .run { send in
-                    do {
-                        let result = try await NetworkService.shared.getMyWorkspaces()
-                        await send(.changeView(result.isEmpty))
-                    } catch {
-                        guard UserDefaultsManager.shared.isUser else { return }
-                        await send(.toggleAlert)
-                    }
-                }
             }
         }
     }
 }
+
