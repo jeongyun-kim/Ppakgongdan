@@ -11,6 +11,8 @@ import ComposableArchitecture
 import PhotosUI
 
 public struct CreateStudyGroupView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     public init(store: StoreOf<CreateStudyGroupReducer>) {
         self.store = store
     }
@@ -39,7 +41,9 @@ public struct CreateStudyGroupView: View {
                                           text: $store.studyGroupDesc)
                     .padding(.bottom, 58)
                     
-                    nextButton("완료", isDisabled: $store.isDisabled)
+                    nextButton("완료", action:  {
+                        store.send(.createStudyGroup)
+                    }, isDisabled: $store.isDisabled)
                     
                     Spacer()
                 }
@@ -48,7 +52,16 @@ public struct CreateStudyGroupView: View {
             .frame(maxWidth: .infinity)
             .background(Resources.Colors.bgPrimary)
             .navigationBarForPresent(title: "스터디그룹 생성")
-            .onTapGesture(count: 99) { }
+            .showReloginAlert(isPresenting: $store.isPresentingReloginAlert)
+            .onAppear {
+                store.send(.viewOnAppear)
+            }
+            .onChange(of: store.isCompleted) {
+                // 생성 완료 시, 뷰 내리기
+                guard store.isCompleted else { return }
+                dismiss()
+            }
+            .onTapGesture(count: 99, perform: { })
             .onTapGesture {
                 self.endTextEditing()
             }
