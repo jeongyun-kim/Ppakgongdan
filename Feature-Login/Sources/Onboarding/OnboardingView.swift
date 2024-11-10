@@ -8,11 +8,13 @@
 import SwiftUI
 import AuthenticationServices
 import UI
+import Utils
 import ComposableArchitecture
 
 public struct OnboardingView: View {
+    @Environment(\.dismiss) private var dismiss
+    @AppStorage(UDKey.isUser.rawValue) var isUser = UserDefaults.standard.bool(forKey: UDKey.isUser.rawValue)
     @Bindable private var store: StoreOf<OnboardingReducer>
-    @AppStorage("isUser") var isUser = UserDefaults.standard.bool(forKey: "isUser")
     
     public init(store: StoreOf<OnboardingReducer>) {
         self.store = store
@@ -36,12 +38,20 @@ public struct OnboardingView: View {
             }
             .padding(.bottom, 11)
         }
-        .sheet(isPresented: $store.isPresenting) {
-            sheetView()
+        .sheet(isPresented: $store.isPresentingSheet) {
+            sheetLoginView()
+        }
+        .onChange(of: isUser) { oldValue, newValue in
+            if newValue {
+                dismiss()
+            }
         }
     }
-    
-    private func sheetView() -> some View {
+}
+
+extension OnboardingView {
+    // MARK: 로그인(카카오/애플/이메일)
+    private func sheetLoginView() -> some View {
         VStack(spacing: 16) {
             nextButton()
                 .overlay {
@@ -72,6 +82,7 @@ public struct OnboardingView: View {
         .presentationDragIndicator(.visible)
     }
     
+    // MARK: 애플 로그인 버튼
     private func appleLoginButton() -> some View {
         SignInWithAppleButton(
             onRequest: { request in

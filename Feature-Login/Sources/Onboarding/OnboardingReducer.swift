@@ -19,7 +19,8 @@ public struct OnboardingReducer {
     @ObservableState
     public struct State: Equatable {
         public init() { }
-        var isPresenting = false
+        var isPresentingSheet = false
+        var isUser = UserDefaultsManager.shared.isUser
     }
     
     public enum Action: BindableAction {
@@ -35,7 +36,7 @@ public struct OnboardingReducer {
         Reduce { state, action in
             switch action {
             case .present:
-                state.isPresenting.toggle()
+                state.isPresentingSheet.toggle()
                 return .none
                 
             case .binding(_):
