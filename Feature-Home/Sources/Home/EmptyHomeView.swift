@@ -52,12 +52,10 @@ extension EmptyHomeView {
             Spacer()
             
             nextButton("스터디그룹 생성") {
-                store.send(.presentCrateView)
+                store.send(.presentCreateView)
             }
         }
         .padding(.bottom, 11)
-        .navigationBar {
-            store.send(.presentListView)
-        }
+        .navigationBar()
     }
 }
