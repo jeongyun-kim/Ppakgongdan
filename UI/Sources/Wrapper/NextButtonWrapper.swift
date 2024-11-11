@@ -26,7 +26,7 @@ private struct NextButtonWrapper: ViewModifier {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(isDisabled ?
                           Resources.Colors.inActive : Resources.Colors.primaryColor)
-                    .frame(width: 323, height: 44)
+                    .frame(height: 44)
                 Text(title)
                     .font(Resources.Fonts.title2)
                     .foregroundStyle(Resources.Colors.white)

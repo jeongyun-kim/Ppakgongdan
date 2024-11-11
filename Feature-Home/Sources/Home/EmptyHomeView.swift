@@ -54,6 +54,7 @@ extension EmptyHomeView {
             nextButton("스터디그룹 생성") {
                 store.send(.presentCreateView)
             }
+            .padding(.horizontal, 24)
         }
         .padding(.bottom, 11)
         .navigationBar()
