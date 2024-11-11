@@ -19,32 +19,43 @@ public struct HomeView: View {
     @Bindable private var store: StoreOf<HomeReducer>
     
     public var body: some View {
-        NavigationStack {
-            ZStack(alignment: .top) {
-                if let data = store.group {
-                    defulatHomeView(item: data)
-                }
+        ZStack(alignment: .top) {
+            if let data = store.group {
+                defulatHomeView(item: data)
+                SideMenuView(isPresenting: $store.isPresentingSideMenu)
             }
-            .onDisappear {
-                store.send(.viewDidDisappear)
-            }
-            .showReloginAlert(isPresenting: $store.isPresentingAlert)
         }
+        .onDisappear {
+            store.send(.viewDidDisappear)
+        }
+        .gesture(
+            DragGesture()
+                .onChanged({ value in
+                    guard value.translation.width > 0 else {
+                        store.send(.dismissSideMenu)
+                        return 
+                    }
+                    store.send(.presentSideMenu)
+                })
+        )
+        .showReloginAlert(isPresenting: $store.isPresentingAlert)
     }
 }
 
 extension HomeView {
     private func defulatHomeView(item: StudyGroup) -> some View {
-        VStack(spacing: 0) {
-            customDivider()
-            
-            Text(item.groupName)
-                .font(Resources.Fonts.title1)
-                .padding(.top, 35)
-                .padding(.bottom, 24)
-        }
-        .navigationBar(leadingImage: nil, trailingImage: nil, title: item.groupName) {
-            print(item)
+        NavigationStack {
+            VStack(spacing: 0) {
+                customDivider()
+                
+                Text(item.groupName)
+                    .font(Resources.Fonts.title1)
+                    .padding(.top, 35)
+                    .padding(.bottom, 24)
+            }
+            .navigationBar(leadingImage: nil, trailingImage: nil, title: item.groupName) {
+                store.send(.presentSideMenu)
+            }
         }
     }
 }

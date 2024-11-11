@@ -19,17 +19,18 @@ public struct HomeReducer: Reducer {
         }
         
         var isPresentCreateView = false
-        var isPresentListView = false
         var isPresentingAlert = false
+        var isPresentingSideMenu = false
         @Shared var group: StudyGroup?
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case presentCrateView // 그룹 생성뷰 띄울지 말지
-        case presentListView // 그룹 리스트뷰 표출 여부
+        case presentCreateView // 그룹 생성뷰 띄울지 말지
         case showReloginAlert // 토큰 갱신 알림
         case viewDidDisappear // 뷰 사라짐
+        case presentSideMenu // 사이드메뉴 열기
+        case dismissSideMenu // 사이드메뉴 닫기
     }
     
     public var body: some Reducer<State, Action> {
@@ -39,12 +40,8 @@ public struct HomeReducer: Reducer {
             case .binding(_):
                 return .none
                 
-            case .presentCrateView:
+            case .presentCreateView:
                 state.isPresentCreateView.toggle()
-                return .none
-                
-            case .presentListView:
-                state.isPresentListView.toggle()
                 return .none
                 
             case .showReloginAlert:
@@ -54,6 +51,14 @@ public struct HomeReducer: Reducer {
             case .viewDidDisappear:
                 guard let group = state.group else { return .none }
                 UserDefaultsManager.shared.recentGroupId = group.groupId
+                return .none
+                
+            case .presentSideMenu:
+                state.isPresentingSideMenu = true
+                return .none
+                
+            case .dismissSideMenu:
+                state.isPresentingSideMenu = false
                 return .none
             }
         }
