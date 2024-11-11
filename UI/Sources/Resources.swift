@@ -72,5 +72,6 @@ public enum Resources {
     
     public enum Corners {
         public static let normal: CGFloat = 8
+        public static let sideMenu: CGFloat = 25
     }
 }
