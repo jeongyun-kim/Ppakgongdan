@@ -54,6 +54,14 @@ extension SideMenuView {
                         isPresentingCreateView.toggle()
                     })
                     .padding(.horizontal, 24)
+                    
+                    Spacer()
+                    
+                    VStack(spacing: 0) {
+                        bottomButtonView(image: Resources.Images.plus, text: "스터디그룹 추가")
+                        bottomButtonView(image: Resources.Images.help, text: "도움말")
+                        .padding(.bottom, 33)
+                    }
                 }
             }
             .frame(width: geometry.size.width * 0.8)
@@ -64,6 +72,21 @@ extension SideMenuView {
                 }))
             }
         }
+    }
+    
+    // MARK: BottomButtonView(도움말 등)
+    private func bottomButtonView(image: Image, text: String) -> some View {
+        HStack {
+            image
+                .resizable()
+                .frame(width: 18, height: 18)
+            Text(text)
+                .font(Resources.Fonts.body)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 41)
+        .padding(.horizontal, 24)
     }
     
     // MARK: TitleView
