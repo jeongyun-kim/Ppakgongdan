@@ -12,6 +12,7 @@ import Utils
 enum HomeRouter {
     case getMyWorkspaces
     case createWorkspace(CreateWorkSpace)
+    case deleteWorkspace(id: String)
 }
 
 extension HomeRouter: TargetType {
@@ -25,6 +26,8 @@ extension HomeRouter: TargetType {
             return "/v1/workspaces"
         case .createWorkspace:
             return "/v1/workspaces"
+        case .deleteWorkspace(let id):
+            return  "/v1/workspaces/\(id)"
         }
     }
     
@@ -34,6 +37,8 @@ extension HomeRouter: TargetType {
             return .get
         case .createWorkspace:
             return .post
+        case .deleteWorkspace:
+            return .delete
         }
     }
     
@@ -47,6 +52,8 @@ extension HomeRouter: TargetType {
                 MultipartFormData(provider: .data(query.image.base64EncodedData()), name: "image", fileName: "\(query.name).jpeg", mimeType: "image/jpeg"),
                 MultipartFormData(provider: .data(query.description.data(using: .utf8)!), name: "description")
             ])
+        case .deleteWorkspace:
+            return .requestPlain
         }
     }
     
@@ -57,9 +64,14 @@ extension HomeRouter: TargetType {
                 APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
                 APIKey.auth: UserDefaultsManager.shared.accessToken
             ]
-        case .createWorkspace(let createWorkSpace):
+        case .createWorkspace:
             return [
                 APIKey.headerKey: APIKey.key, APIKey.content: APIKey.formData,
+                APIKey.auth: UserDefaultsManager.shared.accessToken
+            ]
+        case .deleteWorkspace:
+            return [
+                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
                 APIKey.auth: UserDefaultsManager.shared.accessToken
             ]
         }
