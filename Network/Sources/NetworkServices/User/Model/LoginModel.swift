@@ -8,13 +8,13 @@
 import Foundation
 
 public struct LoginModel: Decodable {
-    let userId: String
-    let email: String
-    let nickname: String
-    let profileImage: String?
-    let phone: String?
+    public let userId: String
+    public let email: String
+    public let nickname: String
+    public let profileImage: String?
+    public let phone: String?
     let provider: String
-    let createdAt: String
+    public let createdAt: String
     public let token: Token
     
     enum CodingKeys: String, CodingKey {

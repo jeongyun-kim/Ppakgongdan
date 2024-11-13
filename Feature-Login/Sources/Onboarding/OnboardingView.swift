@@ -35,6 +35,7 @@ public struct OnboardingView: View {
                 nextButton("시작하기") {
                     store.send(.present)
                 }
+                .frame(width: 323)
             }
             .padding(.bottom, 11)
         }
@@ -54,11 +55,13 @@ extension OnboardingView {
     private func sheetLoginView() -> some View {
         VStack(spacing: 16) {
             nextButton()
+                .frame(width: 323)
                 .overlay {
                     Resources.Images.appleLogin
                     appleLoginButton()
                 }
             nextButton()
+                .frame(width: 323)
                 .overlay {
                     Resources.Images.kakaoLogin
                         .onTapGesture {
@@ -66,6 +69,7 @@ extension OnboardingView {
                         }
                 }
             nextButton()
+                .frame(width: 323)
                 .overlay {
                     Resources.Images.emailLogin
                         .resizable()

@@ -106,11 +106,13 @@ public struct OnboardingReducer {
         ud.email = email
         ud.accessToken = data.token.accessToken
         ud.refreshToken = data.token.refreshToken
+        ud.userId = data.userId
     }
     
     private func saveKakaoDatas(data: LoginModel) {
         ud.accessToken = data.token.accessToken
         ud.refreshToken = data.token.refreshToken
+        ud.userId = data.userId
         ud.isKakao = true
         ud.isUser = true
     }
