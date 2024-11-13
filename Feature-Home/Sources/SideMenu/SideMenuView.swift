@@ -129,6 +129,7 @@ extension SideMenuView {
                     }
                 }
             }
+            
             .padding(.horizontal)
             .padding(.vertical, 8)
         }
@@ -203,6 +204,7 @@ extension SideMenuView {
         Task {
             do {
                 let result = try await NetworkService.shared.getMyWorkspaces()
+                UserDefaultsManager.shared.groupCount = result.count
                 let groups = result.map { $0.toStudyGroup() }
                 studyGroups = groups
             } catch {

@@ -39,6 +39,7 @@ public class UserDefaultsManager {
     @UD(key: UDKey.email.rawValue, defaultValue: "") public var email
     @UD(key: UDKey.recentGroupId.rawValue, defaultValue: "") public var recentGroupId
     @UD(key: UDKey.userId.rawValue, defaultValue: "") public var userId
+    @UD(key: UDKey.groupCount.rawValue, defaultValue: 0) public var groupCount
     
     public func deleteAllData() {
         for key in UserDefaults.standard.dictionaryRepresentation().keys {

@@ -67,6 +67,7 @@ public struct SideMenuReducer {
                 return .run { send in
                     do {
                         let result = try await NetworkService.shared.getMyWorkspaces()
+                        UserDefaultsManager.shared.groupCount = result.count
                         let groups = result.map { $0.toStudyGroup() }
                         await send(.completed(groups))
                     } catch {

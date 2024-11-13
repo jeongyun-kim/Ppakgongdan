@@ -9,22 +9,22 @@ import SwiftUI
 import UI
 import Utils
 import NetworkKit
-import ComposableArchitecture
 import Feature_Login
+import ComposableArchitecture
 
 public struct MainHomeView: View {
     @Environment(\.scenePhase) private var scenePhase
-    @State private var isEmpty = false
     @State private var studyGroupData: StudyGroup? = nil
     @State private var isPresentingReloginAlert: Bool = false
     @State private var isPresentingOnbaording: Bool = false
     @AppStorage(UDKey.isUser.rawValue) private var isUser = UserDefaults.standard.bool(forKey: UDKey.isUser.rawValue)
+    @AppStorage(UDKey.groupCount.rawValue) private var groupCount = UserDefaults.standard.integer(forKey: UDKey.groupCount.rawValue)
     
     public init() { }
     
     public var body: some View {
         ZStack {
-            if isEmpty {
+            if groupCount == 0 {
                 EmptyHomeView(store: .init(initialState: HomeReducer.State(), reducer: {
                     HomeReducer()
                 }))
@@ -38,7 +38,7 @@ public struct MainHomeView: View {
             isPresentingOnbaording.toggle()
         })
         .onChange(of: isUser, { oldValue, newValue in
-            // 사용자가 로그인하면 다시 워크스페이스 받아오게 처리 
+            // 사용자가 로그인하면 다시 워크스페이스 받아오게 처리
             getMyWorkspaces()
         })
         .onChange(of: scenePhase, { oldValue, newValue in
@@ -68,6 +68,7 @@ public struct MainHomeView: View {
         Task {
             do {
                 let result = try await NetworkService.shared.getMyWorkspaces()
+                UserDefaultsManager.shared.groupCount = result.count
                 guard UserDefaultsManager.shared.recentGroupId.isEmpty else {
                     let data = result.filter { $0.workspaceId == UserDefaultsManager.shared.recentGroupId }[0]
                     let studyGroup = data.toStudyGroup()

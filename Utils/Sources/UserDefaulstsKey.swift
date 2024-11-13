@@ -17,4 +17,5 @@ public enum UDKey: String {
     case refreshToken
     case recentGroupId
     case userId
+    case groupCount
 }
