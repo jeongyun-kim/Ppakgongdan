@@ -33,7 +33,7 @@ public struct OnboardingView: View {
                     .padding(.horizontal, 12)
                 Spacer()
                 nextButton("시작하기") {
-                    store.send(.present)
+                    store.send(.togglePresentingSheet)
                 }
                 .frame(width: 323)
             }

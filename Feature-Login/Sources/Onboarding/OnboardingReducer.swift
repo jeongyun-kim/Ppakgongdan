@@ -20,12 +20,11 @@ public struct OnboardingReducer {
     public struct State: Equatable {
         public init() { }
         var isPresentingSheet = false
-        var isUser = UserDefaultsManager.shared.isUser
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case present
+        case togglePresentingSheet
         case appleLoginBtnTapped(Result<ASAuthorization, any Error>)
         case kakaoLoginBtnTapped
         case loginFailed
@@ -35,10 +34,10 @@ public struct OnboardingReducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .present:
-                state.isPresentingSheet.toggle()
+            case .togglePresentingSheet:
+                state.isPresentingSheet = true
                 return .none
-                
+            
             case .binding(_):
                 return .none
                 
@@ -95,7 +94,7 @@ public struct OnboardingReducer {
                         }
                     }
                 }
-                return .send(.present)
+                return .send(.togglePresentingSheet)
             }
         }
     }
