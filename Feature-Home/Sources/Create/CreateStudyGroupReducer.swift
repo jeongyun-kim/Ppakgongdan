@@ -17,11 +17,13 @@ public struct CreateStudyGroupReducer: Reducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(group: Shared<StudyGroup?> = Shared(nil)) {
+        public init(group: Shared<StudyGroup?> = Shared(nil), groupCount: Shared<Int>) {
             _group = group
+            _groupCount = groupCount
         }
         
         @Shared var group: StudyGroup?
+        @Shared var groupCount: Int
         var studyGroupName = "" // 스터디그룹명
         var studyGroupDesc = "" // 스터디그룹 설명
         var isDisabled = true // 생성 버튼 활성화 여부
@@ -99,6 +101,8 @@ public struct CreateStudyGroupReducer: Reducer {
                 
             case .toggleCompleted: // 그룹 생성 후 현재 뷰 내리도록 isCompleted 값 변경
                 state.isCompleted.toggle()
+                UserDefaultsManager.shared.groupCount += 1
+                state.groupCount = UserDefaultsManager.shared.groupCount
                 return .none
             }
         }

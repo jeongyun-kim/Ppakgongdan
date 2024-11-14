@@ -14,14 +14,16 @@ public struct HomeReducer: Reducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(group: StudyGroup? = nil) {
-            _group = Shared(group)
+        public init(group: Shared<StudyGroup?>, groupCount: Shared<Int>) {
+            _group = group
+            _groupCount = groupCount
         }
         
+        @Shared var group: StudyGroup?
+        @Shared var groupCount: Int
         var isPresentCreateView = false
         var isPresentingAlert = false
         var isPresentingSideMenu = false
-        @Shared var group: StudyGroup?
     }
     
     public enum Action: BindableAction {

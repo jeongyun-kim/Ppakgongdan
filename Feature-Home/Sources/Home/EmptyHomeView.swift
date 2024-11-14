@@ -22,7 +22,7 @@ struct EmptyHomeView: View {
             emptyHomeView()
         }
         .sheet(isPresented: $store.isPresentCreateView) {
-            CreateStudyGroupView(store: .init(initialState: CreateStudyGroupReducer.State(), reducer: {
+            CreateStudyGroupView(store: .init(initialState: CreateStudyGroupReducer.State(groupCount: store.$groupCount), reducer: {
                 CreateStudyGroupReducer()
             }))
             .presentationDragIndicator(.visible)
