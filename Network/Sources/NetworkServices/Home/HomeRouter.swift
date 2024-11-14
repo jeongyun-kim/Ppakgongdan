@@ -13,6 +13,7 @@ enum HomeRouter {
     case getMyWorkspaces
     case createWorkspace(CreateWorkSpace)
     case deleteWorkspace(id: String)
+    case exitWorkspace(id: String)
 }
 
 extension HomeRouter: TargetType {
@@ -28,6 +29,8 @@ extension HomeRouter: TargetType {
             return "/v1/workspaces"
         case .deleteWorkspace(let id):
             return  "/v1/workspaces/\(id)"
+        case .exitWorkspace(let id):
+            return "/v1/workspaces/\(id)/exit"
         }
     }
     
@@ -39,6 +42,8 @@ extension HomeRouter: TargetType {
             return .post
         case .deleteWorkspace:
             return .delete
+        case .exitWorkspace:
+            return .get
         }
     }
     
@@ -53,6 +58,8 @@ extension HomeRouter: TargetType {
                 MultipartFormData(provider: .data(query.description.data(using: .utf8)!), name: "description")
             ])
         case .deleteWorkspace:
+            return .requestPlain
+        case .exitWorkspace:
             return .requestPlain
         }
     }
@@ -70,6 +77,11 @@ extension HomeRouter: TargetType {
                 APIKey.auth: UserDefaultsManager.shared.accessToken
             ]
         case .deleteWorkspace:
+            return [
+                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
+                APIKey.auth: UserDefaultsManager.shared.accessToken
+            ]
+        case .exitWorkspace:
             return [
                 APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
                 APIKey.auth: UserDefaultsManager.shared.accessToken

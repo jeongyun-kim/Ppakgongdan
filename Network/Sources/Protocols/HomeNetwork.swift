@@ -13,4 +13,5 @@ protocol HomeNetwork {
     func getMyWorkspaces() async throws -> [Workspace]
     func createWorkspace(name: String, desc: String, image: Data) async throws -> Workspace
     func deleteWorkspace(groupId: String) async throws
+    func exitWorkspace(groupId: String) async throws -> Workspace
 }
