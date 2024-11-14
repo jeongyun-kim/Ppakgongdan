@@ -26,33 +26,29 @@ public struct SideMenuView: View {
                     .onTapGesture {
                         store.send(.dismissSideMenu)
                     }
-                if studyGroups.isEmpty {
+                if store.studyGroupList.isEmpty {
                     baseView(emptyContentView())
                         .sheet(isPresented: $store.isPresentingCreateView) {
-                            CreateStudyGroupView(store: .init(initialState: CreateStudyGroupReducer.State(), reducer: {
+                            CreateStudyGroupView(
+                                store: .init(initialState: CreateStudyGroupReducer.State(groupCount: store.$groupCount), reducer: {
                                 CreateStudyGroupReducer()
                             }))
                         }
                 } else {
-                    baseView(contentView(studyGroups))
+                    baseView(contentView(store.studyGroupList))
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         .ignoresSafeArea()
-        .animation(.easeInOut, value: store.isPresentingSideMenu)
+        .animation(.easeInOut(duration: 0.5), value: store.isPresentingSideMenu)
         .onChange(of: store.isPresentingSideMenu, { oldValue, newValue in
             guard newValue else { return }
-            getStudyGroups()
-            //store.send(.getStudyGroups)
+            store.send(.getStudyGroups)
         })
         .onChange(of: store.isPresentingCreateView) { oldValue, newValue in
             guard !newValue else { return }
-            //store.send(.getStudyGroups)
-            getStudyGroups()
-        }
-        .onChange(of: store.group) { oldValue, newValue in
-            store.send(.dismissSideMenu)
+            store.send(.getStudyGroups)
         }
     }
 }
@@ -88,8 +84,31 @@ extension SideMenuView {
                 ForEach(groups, id: \.groupId) { item in
                     let isSelected = UserDefaultsManager.shared.recentGroupId == item.groupId
                     studyGroupRowView(item, isSelected: isSelected)
+                        .confirmationDialog("스터디그룹 설정", isPresented: $store.isPresentingSettingActionSheet) {
+                            actionSheetView(store.group)
+                        }
+                        .fullScreenCover(isPresented: $store.isPresentingSettingAlert) {
+                            AlertView()
+                                .presentationBackground(Resources.Colors.viewAlpha)
+                        }
+                        .transaction { transaction in
+                            transaction.disablesAnimations = true
+                        }
                 }
             }
+        }
+    }
+    
+    // MARK: AlertView
+    private func AlertView() -> some View {
+        if let group = store.group, group.ownerId == UserDefaultsManager.shared.userId {
+            HomeAlertView(alertCase: .owner,
+                          store: .init(initialState: HomeAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
+                                       reducer: { HomeAlertReducer() }))
+        } else {
+            HomeAlertView(alertCase: .nonOwner,
+                          store: .init(initialState: HomeAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
+                                       reducer: { HomeAlertReducer() }))
         }
     }
     
@@ -121,7 +140,7 @@ extension SideMenuView {
                 Spacer()
                 if isSelected {
                     Button {
-                        print("tapped")
+                        store.send(.toggleSettingActionSheet)
                     } label: {
                         Resources.Images.threeDots
                             .resizable()
@@ -129,7 +148,6 @@ extension SideMenuView {
                     }
                 }
             }
-            
             .padding(.horizontal)
             .padding(.vertical, 8)
         }
@@ -140,6 +158,29 @@ extension SideMenuView {
         }
     }
     
+    // MARK: SettingActionSheet
+    private func actionSheetView(_ item: StudyGroup?) -> some View {
+        if let item, item.ownerId == UserDefaultsManager.shared.userId {
+            return VStack {
+                Button("스터디그룹 편집") {
+                    print("편집")
+                }
+                Button("스터디그룹 나가기") {
+                    store.send(.toggleOwnerExitView)
+                }
+                Button("스터디그룹 관리자 변경") {
+                    print("관리자 변경")
+                }
+                Button("스터디그룹 삭제", role: .destructive) {
+                    store.send(.deleteStudyGroup(id: item.groupId))
+                }
+            }
+        } else {
+            return Button("스터디그룹 나가기") {
+                print("삭제")
+            }
+        }
+    }
     // MARK: EmptyContentView
     private func emptyContentView() -> some View {
         VStack {

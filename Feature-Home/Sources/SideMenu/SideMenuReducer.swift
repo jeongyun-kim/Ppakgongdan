@@ -17,26 +17,33 @@ public struct SideMenuReducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(isPresenting: Bool, selectedGroup: Shared<StudyGroup?>) {
+        public init(isPresenting: Bool, selectedGroup: Shared<StudyGroup?>, groupCount: Shared<Int>) {
             _isPresentingSideMenu = Shared(isPresenting)
             _group = selectedGroup
+            _groupCount = groupCount
         }
         
-        @Shared var isPresentingSideMenu: Bool
-        @Shared var group: StudyGroup?
-        var isPresentingCreateView = false
-        var isPresentingReloginAlert = false
-        var studyGroupList = Array<StudyGroup>()
+        @Shared var groupCount: Int // 현재 사용자의 그룹 개수
+        @Shared var isPresentingSideMenu: Bool // 사이드메뉴 표출 여부
+        @Shared var group: StudyGroup? // 현재 선택중인 그룹
+        var isPresentingCreateView = false // 생성뷰 표출 여부
+        var isPresentingReloginAlert = false // 재로그인 알림 표출 여부
+        var studyGroupList: [StudyGroup] = [] // 스터디그룹 목록
+        var isPresentingSettingActionSheet = false // 스터디그룹 설정 액션시트 표출 여부
+        var isPresentingSettingAlert = false // 스터디그룹 나가기 같은 설정뷰 표출 여부 
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case toggleReloginAlert
         case toggleCreateView
+        case toggleSettingActionSheet
         case dismissSideMenu
         case completed([StudyGroup])
         case getStudyGroups
         case changedStudyGroup(StudyGroup)
+        case deleteStudyGroup(id: String)
+        case toggleOwnerExitView
     }
     
     public var body: some Reducer<State, Action> {
@@ -54,13 +61,16 @@ public struct SideMenuReducer {
                 state.isPresentingCreateView.toggle()
                 return .none
                 
+            case .toggleSettingActionSheet:
+                state.isPresentingSettingActionSheet.toggle()
+                return .none
+                
             case .dismissSideMenu:
                 state.isPresentingSideMenu.toggle()
                 return .none
                 
-            case .completed(let groups):
-                // 🧐 왜 뷰에 반영이 안되나
-                state.studyGroupList = groups
+            case .toggleOwnerExitView:
+                state.isPresentingSettingAlert.toggle()
                 return .none
                 
             case .getStudyGroups:
@@ -77,14 +87,34 @@ public struct SideMenuReducer {
                     }
                 }
                 
+            case .completed(let groups):
+                state.studyGroupList = groups
+                return .none
+                
             case .changedStudyGroup(let group):
                 state.group = group
                 UserDefaultsManager.shared.recentGroupId = group.groupId
-                // state.isPresentingSideMenu.toggle() <- 🧐 이건 왜 안먹는가
                 return .none
+                
+            case .deleteStudyGroup(let id):
+                return .run { send in
+                    do {
+                        let _ = try await NetworkService.shared.deleteWorkspace(groupId: id)
+                        // 삭제할 때, 최근 접속 그룹아이디가 해당 그룹이라면 최근 접속 그룹도 비워주기 
+                        if UserDefaultsManager.shared.recentGroupId == id {
+                            UserDefaultsManager.shared.recentGroupId = ""
+                        }
+                        UserDefaultsManager.shared.groupCount -= 1
+                        await send(.getStudyGroups)
+                    } catch {
+                        guard let errorCode = error as? ErrorCodes else { return }
+                        guard errorCode == .E05 else { return }
+                        await send(.toggleReloginAlert)
+                    }
+                }
             }
         }
     }
-
-
+    
+    
 }
