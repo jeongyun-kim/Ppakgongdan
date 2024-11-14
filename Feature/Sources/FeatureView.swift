@@ -16,6 +16,8 @@ public struct FeatureView: View {
     public init() { }
     
     public var body: some View {
-        MainHomeView()
+        MainHomeView(store: .init(initialState: MainHomeReducer.State(), reducer: {
+            MainHomeReducer()
+        }))
     }
 }

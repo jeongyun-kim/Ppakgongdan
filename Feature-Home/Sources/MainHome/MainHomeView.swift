@@ -14,76 +14,58 @@ import ComposableArchitecture
 
 public struct MainHomeView: View {
     @Environment(\.scenePhase) private var scenePhase
-    @State private var studyGroupData: StudyGroup? = nil
-    @State private var isPresentingReloginAlert: Bool = false
-    @State private var isPresentingOnbaording: Bool = false
-    @AppStorage(UDKey.isUser.rawValue) private var isUser = UserDefaults.standard.bool(forKey: UDKey.isUser.rawValue)
-    @AppStorage(UDKey.groupCount.rawValue) private var groupCount = UserDefaults.standard.integer(forKey: UDKey.groupCount.rawValue)
+    @Bindable private var store: StoreOf<MainHomeReducer>
     
-    public init() { }
+    public init(store: StoreOf<MainHomeReducer>) {
+        self.store = store
+    }
     
     public var body: some View {
         ZStack {
-            if groupCount == 0 {
-                EmptyHomeView(store: .init(initialState: HomeReducer.State(), reducer: {
+            if store.groupCount == 0 {
+                EmptyHomeView(store: .init(initialState: HomeReducer.State(group: store.$group, groupCount: store.$groupCount), reducer: {
                     HomeReducer()
                 }))
             } else {
-                HomeView(store: .init(initialState: HomeReducer.State(group: studyGroupData), reducer: {
+                HomeView(store: .init(initialState: HomeReducer.State(group: store.$group, groupCount: store.$groupCount), reducer: {
                     HomeReducer()
                 }))
             }
         }
-        .showReloginAlert(isPresenting: $isPresentingReloginAlert, action: {
-            isPresentingOnbaording.toggle()
+        .showReloginAlert(isPresenting: $store.isPresentingReloginAlert, action: {
+            store.send(.toggleOnbaording)
         })
-        .onChange(of: isUser, { oldValue, newValue in
+        .onChange(of: UserDefaultsManager.shared.isUser, { oldValue, newValue in
+            // 여기서 shared 통해 Onboarding과 공유하는 isUser를 만들고 싶었으나, 카카오 로그인 같은 경우 async가 불가능 -> 해결방법을 찾지못한 타협..
+            guard newValue else { return }
             // 사용자가 로그인하면 다시 워크스페이스 받아오게 처리
-            getMyWorkspaces()
+            store.send(.getMyWorkspaces)
         })
         .onChange(of: scenePhase, { oldValue, newValue in
             // 홈을 보던 중 앱이 백그라운드나 전화받는 상태가 됐을 때, 최근 접속 그룹아이디 저장 
             if scenePhase == .background || scenePhase == .inactive {
-                guard let studyGroupData else { return }
                 print("👀 View Inactive or Background")
-                UserDefaultsManager.shared.recentGroupId = studyGroupData.groupId
+                store.send(.viewDidDisappear)
             }
         })
-        .task {
-            print("⚡️ MainView Task")
+        .onChange(of: store.groupCount, { oldValue, newValue in
+            // 그룹 모두 삭제 후 새로 생성 시 이전 기록 날리고 새로 받아오기 위해 
+            if newValue == 1 {
+                store.send(.getMyWorkspaces)
+            }
+        })
+        .onAppear {
+            print("⚡️ MainView OnAppear")
             guard UserDefaultsManager.shared.isUser else {
-                isPresentingOnbaording.toggle()
+                store.send(.toggleOnbaording)
                 return
             }
-            getMyWorkspaces()
+            store.send(.getMyWorkspaces)
         }
-        .fullScreenCover(isPresented: $isPresentingOnbaording) {
+        .fullScreenCover(isPresented: $store.isPresentingOnbaording) {
             OnboardingView(store: .init(initialState: OnboardingReducer.State(), reducer: {
                 OnboardingReducer()
             }))
-        }
-    }
-       
-    private func getMyWorkspaces() {
-        Task {
-            do {
-                let result = try await NetworkService.shared.getMyWorkspaces()
-                UserDefaultsManager.shared.groupCount = result.count
-                guard UserDefaultsManager.shared.recentGroupId.isEmpty else {
-                    let data = result.filter { $0.workspaceId == UserDefaultsManager.shared.recentGroupId }[0]
-                    let studyGroup = data.toStudyGroup()
-                    studyGroupData = studyGroup
-                    return
-                }
-                guard let group = result.first else { return }
-                studyGroupData = group.toStudyGroup()
-                // 최근 접속한 그룹없을 경우, 가장 최신에 만들어진 그룹을 최근 그룹으로 우선 저장 
-                UserDefaultsManager.shared.recentGroupId = group.workspaceId
-            } catch {
-                guard let errorCode = error as? ErrorCodes else { return }
-                guard errorCode == .E05 else { return }
-                isPresentingReloginAlert.toggle()
-            }
         }
     }
 }
