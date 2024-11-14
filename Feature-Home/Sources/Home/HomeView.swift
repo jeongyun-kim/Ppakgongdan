@@ -22,26 +22,23 @@ public struct HomeView: View {
         ZStack(alignment: .top) {
             if let data = store.group {
                 defulatHomeView(item: data)
-                SideMenuView(isPresenting: $store.isPresentingSideMenu)
+                SideMenuView(store: .init(
+                    initialState: SideMenuReducer.State(
+                        isPresenting: store.isPresentingSideMenu,
+                        selectedGroup: store.$group,
+                        groupCount: store.$groupCount),
+                    reducer: { SideMenuReducer() })
+                )
             }
         }
         .onDisappear {
             store.send(.viewDidDisappear)
         }
-        .gesture(
-            DragGesture()
-                .onChanged({ value in
-                    guard value.translation.width > 0 else {
-                        store.send(.dismissSideMenu)
-                        return 
-                    }
-                    store.send(.presentSideMenu)
-                })
-        )
         .showReloginAlert(isPresenting: $store.isPresentingAlert)
     }
 }
 
+// MARK: UI
 extension HomeView {
     private func defulatHomeView(item: StudyGroup) -> some View {
         NavigationStack {
