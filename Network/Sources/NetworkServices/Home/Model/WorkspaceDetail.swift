@@ -27,6 +27,15 @@ public struct WorkspaceDetail: Decodable {
         case channels
         case workspaceMembers
     }
+    
+    public func toStudyGroupDetail() -> StudyGroupDetail {
+        return StudyGroupDetail(workspaceId: self.workspaceId,
+                                name: self.name,
+                                description: self.description,
+                                coverImage: self.coverImage,
+                                owenrId: self.owenrId,
+                                createdAt: self.createdAt)
+    }
 }
 
 public struct Channel: Decodable {
@@ -45,6 +54,15 @@ public struct Channel: Decodable {
         case ownerId = "owner_id"
         case createdAt
     }
+    
+    public func toStudyGroupChannel() -> StudyGroupChannel {
+        return StudyGroupChannel(channelId: self.channelId,
+                                 name: self.name,
+                                 description: self.description,
+                                 coverImage: self.coverImage,
+                                 ownerId: self.ownerId,
+                                 createdAt: self.createdAt)
+    }
 }
 
 public struct Member: Decodable {
@@ -58,5 +76,12 @@ public struct Member: Decodable {
         case email
         case nickname
         case profileImage
+    }
+    
+    public func toStudyGroupMember() -> StudyGroupMember {
+        return StudyGroupMember(userId: self.userId,
+                                email: self.email,
+                                nickname: self.nickname,
+                                profileImage: self.profileImage)
     }
 }
