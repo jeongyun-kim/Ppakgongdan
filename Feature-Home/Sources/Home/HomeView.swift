@@ -34,6 +34,9 @@ public struct HomeView: View {
         .onDisappear {
             store.send(.viewDidDisappear)
         }
+        .onChange(of: store.group, { oldValue, newValue in
+            store.send(.getWorkspaceDetail)
+        })
         .showReloginAlert(isPresenting: $store.isPresentingAlert)
     }
 }
