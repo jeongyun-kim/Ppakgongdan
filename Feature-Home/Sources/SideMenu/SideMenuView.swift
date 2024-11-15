@@ -28,12 +28,6 @@ public struct SideMenuView: View {
                     }
                 if store.studyGroupList.isEmpty {
                     baseView(emptyContentView())
-                        .sheet(isPresented: $store.isPresentingCreateView) {
-                            CreateStudyGroupView(
-                                store: .init(initialState: CreateStudyGroupReducer.State(groupCount: store.$groupCount), reducer: {
-                                CreateStudyGroupReducer()
-                            }))
-                        }
                 } else {
                     baseView(contentView(store.studyGroupList))
                 }
@@ -65,6 +59,9 @@ extension SideMenuView {
                     view
                     VStack(spacing: 0) {
                         bottomButtonView(image: Resources.Images.plus, text: "스터디그룹 추가")
+                            .onTapGesture {
+                                store.send(.toggleCreateView)
+                            }
                         bottomButtonView(image: Resources.Images.help, text: "도움말")
                         .padding(.bottom, 33)
                     }
@@ -72,6 +69,12 @@ extension SideMenuView {
             }
             .frame(width: geometry.size.width * 0.8)
             .frame(maxHeight: .infinity)
+            .sheet(isPresented: $store.isPresentingCreateView) {
+                CreateStudyGroupView(
+                    store: .init(initialState: CreateStudyGroupReducer.State(groupCount: store.$groupCount), reducer: {
+                    CreateStudyGroupReducer()
+                }))
+            }
         }
         .transition(.move(edge: .leading))
         .background(.clear)
@@ -166,7 +169,7 @@ extension SideMenuView {
                     print("편집")
                 }
                 Button("스터디그룹 나가기") {
-                    store.send(.toggleOwnerExitView)
+                    store.send(.toggleSettingAlert)
                 }
                 Button("스터디그룹 관리자 변경") {
                     print("관리자 변경")
@@ -177,7 +180,7 @@ extension SideMenuView {
             }
         } else {
             return Button("스터디그룹 나가기") {
-                print("삭제")
+                store.send(.toggleSettingAlert)
             }
         }
     }
@@ -238,21 +241,6 @@ extension SideMenuView {
             }
             .padding(.leading, 16)
             .padding(.top, 51)
-        }
-    }
-    
-    private func getStudyGroups() {
-        Task {
-            do {
-                let result = try await NetworkService.shared.getMyWorkspaces()
-                UserDefaultsManager.shared.groupCount = result.count
-                let groups = result.map { $0.toStudyGroup() }
-                studyGroups = groups
-            } catch {
-                guard let errorCode = error as? ErrorCodes else { return }
-                guard errorCode == .E05 else { return }
-                store.send(.toggleReloginAlert)
-            }
         }
     }
 }

@@ -43,7 +43,7 @@ public struct SideMenuReducer {
         case getStudyGroups
         case changedStudyGroup(StudyGroup)
         case deleteStudyGroup(id: String)
-        case toggleOwnerExitView
+        case toggleSettingAlert
     }
     
     public var body: some Reducer<State, Action> {
@@ -69,7 +69,7 @@ public struct SideMenuReducer {
                 state.isPresentingSideMenu.toggle()
                 return .none
                 
-            case .toggleOwnerExitView:
+            case .toggleSettingAlert:
                 state.isPresentingSettingAlert.toggle()
                 return .none
                 
