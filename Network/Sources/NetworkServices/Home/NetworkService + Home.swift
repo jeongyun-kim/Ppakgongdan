@@ -51,4 +51,9 @@ extension NetworkService: HomeNetwork {
         let result = await homeProvider.request(.exitWorkspace(id: groupId))
         return try decodeResults(result, modelType: [Workspace].self)
     }
+    
+    public func getWorkspaceDetail(workspaceId: String) async throws -> WorkspaceDetail {
+        let result = await homeProvider.request(.getWorkspaceDetail(id: workspaceId))
+        return try decodeResults(result, modelType: WorkspaceDetail.self)
+    }
 }

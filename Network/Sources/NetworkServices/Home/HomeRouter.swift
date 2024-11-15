@@ -14,6 +14,7 @@ enum HomeRouter {
     case createWorkspace(CreateWorkSpace)
     case deleteWorkspace(id: String)
     case exitWorkspace(id: String)
+    case getWorkspaceDetail(id: String)
 }
 
 extension HomeRouter: TargetType {
@@ -31,6 +32,8 @@ extension HomeRouter: TargetType {
             return  "/v1/workspaces/\(id)"
         case .exitWorkspace(let id):
             return "/v1/workspaces/\(id)/exit"
+        case .getWorkspaceDetail(let id):
+            return "/v1/workspaces/\(id)"
         }
     }
     
@@ -43,6 +46,8 @@ extension HomeRouter: TargetType {
         case .deleteWorkspace:
             return .delete
         case .exitWorkspace:
+            return .get
+        case .getWorkspaceDetail:
             return .get
         }
     }
@@ -60,6 +65,8 @@ extension HomeRouter: TargetType {
         case .deleteWorkspace:
             return .requestPlain
         case .exitWorkspace:
+            return .requestPlain
+        case .getWorkspaceDetail:
             return .requestPlain
         }
     }
@@ -82,6 +89,11 @@ extension HomeRouter: TargetType {
                 APIKey.auth: UserDefaultsManager.shared.accessToken
             ]
         case .exitWorkspace:
+            return [
+                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
+                APIKey.auth: UserDefaultsManager.shared.accessToken
+            ]
+        case .getWorkspaceDetail:
             return [
                 APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
                 APIKey.auth: UserDefaultsManager.shared.accessToken
