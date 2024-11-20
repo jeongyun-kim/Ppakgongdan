@@ -48,7 +48,7 @@ extension HomeView {
         NavigationStack {
             VStack(spacing: 0) {
                 customDivider()
-                channelListView()
+                listView()
             }
             .navigationBar(leadingImage: nil, trailingImage: nil, title: item.groupName) {
                 store.send(.presentSideMenu)
@@ -56,27 +56,30 @@ extension HomeView {
         }
     }
     
+    // MARK: ListView
+    private func listView() -> some View {
+        List {
+            channelSectionView()
+        }
+        .asPlainList()
+    }
+
     // MARK: ChannelListView
-    private func channelListView() -> some View {
-        VStack(spacing: 0) {
-            List {
-                Section(isExpanded: $store.isExpandedChannels) {
-                    LazyVStack(alignment: .leading) {
-                        ForEach(store.studyGroupChannels, id: \.channelId) { item in
-                            channelRowView(item)
-                        }
-                        addRowView("채널 추가")
-                        customDivider()
-                    }
-                    .listSectionSeparator(.hidden)
-                } header: {
-                    headerView("채널", isExpanded: store.isExpandedChannels)
-                        .asTappableHeaderView {
-                            store.send(.toggleExpandedChannels)
-                        }
+    private func channelSectionView() -> some View {
+        Section(isExpanded: $store.isExpandedChannels) {
+            LazyVStack(alignment: .leading) {
+                ForEach(store.studyGroupChannels, id: \.channelId) { item in
+                    channelRowView(item)
                 }
+                addRowView("채널 추가")
+                customDivider()
             }
-            .asPlainList()
+            .listSectionSeparator(.hidden)
+        } header: {
+            headerView("채널", isExpanded: store.isExpandedChannels)
+                .asTappableHeaderView {
+                    store.send(.toggleExpandedChannels)
+                }
         }
     }
     
@@ -118,7 +121,7 @@ extension HomeView {
             
             Text(item.name)
                 .font(item.unreadCount > 0 ? Resources.Fonts.bodyBold : Resources.Fonts.body)
-
+            
             if item.unreadCount > 0 {
                 Spacer()
                 Text("\(item.unreadCount)")
