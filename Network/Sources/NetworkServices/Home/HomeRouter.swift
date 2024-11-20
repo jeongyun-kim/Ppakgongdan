@@ -16,6 +16,7 @@ enum HomeRouter {
     case exitWorkspace(id: String)
     case getWorkspaceDetail(id: String)
     case getUnreadChannels(UnreadChannelQuery)
+    case getDmList(id: String)
 }
 
 extension HomeRouter: TargetType {
@@ -37,6 +38,8 @@ extension HomeRouter: TargetType {
             return "/v1/workspaces/\(id)"
         case .getUnreadChannels(let query):
             return "/v1/workspaces/\(query.workspaceId)/channels/\(query.channelId)/unreads"
+        case .getDmList(let id):
+            return "/v1/workspaces/\(id)/dms"
         }
     }
     
@@ -53,6 +56,8 @@ extension HomeRouter: TargetType {
         case .getWorkspaceDetail:
             return .get
         case .getUnreadChannels:
+            return .get
+        case .getDmList:
             return .get
         }
     }
@@ -75,37 +80,19 @@ extension HomeRouter: TargetType {
             return .requestPlain
         case .getUnreadChannels(let query):
             return .requestParameters(parameters: ["after": query.after], encoding: URLEncoding.queryString)
+        case .getDmList:
+            return .requestPlain
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .getMyWorkspaces:
-            return [
-                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
-                APIKey.auth: UserDefaultsManager.shared.accessToken
-            ]
         case .createWorkspace:
             return [
                 APIKey.headerKey: APIKey.key, APIKey.content: APIKey.formData,
                 APIKey.auth: UserDefaultsManager.shared.accessToken
             ]
-        case .deleteWorkspace:
-            return [
-                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
-                APIKey.auth: UserDefaultsManager.shared.accessToken
-            ]
-        case .exitWorkspace:
-            return [
-                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
-                APIKey.auth: UserDefaultsManager.shared.accessToken
-            ]
-        case .getWorkspaceDetail:
-            return [
-                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
-                APIKey.auth: UserDefaultsManager.shared.accessToken
-            ]
-        case .getUnreadChannels:
+        default:
             return [
                 APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
                 APIKey.auth: UserDefaultsManager.shared.accessToken
