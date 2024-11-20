@@ -60,11 +60,45 @@ extension HomeView {
     private func listView() -> some View {
         List {
             channelSectionView()
+            dmSectionView()
         }
         .asPlainList()
     }
-
-    // MARK: ChannelListView
+    
+    // MARK: DmSectionView
+    private func dmSectionView() -> some View {
+        Section(isExpanded: $store.isExpandedDms) {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ForEach(store.dmList, id: \.roomId) { item in
+                    dmRowView(item)
+                }
+                addRowView("새 메시지 시작")
+            }
+            .listSectionSeparator(.hidden)
+        } header: {
+            headerView("다이렉트 메시지", isExpanded: store.isExpandedDms)
+                .asTappableHeaderView {
+                    store.send(.toggleExpandedDms)
+                }
+        }
+    }
+    
+    // MARK: DmRowView
+    private func dmRowView(_ item: DirectMessage) -> some View {
+        let size: CGFloat = 24
+        return HStack(spacing: 11) {
+            Resources.Images.dummy
+                .resizable()
+                .frame(width: size, height: size)
+                .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
+            Text(item.user.nickname)
+                .font(Resources.Fonts.body)
+                .foregroundStyle(Resources.Colors.textSecondary)
+        }
+        .frame(height: 44)
+    }
+    
+    // MARK: ChannelSectionView
     private func channelSectionView() -> some View {
         Section(isExpanded: $store.isExpandedChannels) {
             LazyVStack(alignment: .leading) {
@@ -81,6 +115,31 @@ extension HomeView {
                     store.send(.toggleExpandedChannels)
                 }
         }
+    }
+    
+    // MARK: ChannelRowView
+    private func channelRowView(_ item: StudyGroupChannel) -> some View {
+        HStack {
+            Resources.Images.hashTag
+                .frame(width: 18, height: 18)
+            
+            Text(item.name)
+                .font(item.unreadCount > 0 ? Resources.Fonts.bodyBold : Resources.Fonts.body)
+            
+            if item.unreadCount > 0 {
+                Spacer()
+                Text("\(item.unreadCount)")
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .font(Resources.Fonts.caption)
+                    .foregroundStyle(Resources.Colors.white)
+                    .background(Resources.Colors.secondaryColor)
+                    .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
+            }
+        }
+        .frame(height: 41)
+        .foregroundStyle(item.unreadCount > 0 ? Resources.Colors.black : Resources.Colors.textSecondary)
+        .listRowSeparator(.hidden)
     }
     
     // MARK: AddRowView
@@ -111,31 +170,6 @@ extension HomeView {
                     .frame(width: size, height: size)
             }
         }
-    }
-    
-    // MARK: ChannelRowView
-    private func channelRowView(_ item: StudyGroupChannel) -> some View {
-        HStack {
-            Resources.Images.hashTag
-                .frame(width: 18, height: 18)
-            
-            Text(item.name)
-                .font(item.unreadCount > 0 ? Resources.Fonts.bodyBold : Resources.Fonts.body)
-            
-            if item.unreadCount > 0 {
-                Spacer()
-                Text("\(item.unreadCount)")
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 2)
-                    .font(Resources.Fonts.caption)
-                    .foregroundStyle(Resources.Colors.white)
-                    .background(Resources.Colors.secondaryColor)
-                    .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
-            }
-        }
-        .frame(height: 41)
-        .foregroundStyle(item.unreadCount > 0 ? Resources.Colors.black : Resources.Colors.textSecondary)
-        .listRowSeparator(.hidden)
     }
 }
 
