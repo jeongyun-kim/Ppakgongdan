@@ -56,4 +56,10 @@ extension NetworkService: HomeNetwork {
         let result = await homeProvider.request(.getWorkspaceDetail(id: workspaceId))
         return try decodeResults(result, modelType: WorkspaceDetail.self)
     }
+    
+    public func getUnreadChannels(workspaceId: String, channelId: String, after: Date) async throws -> UnreadChannel {
+        let query = UnreadChannelQuery(workspaceId: workspaceId, channelId: channelId, after: after.toFormattedString())
+        let result = await homeProvider.request(.getUnreadChannels(query))
+        return try decodeResults(result, modelType: UnreadChannel.self)
+    }
 }

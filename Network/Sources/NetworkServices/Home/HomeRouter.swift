@@ -15,6 +15,7 @@ enum HomeRouter {
     case deleteWorkspace(id: String)
     case exitWorkspace(id: String)
     case getWorkspaceDetail(id: String)
+    case getUnreadChannels(UnreadChannelQuery)
 }
 
 extension HomeRouter: TargetType {
@@ -34,6 +35,8 @@ extension HomeRouter: TargetType {
             return "/v1/workspaces/\(id)/exit"
         case .getWorkspaceDetail(let id):
             return "/v1/workspaces/\(id)"
+        case .getUnreadChannels(let query):
+            return "/v1/workspaces/\(query.workspaceId)/channels/\(query.channelId)/unreads"
         }
     }
     
@@ -48,6 +51,8 @@ extension HomeRouter: TargetType {
         case .exitWorkspace:
             return .get
         case .getWorkspaceDetail:
+            return .get
+        case .getUnreadChannels:
             return .get
         }
     }
@@ -68,6 +73,8 @@ extension HomeRouter: TargetType {
             return .requestPlain
         case .getWorkspaceDetail:
             return .requestPlain
+        case .getUnreadChannels(let query):
+            return .requestParameters(parameters: ["after": query.after], encoding: URLEncoding.queryString)
         }
     }
     
@@ -94,6 +101,11 @@ extension HomeRouter: TargetType {
                 APIKey.auth: UserDefaultsManager.shared.accessToken
             ]
         case .getWorkspaceDetail:
+            return [
+                APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
+                APIKey.auth: UserDefaultsManager.shared.accessToken
+            ]
+        case .getUnreadChannels:
             return [
                 APIKey.headerKey: APIKey.key, APIKey.content: APIKey.json,
                 APIKey.auth: UserDefaultsManager.shared.accessToken
