@@ -22,6 +22,7 @@ public struct HomeView: View {
         ZStack(alignment: .top) {
             if let data = store.group {
                 defulatHomeView(item: data)
+                
                 SideMenuView(store: .init(
                     initialState: SideMenuReducer.State(
                         isPresenting: store.isPresentingSideMenu,
@@ -55,13 +56,19 @@ extension HomeView {
         }
     }
     
+    // MARK: ChannelListView
     private func channelListView() -> some View {
         VStack(spacing: 0) {
             List {
                 Section(isExpanded: $store.isExpandedChannels) {
-                    ForEach(store.studyGroupChannels, id: \.channelId) { item in
-                        channelRowView(item)
+                    LazyVStack(alignment: .leading) {
+                        ForEach(store.studyGroupChannels, id: \.channelId) { item in
+                            channelRowView(item)
+                        }
+                        addRowView("채널 추가")
+                        customDivider()
                     }
+                    .listSectionSeparator(.hidden)
                 } header: {
                     headerView("채널", isExpanded: store.isExpandedChannels)
                         .asTappableHeaderView {
@@ -71,6 +78,18 @@ extension HomeView {
             }
             .asPlainList()
         }
+    }
+    
+    // MARK: AddRowView
+    private func addRowView(_ title: String) -> some View {
+        HStack {
+            Resources.Images.plus
+                .frame(width: 18, height: 18)
+            Text(title)
+                .font(Resources.Fonts.body)
+        }
+        .foregroundStyle(Resources.Colors.textSecondary)
+        .frame(height: 41)
     }
     
     // MARK: HeaderView
