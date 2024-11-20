@@ -8,12 +8,12 @@
 import Foundation
 
 public struct UnreadChannel: Decodable {
-    let cahnelId: String
-    let name: String
-    let count: Int
+    public let channelId: String
+    public let name: String
+    public let count: Int
     
     enum CodingKeys: String, CodingKey {
-        case cahnelId = "channel_id"
+        case channelId = "channel_id"
         case name
         case count
     }

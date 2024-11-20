@@ -33,6 +33,8 @@ public struct StudyGroupChannel: Equatable {
         self.coverImage = coverImage
         self.ownerId = ownerId
         self.createdAt = createdAt
+        self.unreadCount = 0
+        self.currentReadDate = createdAt
     }
     
     public let channelId: String
@@ -41,6 +43,8 @@ public struct StudyGroupChannel: Equatable {
     public let coverImage: String?
     public let ownerId: String
     public let createdAt: String
+    public var unreadCount: Int
+    public var currentReadDate: String
 }
 
 public struct StudyGroupMember: Equatable {
