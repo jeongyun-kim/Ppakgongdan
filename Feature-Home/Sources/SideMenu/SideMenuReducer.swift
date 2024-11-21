@@ -17,8 +17,8 @@ public struct SideMenuReducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(isPresenting: Bool, selectedGroup: Shared<StudyGroup?>, groupCount: Shared<Int>) {
-            _isPresentingSideMenu = Shared(isPresenting)
+        public init(isPresenting: Shared<Bool>, selectedGroup: Shared<StudyGroup?>, groupCount: Shared<Int>) {
+            _isPresentingSideMenu = isPresenting
             _group = selectedGroup
             _groupCount = groupCount
         }

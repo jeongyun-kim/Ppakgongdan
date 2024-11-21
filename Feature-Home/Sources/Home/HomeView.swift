@@ -25,7 +25,7 @@ public struct HomeView: View {
                 
                 SideMenuView(store: .init(
                     initialState: SideMenuReducer.State(
-                        isPresenting: store.isPresentingSideMenu,
+                        isPresenting: store.$isPresentingSideMenu,
                         selectedGroup: store.$group,
                         groupCount: store.$groupCount),
                     reducer: { SideMenuReducer() })
@@ -56,7 +56,7 @@ extension HomeView {
             }
         }
         .sheet(isPresented: $store.isPresentingAddChannelView) {
-            CreateChannelView(store: .init(initialState: CreateChannelReducer.State(), reducer: {
+            CreateChannelView(store: .init(initialState: CreateChannelReducer.State(id: store.group?.groupId), reducer: {
                 CreateChannelReducer()
             }))
         }

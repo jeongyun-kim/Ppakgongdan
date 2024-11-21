@@ -18,13 +18,15 @@ public struct HomeReducer: Reducer {
         public init(group: Shared<StudyGroup?>, groupCount: Shared<Int>) {
             _group = group
             _groupCount = groupCount
+            _isPresentingSideMenu = Shared(false)
         }
         
+        @Shared var isPresentingSideMenu: Bool
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
         var isPresentCreateView = false
         var isPresentingAlert = false
-        var isPresentingSideMenu = false
+       
         var isPresentingChannelActionView = false
         var isPresentingAddChannelView = false
         var isExpandedChannels = false
@@ -94,6 +96,7 @@ public struct HomeReducer: Reducer {
                 return .none
                 
             case .toggleExpandedChannels:
+                // 🧐 사이드메뉴는 건드리지도 않았는데 왜 true로 되어서 나오는가..
                 state.isExpandedChannels.toggle()
                 return .none
                 
