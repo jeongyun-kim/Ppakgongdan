@@ -11,6 +11,7 @@ import Utils
 import ComposableArchitecture
 
 struct CreateChannelView: View {
+    @Environment(\.dismiss) private var dismiss
     public init(store: StoreOf<CreateChannelReducer>) {
         self.store = store
     }
@@ -41,6 +42,10 @@ struct CreateChannelView: View {
             .onChange(of: store.channelName) { _, _ in
                 store.send(.validateChannelName)
             }
+            .onChange(of: store.isCompleted, { oldValue, newValue in
+                dismiss()
+            })
+            .showReloginAlert(isPresenting: $store.isPresentingReloginAlert)
             .onTapGesture(count: 99, perform: { })
             .onTapGesture {
                 self.endTextEditing()
