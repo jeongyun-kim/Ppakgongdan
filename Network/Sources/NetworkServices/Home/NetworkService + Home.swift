@@ -67,4 +67,10 @@ extension NetworkService: HomeNetwork {
         let result = await homeProvider.request(.getDmList(id: workspaceId))
         return try decodeResults(result, modelType: [DM].self)
     }
+    
+    public func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDM {
+        let query = UnreadDmQuery(roomId: roomlId, workspaceId: workspaceId, after: after)
+        let result = await homeProvider.request(.getUnreadDms(query))
+        return try decodeResults(result, modelType: UnreadDM.self)
+    }
 }

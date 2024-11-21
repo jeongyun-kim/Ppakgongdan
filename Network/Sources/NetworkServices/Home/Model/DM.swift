@@ -28,9 +28,11 @@ public struct DirectMessage: Equatable {
         self.roomId = roomId
         self.createdAt = createdAt
         self.user = user.toStudyGroupMember()
+        self.unreadCount = 0
     }
     
     public let roomId: String
     public let createdAt: String
     public let user: StudyGroupMember
+    public var unreadCount: Int
 }

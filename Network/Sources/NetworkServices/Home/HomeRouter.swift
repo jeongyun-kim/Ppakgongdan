@@ -17,6 +17,7 @@ enum HomeRouter {
     case getWorkspaceDetail(id: String)
     case getUnreadChannels(UnreadChannelQuery)
     case getDmList(id: String)
+    case getUnreadDms(UnreadDmQuery)
 }
 
 extension HomeRouter: TargetType {
@@ -40,6 +41,8 @@ extension HomeRouter: TargetType {
             return "/v1/workspaces/\(query.workspaceId)/channels/\(query.channelId)/unreads"
         case .getDmList(let id):
             return "/v1/workspaces/\(id)/dms"
+        case .getUnreadDms(let query):
+            return "/v1/workspaces/\(query.workspaceId)/dms/\(query.roomId)/unreads"
         }
     }
     
@@ -58,6 +61,8 @@ extension HomeRouter: TargetType {
         case .getUnreadChannels:
             return .get
         case .getDmList:
+            return .get
+        case .getUnreadDms:
             return .get
         }
     }
@@ -81,6 +86,8 @@ extension HomeRouter: TargetType {
         case .getUnreadChannels(let query):
             return .requestParameters(parameters: ["after": query.after], encoding: URLEncoding.queryString)
         case .getDmList:
+            return .requestPlain
+        case .getUnreadDms:
             return .requestPlain
         }
     }
