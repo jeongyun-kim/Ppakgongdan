@@ -61,8 +61,13 @@ extension HomeView {
         List {
             channelSectionView()
             dmSectionView()
+            addRowView("팀원 추가")
+                .listRowSeparator(.hidden)
+                .listRowInsets(.init())
         }
         .asPlainList()
+        .frame(maxWidth: .infinity)
+        // 🧐 추후 listTopPadding 없애기
     }
     
     // MARK: DmSectionView
@@ -73,6 +78,7 @@ extension HomeView {
                     dmRowView(item)
                 }
                 addRowView("새 메시지 시작")
+                customDivider()
             }
             .listSectionSeparator(.hidden)
         } header: {
@@ -81,6 +87,8 @@ extension HomeView {
                     store.send(.toggleExpandedDms)
                 }
         }
+        .listRowInsets(.init())
+        .listSectionSpacing(0)
     }
     
     // MARK: DmRowView
@@ -102,12 +110,14 @@ extension HomeView {
             }
         }
         .frame(height: 44)
+        .padding(.horizontal)
+        .listRowSeparator(.hidden)
     }
     
     // MARK: ChannelSectionView
     private func channelSectionView() -> some View {
         Section(isExpanded: $store.isExpandedChannels) {
-            LazyVStack(alignment: .leading) {
+            LazyVStack(alignment: .leading, spacing: 0) {
                 ForEach(store.studyGroupChannels, id: \.channelId) { item in
                     channelRowView(item)
                 }
@@ -121,6 +131,8 @@ extension HomeView {
                     store.send(.toggleExpandedChannels)
                 }
         }
+        .listRowInsets(.init())
+        .listSectionSpacing(0)
     }
     
     // MARK: ChannelRowView
@@ -138,6 +150,7 @@ extension HomeView {
             }
         }
         .frame(height: 41)
+        .padding(.horizontal)
         .foregroundStyle(item.unreadCount > 0 ? Resources.Colors.black : Resources.Colors.textSecondary)
         .listRowSeparator(.hidden)
     }
@@ -163,24 +176,34 @@ extension HomeView {
         }
         .foregroundStyle(Resources.Colors.textSecondary)
         .frame(height: 41)
+        .padding(.horizontal)
     }
     
     // MARK: HeaderView
     private func headerView(_ channelName: String, isExpanded: Bool) -> some View {
         let size: CGFloat = 20
-        return HStack {
-            Text(channelName)
-                .font(Resources.Fonts.title2)
-                .foregroundStyle(Resources.Colors.black)
-            Spacer()
-            if isExpanded {
-                Resources.Images.chevronDown
-                    .frame(width: size, height: size)
-            } else {
-                Resources.Images.chevronRight
-                    .frame(width: size, height: size)
+        return VStack(alignment: .center, spacing: 0) {
+            HStack(alignment: .center) {
+                Text(channelName)
+                    .font(Resources.Fonts.title2)
+                    .foregroundStyle(Resources.Colors.black)
+                Spacer()
+                if isExpanded {
+                    Resources.Images.chevronDown
+                        .frame(width: size, height: size)
+                } else {
+                    Resources.Images.chevronRight
+                        .frame(width: size, height: size)
+                }
+            }
+            .frame(height: 56)
+            .padding(.horizontal)
+            
+            if !isExpanded {
+                customDivider()
             }
         }
+        .background(Resources.Colors.white)
     }
 }
 
