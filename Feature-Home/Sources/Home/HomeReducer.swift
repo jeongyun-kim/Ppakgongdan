@@ -19,15 +19,19 @@ public struct HomeReducer: Reducer {
             _group = group
             _groupCount = groupCount
             _isPresentingSideMenu = Shared(false)
+            _isPresentingExploringChannelView = Shared(false)
         }
         
         @Shared var isPresentingSideMenu: Bool
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
+        @Shared var isPresentingExploringChannelView: Bool
+        
         var isPresentCreateView = false
         var isPresentingAlert = false
         var isPresentingChannelActionView = false
         var isPresentingAddChannelView = false
+
         var isExpandedChannels = false
         var isExpandedDms = false
         var studyGroupInfos: StudyGroupDetail? = nil
@@ -43,6 +47,7 @@ public struct HomeReducer: Reducer {
         case viewDidDisappear // 뷰 사라짐
         case presentAddChannelView
         case presentChannelActionView
+        case presentExploringChannelView
         case presentSideMenu // 사이드메뉴 열기
         case dismissSideMenu // 사이드메뉴 닫기
         case toggleExpandedChannels // 채널 열고닫기
@@ -86,6 +91,10 @@ public struct HomeReducer: Reducer {
                 state.isPresentingChannelActionView.toggle()
                 return .none
                 
+            case .presentExploringChannelView:
+                state.isPresentingExploringChannelView.toggle()
+                return .none
+                
             case .presentSideMenu:
                 state.isPresentingSideMenu = true
                 return .none
@@ -95,7 +104,6 @@ public struct HomeReducer: Reducer {
                 return .none
                 
             case .toggleExpandedChannels:
-                // 🧐 사이드메뉴는 건드리지도 않았는데 왜 true로 되어서 나오는가..
                 state.isExpandedChannels.toggle()
                 return .none
                 
@@ -118,11 +126,11 @@ public struct HomeReducer: Reducer {
                 
             case .changedWorkspaceDetail(let detail): // 선택한 스터디그룹 변경 시마다 호출
                 return .merge (
-                        .send(.setStudyGroupInfos(detail.toStudyGroupDetail())),
-                        .send(.getUnreadChannelsCount(detail.channels)),
-                        .send(.setStudyGroupMembers(detail.workspaceMembers.map { $0.toStudyGroupMember() })),
-                        .send(.getDmList)
-                    )
+                    .send(.setStudyGroupInfos(detail.toStudyGroupDetail())),
+                    .send(.getUnreadChannelsCount(detail.channels)),
+                    .send(.setStudyGroupMembers(detail.workspaceMembers.map { $0.toStudyGroupMember() })),
+                    .send(.getDmList)
+                )
                 
             case .getUnreadChannelsCount(let channels): // 안 읽은 채널 개수 조회
                 return .run { [info = state.studyGroupInfos] send in
@@ -165,12 +173,12 @@ public struct HomeReducer: Reducer {
                         print(error)
                     }
                 }
-            
+                
             case .getUnreadDmCounts(let dms): // 안 읽은 메시지수 조회
                 return .run { [info = state.studyGroupInfos] send in
                     guard let info else { return }
                     var directMessages: [DirectMessage] = []
-
+                    
                     for dm in dms {
                         do {
                             let result = try await NetworkService.shared.getUnreadDms(workspaceId: info.workspaceId, roomlId: dm.roomId, after: dm.createdAt)

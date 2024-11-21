@@ -60,6 +60,14 @@ extension HomeView {
                 CreateChannelReducer()
             }))
         }
+        .fullScreenCover(isPresented: $store.isPresentingExploringChannelView) {
+            ExploringChannelView(
+                store: .init(initialState: ExploringChannelReducer.State(
+                    isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
+                    id: store.group?.groupId), reducer: {
+                ExploringChannelReducer()
+            }))
+        }
     }
     
     // MARK: ListView
@@ -146,7 +154,7 @@ extension HomeView {
                 store.send(.presentAddChannelView)
             }
             Button("채널 탐색") {
-                print("dfd")
+                store.send(.presentExploringChannelView)
             }
         }
     }
