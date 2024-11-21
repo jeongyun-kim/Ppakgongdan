@@ -44,6 +44,7 @@ public struct HomeView: View {
 
 // MARK: UI
 extension HomeView {
+    // MARK: DefaultHomeView
     private func defulatHomeView(item: StudyGroup) -> some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -53,6 +54,11 @@ extension HomeView {
             .navigationBar(leadingImage: nil, trailingImage: nil, title: item.groupName) {
                 store.send(.presentSideMenu)
             }
+        }
+        .sheet(isPresented: $store.isPresentingAddChannelView) {
+            CreateChannelView(store: .init(initialState: CreateChannelReducer.State(), reducer: {
+                CreateChannelReducer()
+            }))
         }
     }
     
@@ -121,7 +127,9 @@ extension HomeView {
                 ForEach(store.studyGroupChannels, id: \.channelId) { item in
                     channelRowView(item)
                 }
-                addRowView("채널 추가")
+                addRowView("채널 추가") {
+                    store.send(.presentChannelActionView)
+                }
                 customDivider()
             }
             .listSectionSeparator(.hidden)
@@ -133,6 +141,14 @@ extension HomeView {
         }
         .listRowInsets(.init())
         .listSectionSpacing(0)
+        .confirmationDialog("채널 추가", isPresented: $store.isPresentingChannelActionView) {
+            Button("채널 생성") {
+                store.send(.presentAddChannelView)
+            }
+            Button("채널 탐색") {
+                print("dfd")
+            }
+        }
     }
     
     // MARK: ChannelRowView
@@ -167,7 +183,7 @@ extension HomeView {
     }
     
     // MARK: AddRowView
-    private func addRowView(_ title: String) -> some View {
+    private func addRowView(_ title: String, action: (() -> Void)? = nil) -> some View {
         HStack {
             Resources.Images.plus
                 .frame(width: 18, height: 18)
@@ -177,6 +193,9 @@ extension HomeView {
         .foregroundStyle(Resources.Colors.textSecondary)
         .frame(height: 41)
         .padding(.horizontal)
+        .onTapGesture {
+            action?()
+        }
     }
     
     // MARK: HeaderView

@@ -25,6 +25,8 @@ public struct HomeReducer: Reducer {
         var isPresentCreateView = false
         var isPresentingAlert = false
         var isPresentingSideMenu = false
+        var isPresentingChannelActionView = false
+        var isPresentingAddChannelView = false
         var isExpandedChannels = false
         var isExpandedDms = false
         var studyGroupInfos: StudyGroupDetail? = nil
@@ -38,10 +40,12 @@ public struct HomeReducer: Reducer {
         case presentCreateView // 그룹 생성뷰 띄울지 말지
         case toggleReloginAlert // 토큰 갱신 알림
         case viewDidDisappear // 뷰 사라짐
+        case presentAddChannelView
+        case presentChannelActionView
         case presentSideMenu // 사이드메뉴 열기
         case dismissSideMenu // 사이드메뉴 닫기
         case toggleExpandedChannels // 채널 열고닫기
-        case toggleExpandedDms
+        case toggleExpandedDms // DM 열고 닫기
         case getWorkspaceDetail // 상세정보 받아오기
         case changedWorkspaceDetail(WorkspaceDetail) // 그룹 선택할 때마다 상세정보 받아오기
         case setStudyGroupInfos(StudyGroupDetail) // 스터디그룹 정보
@@ -71,6 +75,14 @@ public struct HomeReducer: Reducer {
             case .viewDidDisappear:
                 guard let group = state.group else { return .none }
                 UserDefaultsManager.shared.recentGroupId = group.groupId
+                return .none
+                
+            case .presentAddChannelView:
+                state.isPresentingAddChannelView.toggle()
+                return .none
+                
+            case .presentChannelActionView:
+                state.isPresentingChannelActionView.toggle()
                 return .none
                 
             case .presentSideMenu:
