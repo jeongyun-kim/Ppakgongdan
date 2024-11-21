@@ -11,6 +11,7 @@ import Utils
 
 enum ChannelRouter {
     case createNewChannel(id: String, query: CreateChannelQuery)
+    case getAllChannels(id: String)
 }
 
 extension ChannelRouter: TargetType {
@@ -22,6 +23,8 @@ extension ChannelRouter: TargetType {
         switch self {
         case .createNewChannel(let id, _):
             return "/v1/workspaces/\(id)/channels"
+        case .getAllChannels(let id):
+            return "/v1/workspaces/\(id)/channels"
         }
     }
     
@@ -29,13 +32,17 @@ extension ChannelRouter: TargetType {
         switch self {
         case .createNewChannel:
             return .post
+        case .getAllChannels:
+            return .get
         }
     }
     
     var task: Moya.Task {
         switch self {
-        case .createNewChannel(let id, let query):
+        case .createNewChannel(_, let query):
             return .requestJSONEncodable(query)
+        case .getAllChannels:
+            return .requestPlain
         }
     }
     

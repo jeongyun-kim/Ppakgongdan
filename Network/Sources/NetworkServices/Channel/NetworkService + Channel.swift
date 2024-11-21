@@ -19,5 +19,9 @@ extension NetworkService: ChannelNetwork {
         return try decodeResults(result, modelType: Channel.self)
     }
     
+    public func getAllChannels(workspaceId: String) async throws -> [Channel] {
+        let result = await channelProvider.request(.getAllChannels(id: workspaceId))
+        return try decodeResults(result, modelType: [Channel].self)
+    }
     
 }
