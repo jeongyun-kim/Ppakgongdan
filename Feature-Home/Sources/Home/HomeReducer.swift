@@ -49,7 +49,8 @@ public struct HomeReducer: Reducer {
         case setStudyGroupMembers([StudyGroupMember]) // 스터디그룹 멤버 정보
         case getUnreadChannelsCount([Channel]) // 채널의 안 읽은 메시지 개수 가져오기
         case getDmList // DM 조회하기
-        case setDmList([DM]) // 조회한 DM 내역 보여주기
+        case getUnreadDmCounts([DM]) // 안 읽은 DM 개수 조회
+        case setDmList([DirectMessage]) // 조회한 DM 내역 보여주기
     }
     
     public var body: some Reducer<State, Action> {
@@ -88,7 +89,7 @@ public struct HomeReducer: Reducer {
                 state.isExpandedDms.toggle()
                 return .none
                 
-            case .getWorkspaceDetail:
+            case .getWorkspaceDetail: // 선택한 스터디그룹의 상세정보 조회
                 return .run { [group = state.group] send in
                     do {
                         guard let group else { return }
@@ -101,7 +102,7 @@ public struct HomeReducer: Reducer {
                     }
                 }
                 
-            case .changedWorkspaceDetail(let detail):
+            case .changedWorkspaceDetail(let detail): // 선택한 스터디그룹 변경 시마다 호출
                 return .merge (
                         .send(.setStudyGroupInfos(detail.toStudyGroupDetail())),
                         .send(.getUnreadChannelsCount(detail.channels)),
@@ -109,7 +110,7 @@ public struct HomeReducer: Reducer {
                         .send(.getDmList)
                     )
                 
-            case .getUnreadChannelsCount(let channels):
+            case .getUnreadChannelsCount(let channels): // 안 읽은 채널 개수 조회
                 return .run { [info = state.studyGroupInfos] send in
                     guard let info else { return }
                     var studyGroupChannels: [StudyGroupChannel] = []
@@ -128,31 +129,50 @@ public struct HomeReducer: Reducer {
                     await send(.setStudyGroupChannels(studyGroupChannels))
                 }
                 
-            case .setStudyGroupInfos(let infos):
+            case .setStudyGroupInfos(let infos): // 스터디그룹 정보 세팅
                 state.studyGroupInfos = infos
                 return .none
                 
-            case .setStudyGroupChannels(let channels):
+            case .setStudyGroupChannels(let channels): // 채널 세팅
                 state.studyGroupChannels = channels
                 return .none
                 
-            case .setStudyGroupMembers(let members):
+            case .setStudyGroupMembers(let members): // 멤버 세팅
                 state.studyGroupMemebers = members
                 return .none
                 
-            case .getDmList:
+            case .getDmList: // DM 조회하기
                 return .run { [info = state.studyGroupInfos] send in
                     guard let info else { return }
                     do {
                         let result = try await NetworkService.shared.getDmList(workspaceId: info.workspaceId)
-                        await send(.setDmList(result))
+                        await send(.getUnreadDmCounts(result))
                     } catch {
                         print(error)
                     }
                 }
+            
+            case .getUnreadDmCounts(let dms): // 안 읽은 메시지수 조회
+                return .run { [info = state.studyGroupInfos] send in
+                    guard let info else { return }
+                    var directMessages: [DirectMessage] = []
+
+                    for dm in dms {
+                        do {
+                            let result = try await NetworkService.shared.getUnreadDms(workspaceId: info.workspaceId, roomlId: dm.roomId, after: dm.createdAt)
+                            var directMessage = DirectMessage(roomId: dm.roomId, createdAt: dm.createdAt, user: dm.user)
+                            directMessage.unreadCount = result.count
+                            directMessages.append(directMessage)
+                        } catch {
+                            print(error)
+                        }
+                    }
+                    
+                    await send(.setDmList(directMessages))
+                }
                 
-            case .setDmList(let dms):
-                state.dmList = dms.map { $0.toDirectMessage() }
+            case .setDmList(let dms): // dmList 세팅
+                state.dmList = dms
                 return .none
             }
         }

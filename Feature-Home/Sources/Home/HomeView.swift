@@ -91,9 +91,15 @@ extension HomeView {
                 .resizable()
                 .frame(width: size, height: size)
                 .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
+            
             Text(item.user.nickname)
                 .font(Resources.Fonts.body)
                 .foregroundStyle(Resources.Colors.textSecondary)
+            
+            if item.unreadCount > 0 {
+                Spacer()
+                unreadCountView("\(item.unreadCount)")
+            }
         }
         .frame(height: 44)
     }
@@ -128,18 +134,23 @@ extension HomeView {
             
             if item.unreadCount > 0 {
                 Spacer()
-                Text("\(item.unreadCount)")
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 2)
-                    .font(Resources.Fonts.caption)
-                    .foregroundStyle(Resources.Colors.white)
-                    .background(Resources.Colors.secondaryColor)
-                    .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
+                unreadCountView("\(item.unreadCount)")
             }
         }
         .frame(height: 41)
         .foregroundStyle(item.unreadCount > 0 ? Resources.Colors.black : Resources.Colors.textSecondary)
         .listRowSeparator(.hidden)
+    }
+    
+    // MARK: UnreadCountView
+    private func unreadCountView(_ text: String) -> some View {
+        Text(text)
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .font(Resources.Fonts.caption)
+            .foregroundStyle(Resources.Colors.white)
+            .background(Resources.Colors.secondaryColor)
+            .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
     }
     
     // MARK: AddRowView
