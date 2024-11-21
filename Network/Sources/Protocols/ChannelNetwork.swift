@@ -12,4 +12,5 @@ protocol ChannelNetwork {
     var channelProvider: MoyaProvider<ChannelRouter> { get }
     func createNewChannel(workspaceId: String, name: String, desc: String?) async throws -> Channel
     func getAllChannels(workspaceId: String) async throws -> [Channel]
+    func getAllMyChannels(workspaceId: String) async throws -> [Channel]
 }

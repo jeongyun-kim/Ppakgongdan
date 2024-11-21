@@ -12,6 +12,7 @@ import Utils
 enum ChannelRouter {
     case createNewChannel(id: String, query: CreateChannelQuery)
     case getAllChannels(id: String)
+    case getAllMyChannels(id: String)
 }
 
 extension ChannelRouter: TargetType {
@@ -25,6 +26,8 @@ extension ChannelRouter: TargetType {
             return "/v1/workspaces/\(id)/channels"
         case .getAllChannels(let id):
             return "/v1/workspaces/\(id)/channels"
+        case .getAllMyChannels(let id):
+            return "/v1/workspaces/\(id)/my-channels"
         }
     }
     
@@ -34,6 +37,8 @@ extension ChannelRouter: TargetType {
             return .post
         case .getAllChannels:
             return .get
+        case .getAllMyChannels:
+            return .get
         }
     }
     
@@ -42,6 +47,8 @@ extension ChannelRouter: TargetType {
         case .createNewChannel(_, let query):
             return .requestJSONEncodable(query)
         case .getAllChannels:
+            return .requestPlain
+        case .getAllMyChannels:
             return .requestPlain
         }
     }
