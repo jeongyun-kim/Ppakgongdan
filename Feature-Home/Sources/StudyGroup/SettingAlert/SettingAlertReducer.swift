@@ -11,7 +11,7 @@ import ComposableArchitecture
 import NetworkKit
 
 @Reducer
-struct HomeAlertReducer {
+struct SettingAlertReducer {
     @ObservableState
     struct State: Equatable {
         init(group: Shared<StudyGroup?>, groupCount: Shared<Int>) {

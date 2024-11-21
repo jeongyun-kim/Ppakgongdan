@@ -26,7 +26,6 @@ public struct HomeReducer: Reducer {
         @Shared var groupCount: Int
         var isPresentCreateView = false
         var isPresentingAlert = false
-       
         var isPresentingChannelActionView = false
         var isPresentingAddChannelView = false
         var isExpandedChannels = false

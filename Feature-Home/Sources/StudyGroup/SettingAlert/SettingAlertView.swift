@@ -10,7 +10,7 @@ import UI
 import Utils
 import ComposableArchitecture
 
-struct HomeAlertView: View {
+struct SettingAlertView: View {
     @Environment(\.dismiss) private var dismiss
     private var alertCase: AlertCase
     private var store: StoreOf<HomeAlertReducer>
