@@ -35,6 +35,7 @@ public struct StudyGroupChannel: Equatable {
         self.createdAt = createdAt
         self.unreadCount = 0
         self.currentReadDate = createdAt
+        self.isContains = false
     }
     
     public let channelId: String
@@ -45,6 +46,7 @@ public struct StudyGroupChannel: Equatable {
     public let createdAt: String
     public var unreadCount: Int
     public var currentReadDate: String
+    public var isContains: Bool
 }
 
 public struct StudyGroupMember: Equatable {

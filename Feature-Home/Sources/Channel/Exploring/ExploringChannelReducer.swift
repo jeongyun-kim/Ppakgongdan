@@ -29,8 +29,9 @@ public struct ExploringChannelReducer {
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case getAllChannels
-        case setAllChannels([Channel])
+        case getAllChannels // 현워크스페이스의 모든 채널 리스트 가져오기
+        case getAllMyChannels([Channel]) // 현워크스페이스 내 내가 속한 모든 채널 리스트 가져오기
+        case setAllChannels([StudyGroupChannel]) // 뷰를 위한 채널리스트 세팅
     }
     
     public var body: some Reducer<State, Action> {
@@ -45,15 +46,33 @@ public struct ExploringChannelReducer {
                     guard let id else { return }
                     do {
                         let result = try await NetworkService.shared.getAllChannels(workspaceId: id)
-                        await send(.setAllChannels(result))
+                        await send(.getAllMyChannels(result))
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+            case .getAllMyChannels(let channels):
+                return .run { [id = state.id] send in
+                    var studyGroupChannelList = channels.map { $0.toStudyGroupChannel() }
+                    guard let id else { return }
+                    
+                    do {
+                        let result = try await NetworkService.shared.getAllMyChannels(workspaceId: id)
+                        let studyGroupChannelsFromResult = result.map { $0.toStudyGroupChannel() }
+                        
+                        for idx in (0..<studyGroupChannelList.count) {
+                            studyGroupChannelList[idx].isContains = studyGroupChannelsFromResult.contains(studyGroupChannelList[idx])
+                        }
+                        
+                        await send(.setAllChannels(studyGroupChannelList))
                     } catch {
                         print(error)
                     }
                 }
                 
             case .setAllChannels(let channels):
-                let studyGroupChannels = channels.map { $0.toStudyGroupChannel() }
-                state.channelList = studyGroupChannels
+                state.channelList = channels
                 return .none
             }
         }
