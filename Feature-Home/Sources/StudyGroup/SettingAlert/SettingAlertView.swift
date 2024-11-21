@@ -13,9 +13,9 @@ import ComposableArchitecture
 struct SettingAlertView: View {
     @Environment(\.dismiss) private var dismiss
     private var alertCase: AlertCase
-    private var store: StoreOf<HomeAlertReducer>
+    private var store: StoreOf<SettingAlertReducer>
     
-    init(alertCase: AlertCase, store: StoreOf<HomeAlertReducer>) {
+    init(alertCase: AlertCase, store: StoreOf<SettingAlertReducer>) {
         self.alertCase = alertCase
         self.store = store
     }
@@ -35,7 +35,7 @@ struct SettingAlertView: View {
 }
 
 // MARK: AlertCaseEnum
-extension HomeAlertView {
+extension SettingAlertView {
     enum AlertCase {
         case owner
         case nonOwner
@@ -68,7 +68,7 @@ extension HomeAlertView {
 }
 
 // MARK: UI
-extension HomeAlertView {
+extension SettingAlertView {
     // MARK: DescView
     private func descView(_ alertCase: AlertCase) -> some View {
         Text(alertCase.desc)

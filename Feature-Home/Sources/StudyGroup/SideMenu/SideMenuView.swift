@@ -105,13 +105,13 @@ extension SideMenuView {
     // MARK: AlertView
     private func AlertView() -> some View {
         if let group = store.group, group.ownerId == UserDefaultsManager.shared.userId {
-            HomeAlertView(alertCase: .owner,
-                          store: .init(initialState: HomeAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
-                                       reducer: { HomeAlertReducer() }))
+            SettingAlertView(alertCase: .owner,
+                          store: .init(initialState: SettingAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
+                                       reducer: { SettingAlertReducer() }))
         } else {
-            HomeAlertView(alertCase: .nonOwner,
-                          store: .init(initialState: HomeAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
-                                       reducer: { HomeAlertReducer() }))
+            SettingAlertView(alertCase: .nonOwner,
+                          store: .init(initialState: SettingAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
+                                       reducer: { SettingAlertReducer() }))
         }
     }
     
