@@ -13,6 +13,7 @@ enum ChannelRouter {
     case createNewChannel(id: String, query: CreateChannelQuery)
     case getAllChannels(id: String)
     case getAllMyChannels(id: String)
+    case getUnreadChannels(UnreadChannelQuery)
 }
 
 extension ChannelRouter: TargetType {
@@ -28,6 +29,8 @@ extension ChannelRouter: TargetType {
             return "/v1/workspaces/\(id)/channels"
         case .getAllMyChannels(let id):
             return "/v1/workspaces/\(id)/my-channels"
+        case .getUnreadChannels(let query):
+            return "/v1/workspaces/\(query.workspaceId)/channels/\(query.channelId)/unreads"
         }
     }
     
@@ -38,6 +41,8 @@ extension ChannelRouter: TargetType {
         case .getAllChannels:
             return .get
         case .getAllMyChannels:
+            return .get
+        case .getUnreadChannels:
             return .get
         }
     }
@@ -50,6 +55,8 @@ extension ChannelRouter: TargetType {
             return .requestPlain
         case .getAllMyChannels:
             return .requestPlain
+        case .getUnreadChannels(let query):
+            return .requestParameters(parameters: ["after": query.after], encoding: URLEncoding.queryString)
         }
     }
     

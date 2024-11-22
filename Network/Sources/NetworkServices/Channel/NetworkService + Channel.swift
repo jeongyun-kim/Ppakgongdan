@@ -28,4 +28,10 @@ extension NetworkService: ChannelNetwork {
         let result = await channelProvider.request(.getAllMyChannels(id: workspaceId))
         return try decodeResults(result, modelType: [Channel].self)
     }
+    
+    public func getUnreadChannels(workspaceId: String, channelId: String, after: String) async throws -> UnreadChannel {
+        let query = UnreadChannelQuery(workspaceId: workspaceId, channelId: channelId, after: after)
+        let result = await channelProvider.request(.getUnreadChannels(query))
+        return try decodeResults(result, modelType: UnreadChannel.self)
+    }
 }

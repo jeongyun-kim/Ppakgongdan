@@ -15,7 +15,6 @@ protocol HomeNetwork {
     func deleteWorkspace(groupId: String) async throws
     func exitWorkspace(groupId: String) async throws -> [Workspace]
     func getWorkspaceDetail(workspaceId: String) async throws -> WorkspaceDetail
-    func getUnreadChannels(workspaceId: String, channelId: String, after: String) async throws -> UnreadChannel
     func getDmList(workspaceId: String) async throws -> [DM]
     func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDM
 }
