@@ -74,7 +74,7 @@ extension HomeRouter: TargetType {
         case .createWorkspace(let query):
             return .uploadMultipart([
                 MultipartFormData(provider: .data(query.name.data(using: .utf8)!), name: "name"),
-                MultipartFormData(provider: .data(query.image.base64EncodedData()), name: "image", fileName: "\(query.name).jpeg", mimeType: "image/jpeg"),
+                MultipartFormData(provider: .data(query.image), name: "image", fileName: "\(query.name).jpeg", mimeType: "image/jpeg"),
                 MultipartFormData(provider: .data(query.description.data(using: .utf8)!), name: "description")
             ])
         case .deleteWorkspace:
