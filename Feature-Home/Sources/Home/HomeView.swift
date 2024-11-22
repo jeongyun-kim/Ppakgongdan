@@ -88,6 +88,9 @@ extension HomeView {
         }
         .asPlainList()
         .frame(maxWidth: .infinity)
+        .refreshable {
+            store.send(.getWorkspaceDetail)
+        }
         // 🧐 추후 listTopPadding 없애기
     }
     
