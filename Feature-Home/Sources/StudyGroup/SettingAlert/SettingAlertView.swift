@@ -21,16 +21,13 @@ struct SettingAlertView: View {
     }
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Resources.Colors.white)
-            .frame(width: 344, height: alertCase.height)
-            .overlay {
-                if alertCase == .owner {
-                    ownerAlertView()
-                } else {
-                    nonOwnerAlertView()
-                }
+        AlertView(height: alertCase.height) {
+            if alertCase == .owner {
+                ownerAlertView()
+            } else {
+                nonOwnerAlertView()
             }
+        }
     }
 }
 
