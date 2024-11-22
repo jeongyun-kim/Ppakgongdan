@@ -22,9 +22,11 @@ public struct ExploringChannelReducer {
         }
         
         @Shared var isPresentingExploringChannelView: Bool
-        
         var id: String?
+        
         var channelList: [StudyGroupChannel] = []
+        var selectedChannel: StudyGroupChannel? = nil
+        var isPresentingJoinAlert = false
     }
     
     public enum Action: BindableAction {
@@ -32,6 +34,8 @@ public struct ExploringChannelReducer {
         case getAllChannels // 현워크스페이스의 모든 채널 리스트 가져오기
         case getAllMyChannels([Channel]) // 현워크스페이스 내 내가 속한 모든 채널 리스트 가져오기
         case setAllChannels([StudyGroupChannel]) // 뷰를 위한 채널리스트 세팅
+        case toggleJoinAlert(selected: StudyGroupChannel)
+        case dismissJoinAlert
     }
     
     public var body: some Reducer<State, Action> {
@@ -39,6 +43,15 @@ public struct ExploringChannelReducer {
         Reduce { state, action in
             switch action {
             case .binding(_):
+                return .none
+                
+            case .toggleJoinAlert(let selectedChannel):
+                state.selectedChannel = selectedChannel
+                state.isPresentingJoinAlert.toggle()
+                return .none
+                
+            case .dismissJoinAlert:
+                state.isPresentingJoinAlert.toggle()
                 return .none
                 
             case .getAllChannels:

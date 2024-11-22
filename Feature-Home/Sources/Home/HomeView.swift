@@ -32,6 +32,9 @@ public struct HomeView: View {
                 )
             }
         }
+        .onAppear(perform: {
+            print("appear~")
+        })
         .onDisappear {
             store.send(.viewDidDisappear)
         }
@@ -61,13 +64,20 @@ extension HomeView {
             }))
         }
         .fullScreenCover(isPresented: $store.isPresentingExploringChannelView) {
-            ExploringChannelView(
-                store: .init(initialState: ExploringChannelReducer.State(
-                    isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
-                    id: store.group?.groupId), reducer: {
-                ExploringChannelReducer()
-            }))
+            exploringChannelView()
         }
+    }
+    
+    // MARK: ExploringChannelView
+    private func exploringChannelView() -> some View {
+        ExploringChannelView(
+            store: .init(initialState: ExploringChannelReducer.State(
+                isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
+                id: store.group?.groupId), reducer: {
+            ExploringChannelReducer()
+        }))
+        // 채널 탐색에서 AlertView에 viewAlpha를 주고있기 때문에 이곳에도 해당사항 적용안되게 white로 고정
+        .presentationBackground(Resources.Colors.white)
     }
     
     // MARK: ListView

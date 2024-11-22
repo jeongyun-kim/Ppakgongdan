@@ -15,7 +15,7 @@ struct ExploringChannelView: View {
         self.store = store
     }
     
-    private var store: StoreOf<ExploringChannelReducer>
+    @Bindable private var store: StoreOf<ExploringChannelReducer>
     
     var body: some View {
         NavigationStack {
@@ -23,6 +23,9 @@ struct ExploringChannelView: View {
         }
         .onAppear {
             store.send(.getAllChannels)
+        }
+        .transaction { transaction in
+            transaction.disablesAnimations = true
         }
     }
 }
@@ -34,6 +37,11 @@ extension ExploringChannelView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 ForEach(store.channelList, id: \.channelId) { item in
                     channelRowView(item)
+                        .onTapGesture {
+                            if !item.isContains {
+                                store.send(.toggleJoinAlert(selected: item))
+                            }
+                        }
                 }
             }
             .padding(.horizontal)
@@ -51,5 +59,33 @@ extension ExploringChannelView {
                 .font(Resources.Fonts.bodyBold)
         }
         .frame(height: 41)
+        .fullScreenCover(isPresented: $store.isPresentingJoinAlert) {
+            joinAlertView()
+                .presentationBackground(Resources.Colors.viewAlpha)
+        }
+    }
+    
+    private func joinAlertView() -> some View {
+        AlertView(height: 138) {
+            VStack {
+                Text("채널 참여")
+                    .asAlertTitle()
+                
+                Text("[\(store.selectedChannel?.name ?? "")] 채널에 참여하시겠습니까?")
+                    .asAlertDesc()
+                
+                HStack(spacing: 8) {
+                    nextButton("취소", isDisabled: .constant(true))
+                        .onTapGesture {
+                            store.send(.dismissJoinAlert)
+                        }
+                    nextButton("확인") {
+                        print("tapped")
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical)
+            }
+        }
     }
 }
