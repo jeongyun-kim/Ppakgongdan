@@ -20,7 +20,9 @@ let project = Project(
         .remote(url: "https://github.com/Moya/Moya.git",
                 requirement: .upToNextMajor(from: "15.0.0")),
         .remote(url: "https://github.com/socketio/socket.io-client-swift.git",
-                requirement: .upToNextMajor(from: "16.1.1"))
+                requirement: .upToNextMajor(from: "16.1.1")),
+        .remote(url: "https://github.com/onevcat/Kingfisher.git",
+                requirement: .upToNextMinor(from: "8.1.1"))
     ],
     targets: [ // 프로젝트의 타겟
         .target(
@@ -36,7 +38,8 @@ let project = Project(
                 .package(product: "Moya"),
                 .package(product: "ComposableArchitecture"),
                 .package(product: "KakaoSDK"),
-                .package(product: "SocketIO")
+                .package(product: "SocketIO"),
+                .package(product: "Kingfisher")
             ]
         )
     ]
