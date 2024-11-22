@@ -32,9 +32,6 @@ public struct HomeView: View {
                 )
             }
         }
-        .onAppear(perform: {
-            print("appear~")
-        })
         .onDisappear {
             store.send(.viewDidDisappear)
         }

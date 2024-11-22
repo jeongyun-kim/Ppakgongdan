@@ -57,6 +57,7 @@ public struct HomeReducer: Reducer {
         case setStudyGroupInfos(StudyGroupDetail) // 스터디그룹 정보
         case setStudyGroupChannels([StudyGroupChannel]) // 스터디그룹 채널 정보
         case setStudyGroupMembers([StudyGroupMember]) // 스터디그룹 멤버 정보
+        case getAllMyChannels
         case getUnreadChannelsCount([Channel]) // 채널의 안 읽은 메시지 개수 가져오기
         case getDmList // DM 조회하기
         case getUnreadDmCounts([DM]) // 안 읽은 DM 개수 조회
@@ -127,12 +128,23 @@ public struct HomeReducer: Reducer {
             case .changedWorkspaceDetail(let detail): // 선택한 스터디그룹 변경 시마다 호출
                 return .merge (
                     .send(.setStudyGroupInfos(detail.toStudyGroupDetail())),
-                    .send(.getUnreadChannelsCount(detail.channels)),
+                    .send(.getAllMyChannels),
                     .send(.setStudyGroupMembers(detail.workspaceMembers.map { $0.toStudyGroupMember() })),
                     .send(.getDmList)
                 )
                 
-            case .getUnreadChannelsCount(let channels): // 안 읽은 채널 개수 조회
+            case .getAllMyChannels: // 내가 속한 모든 채널 가져오기
+                return .run { [group = state.group] send in
+                    guard let group else { return }
+                    do {
+                        let result = try await NetworkService.shared.getAllMyChannels(workspaceId: group.groupId)
+                        await send(.getUnreadChannelsCount(result))
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+            case .getUnreadChannelsCount(let channels): // 내가 속한 채널에서 채널 내 안 읽은 메시지수 조회
                 return .run { [info = state.studyGroupInfos] send in
                     guard let info else { return }
                     var studyGroupChannels: [StudyGroupChannel] = []
