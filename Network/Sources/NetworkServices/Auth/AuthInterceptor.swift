@@ -5,18 +5,34 @@
 //  Created by 김정윤 on 11/5/24.
 //
 
+import Foundation
 import Alamofire
 import Moya
 import Utils
-import Foundation
+import Kingfisher
 
 final class AuthInterceptor: RequestInterceptor {
     private init() { }
     static let shared = AuthInterceptor()
     
+    func setHeaders() {
+        let modifier = AnyModifier { request in
+            var requestBody = request
+            let accessToken = UserDefaultsManager.shared.accessToken
+            requestBody.setValue(accessToken, forHTTPHeaderField: APIKey.auth)
+            requestBody.setValue(APIKey.key, forHTTPHeaderField: APIKey.headerKey)
+            return requestBody
+        }
+        
+        KingfisherManager.shared.defaultOptions = [
+            .requestModifier(modifier)
+        ]
+    }
+    
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
         var request = urlRequest
         request.setValue(UserDefaultsManager.shared.accessToken, forHTTPHeaderField: APIKey.auth)
+        setHeaders()
         completion(.success(request))
     }
     

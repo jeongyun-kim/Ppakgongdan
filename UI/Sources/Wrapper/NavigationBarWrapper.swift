@@ -6,17 +6,20 @@
 //
 
 import SwiftUI
+import Utils
+import NetworkKit
+import Kingfisher
 
 // NavigationBar
 private struct NavigationBarWrapper: ViewModifier {
     let leadingImage: String?
-    let trailligImage: String?
+    let trailigImage: String?
     let title: String?
     let action: (() -> Void)?
     
-    init(leadingImage: String? = nil, trailligImage: String? = nil, title: String? = nil, action: (() -> Void)?) {
+    init(leadingImage: String? = nil, trailigImage: String? = nil, title: String? = nil, action: (() -> Void)?) {
         self.leadingImage = leadingImage
-        self.trailligImage = trailligImage
+        self.trailigImage = trailigImage
         self.title = title
         self.action = action
     }
@@ -25,40 +28,78 @@ private struct NavigationBarWrapper: ViewModifier {
         content
             .toolbar {
                 ToolbarItem(placement: .topBarLeading, content: { leadingView() })
-                ToolbarItem(placement: .topBarTrailing, content: { traillingView() })
+                ToolbarItem(placement: .topBarTrailing, content: { trailingView() })
             }
     }
     
+    // MARK: LeadingView
     private func leadingView() -> some View {
-        HStack(spacing: 0) {
-            Resources.Images.logo
-                .resizable()
-                .frame(width: 32, height: 32)
-                .cornerRadius(8)
+       HStack(spacing: 0) {
+            leadingImageView()
+            
             Text(title ?? "빡공단")
                 .font(Resources.Fonts.title1)
                 .frame(height: 35)
                 .padding(.leading, 8)
-                .onTapGesture {
-                    action?()
-                }
+        }
+       .onTapGesture {
+           action?()
+       }
+    }
+    
+    // MARK: LeadingImageView
+    private func leadingImageView() -> some View {
+        let size: CGFloat = 32
+        if let imagePath = leadingImage {
+            let imageURL = APIKey.baseURL.appending(path: "/v1\(imagePath)")
+            return VStack {
+                KFImage(imageURL)
+                    .resizable()
+                    .frame(width: size, height: size)
+                    .cornerRadius(Resources.Corners.normal)
+            }
+        } else {
+            return VStack {
+                Resources.Images.logo
+                    .resizable()
+                    .frame(width: size, height: size)
+                    .cornerRadius(Resources.Corners.normal)
+            }
         }
     }
     
-    private func traillingView() -> some View {
+    // MARK: TrailingView
+    private func trailingView() -> some View {
         Circle()
             .frame(width: 32, height: 32)
             .overlay {
-                Resources.Images.dummy
-                    .resizable()
-                    .clipShape(Circle())
+                trailingImageView()
             }
             .padding(.leading, 12)
     }
+    
+    // MARK: TrailingImageView
+    private func trailingImageView() -> some View {
+        if let imagePath = trailigImage {
+            let imageURL = APIKey.baseURL.appending(path: "/v1\(imagePath)")
+            return VStack {
+                KFImage(imageURL)
+                    .resizable()
+                    .clipShape(Circle())
+            }
+        } else {
+            return VStack {
+                Resources.Images.noPhotoA
+                    .resizable()
+                    .clipShape(Circle())
+            }
+        }
+    }
 }
 
+// MARK: Extension
 extension View {
     public func navigationBar(leadingImage: String? = nil, trailingImage: String? = nil, title: String? = nil, action: (() -> Void)? = nil) -> some View {
-        modifier(NavigationBarWrapper(leadingImage: leadingImage, trailligImage: trailingImage, title: title, action: action))
+        modifier(NavigationBarWrapper(leadingImage: leadingImage, trailigImage: trailingImage, title: title, action: action))
     }
 }

@@ -51,7 +51,7 @@ extension HomeView {
                 customDivider()
                 listView()
             }
-            .navigationBar(leadingImage: nil, trailingImage: nil, title: item.groupName) {
+            .navigationBar(leadingImage: store.group?.coverImage, trailingImage: nil, title: item.groupName) {
                 store.send(.presentSideMenu)
             }
         }
