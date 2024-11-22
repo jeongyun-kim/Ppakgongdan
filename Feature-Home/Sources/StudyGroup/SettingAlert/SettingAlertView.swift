@@ -72,18 +72,13 @@ extension SettingAlertView {
     // MARK: DescView
     private func descView(_ alertCase: AlertCase) -> some View {
         Text(alertCase.desc)
-            .multilineTextAlignment(.center)
-            .font(Resources.Fonts.body)
-            .foregroundStyle(Resources.Colors.textSecondary)
-            .padding(.horizontal)
+            .asAlertDesc()
     }
     
     // MARK: TitleView
     private func titleView(_ alertCase: AlertCase) -> some View {
         Text(alertCase.title)
-            .font(Resources.Fonts.title2)
-            .padding(.bottom, 8)
-            .padding(.top, 16)
+            .asAlertTitle()
     }
     
     // MARK: nonOwnerView
