@@ -42,7 +42,7 @@ struct CreateChannelView: View {
             .onChange(of: store.channelName) { _, _ in
                 store.send(.validateChannelName)
             }
-            .onChange(of: store.isCompleted, { oldValue, newValue in
+            .onChange(of: store.isCompleted, { _, _ in
                 dismiss()
             })
             .showReloginAlert(isPresenting: $store.isPresentingReloginAlert)
@@ -58,9 +58,7 @@ extension CreateChannelView {
     // MARK: VerticalTextFieldView
     private func verticalTextFieldView(_ title: String, placeHolder: String, text: Binding<String>) -> some View {
         VStack(spacing: 8) {
-            Text(title)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(Resources.Fonts.title2)
+            TitleTextView(title)
             RoundedTextFieldView(placeHolder: placeHolder, text: text)
         }
     }
