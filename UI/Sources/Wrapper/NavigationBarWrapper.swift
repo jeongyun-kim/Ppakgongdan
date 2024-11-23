@@ -51,9 +51,8 @@ private struct NavigationBarWrapper: ViewModifier {
     private func leadingImageView() -> some View {
         let size: CGFloat = 32
         if let imagePath = leadingImage {
-            let imageURL = APIKey.baseURL.appending(path: "/v1\(imagePath)")
             return VStack {
-                KFImage(imageURL)
+                KFImage(imagePath.toURL)
                     .resizable()
                     .frame(width: size, height: size)
                     .cornerRadius(Resources.Corners.normal)
@@ -81,9 +80,8 @@ private struct NavigationBarWrapper: ViewModifier {
     // MARK: TrailingImageView
     private func trailingImageView() -> some View {
         if let imagePath = trailigImage {
-            let imageURL = APIKey.baseURL.appending(path: "/v1\(imagePath)")
             return VStack {
-                KFImage(imageURL)
+                KFImage(imagePath.toURL)
                     .resizable()
                     .clipShape(Circle())
             }
