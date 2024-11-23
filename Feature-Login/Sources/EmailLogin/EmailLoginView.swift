@@ -41,6 +41,7 @@ extension EmailLoginView {
     private func passwordView() -> some View {
         VStack(spacing: 8) {
             TitleTextView("비밀번호")
+                .foregroundStyle(store.isValidPassword ? Resources.Colors.black : Resources.Colors.error)
             passwordSecureFieldView()
         }
         .padding(.bottom, 132)
@@ -52,6 +53,7 @@ extension EmailLoginView {
     private func emailView() -> some View {
         VStack(spacing: 8) {
             TitleTextView("이메일")
+                .foregroundStyle(store.isValidEmail ? Resources.Colors.black : Resources.Colors.error)
             RoundedTextFieldView(placeHolder: "이메일을 입력하세요", text: $store.email)
             
         }
