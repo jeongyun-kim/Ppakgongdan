@@ -15,6 +15,7 @@ public struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(UDKey.isUser.rawValue) var isUser = UserDefaults.standard.bool(forKey: UDKey.isUser.rawValue)
     @Bindable private var store: StoreOf<OnboardingReducer>
+    @State private var presentingSheet: Bool = false
     
     public init(store: StoreOf<OnboardingReducer>) {
         self.store = store
@@ -41,7 +42,13 @@ public struct OnboardingView: View {
         }
         .sheet(isPresented: $store.isPresentingSheet) {
             sheetLoginView()
+                .sheet(isPresented: $presentingSheet, content: {
+                    EmailLoginView(store: .init(initialState: EmailLoginReducer.State(), reducer: {
+                        EmailLoginReducer()
+                    }))
+                })
         }
+        
         .onChange(of: isUser) { oldValue, newValue in
             if newValue {
                 dismiss()
@@ -60,6 +67,7 @@ extension OnboardingView {
                     Resources.Images.appleLogin
                     appleLoginButton()
                 }
+            
             nextButton()
                 .frame(width: 323)
                 .overlay {
@@ -68,12 +76,17 @@ extension OnboardingView {
                             store.send(.kakaoLoginBtnTapped)
                         }
                 }
+            
             nextButton()
                 .frame(width: 323)
                 .overlay {
                     Resources.Images.emailLogin
                         .resizable()
+                        .onTapGesture {
+                            presentingSheet.toggle()
+                        }
                 }
+                
             HStack(spacing: 4) {
                 Text("또는")
                 Text("새로 회원가입 하기")
