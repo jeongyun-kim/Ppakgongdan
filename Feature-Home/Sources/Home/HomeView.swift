@@ -15,6 +15,8 @@ public struct HomeView: View {
         self.store = store
     }
     
+    // NavigationStackPath
+    @State var path = NavigationPath()
     // state값 바인딩해서 사용할 수 있도록 @Bindable
     @Bindable private var store: StoreOf<HomeReducer>
     
@@ -46,13 +48,19 @@ public struct HomeView: View {
 extension HomeView {
     // MARK: DefaultHomeView
     private func defulatHomeView(item: StudyGroup) -> some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             VStack(spacing: 0) {
                 customDivider()
                 listView()
             }
             .navigationBar(leadingImage: store.group?.coverImage, trailingImage: nil, title: item.groupName) {
                 store.send(.presentSideMenu)
+            }
+            .navigationDestination(for: NavigationViewCase.self) { viewCase in
+                switch viewCase {
+                case .channelChattingView:
+                    ChannelChattingView()
+                }
             }
         }
         .sheet(isPresented: $store.isPresentingAddChannelView) {
@@ -68,11 +76,13 @@ extension HomeView {
     // MARK: ExploringChannelView
     private func exploringChannelView() -> some View {
         ExploringChannelView(
+            path: $path,
             store: .init(initialState: ExploringChannelReducer.State(
                 isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
-                id: store.group?.groupId), reducer: {
-            ExploringChannelReducer()
-        }))
+                id: store.group?.groupId),
+            reducer: {
+                    ExploringChannelReducer()
+                }))
         // 채널 탐색에서 AlertView에 viewAlpha를 주고있기 때문에 이곳에도 해당사항 적용안되게 white로 고정
         .presentationBackground(Resources.Colors.white)
     }
