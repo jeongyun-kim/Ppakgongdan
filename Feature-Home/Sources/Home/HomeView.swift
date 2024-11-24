@@ -120,12 +120,8 @@ extension HomeView {
     
     // MARK: DmRowView
     private func dmRowView(_ item: DirectMessage) -> some View {
-        let size: CGFloat = 24
         return HStack(spacing: 11) {
-            Resources.Images.dummy
-                .resizable()
-                .frame(width: size, height: size)
-                .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
+            RoundedImageView(imageViewCase: .verticalDmListProfile, imagePath: item.user.profileImage)
             
             Text(item.user.nickname)
                 .font(Resources.Fonts.body)

@@ -49,22 +49,7 @@ private struct NavigationBarWrapper: ViewModifier {
     
     // MARK: LeadingImageView
     private func leadingImageView() -> some View {
-        let size: CGFloat = 32
-        if let imagePath = leadingImage {
-            return VStack {
-                KFImage(imagePath.toURL)
-                    .resizable()
-                    .frame(width: size, height: size)
-                    .cornerRadius(Resources.Corners.normal)
-            }
-        } else {
-            return VStack {
-                Resources.Images.logo
-                    .resizable()
-                    .frame(width: size, height: size)
-                    .cornerRadius(Resources.Corners.normal)
-            }
-        }
+        RoundedImageView(imageViewCase: .groupCoverImage, imagePath: leadingImage)
     }
     
     // MARK: TrailingView
