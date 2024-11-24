@@ -40,9 +40,9 @@ extension ExploringChannelView {
                 ForEach(store.channelList, id: \.channelId) { item in
                     Button {
                         if !item.isContains {
-                            store.send(.toggleJoinAlert(selected: item))
+                            store.send(.toggleJoinAlert)
                         } else {
-                            dismissExploringViewAndPushChattingView()
+                            dismissExploringViewAndPushChattingView(item)
                         }
                     } label: {
                         channelRowView(item)
@@ -65,12 +65,13 @@ extension ExploringChannelView {
         }
         .frame(height: 41)
         .fullScreenCover(isPresented: $store.isPresentingJoinAlert) {
-            joinAlertView()
+            joinAlertView(item)
                 .presentationBackground(Resources.Colors.viewAlpha)
         }
     }
     
-    private func joinAlertView() -> some View {
+    // MARK: JoinAlertView
+    private func joinAlertView(_ item: StudyGroupChannel) -> some View {
         AlertView(height: 138) {
             VStack {
                 Text("채널 참여")
@@ -82,10 +83,10 @@ extension ExploringChannelView {
                 HStack(spacing: 8) {
                     nextButton("취소", isDisabled: .constant(true))
                         .onTapGesture {
-                            store.send(.dismissJoinAlert)
+                            store.send(.toggleJoinAlert)
                         }
                     nextButton("확인") {
-                        dismissExploringViewAndPushChattingView()
+                        dismissExploringViewAndPushChattingView(item)
                     }
                 }
                 .padding(.horizontal)
@@ -94,7 +95,9 @@ extension ExploringChannelView {
         }
     }
     
-    private func dismissExploringViewAndPushChattingView() {
+    // MARK: 채널채팅방으로 넘어가기
+    private func dismissExploringViewAndPushChattingView(_ item: StudyGroupChannel) {
+        store.send(.setSelectedChannel(item))
         store.send(.dismissExploringChannelView)
         path.append(NavigationViewCase.channelChattingView)
     }

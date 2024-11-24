@@ -16,16 +16,17 @@ public struct ExploringChannelReducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(isPresentingExploringChannelView: Shared<Bool>, id: String?) {
+        public init(isPresentingExploringChannelView: Shared<Bool>, id: String?, selectedChannel: Shared<StudyGroupChannel?>) {
             _isPresentingExploringChannelView = isPresentingExploringChannelView
+            _selectedChannel = selectedChannel
             self.id = id
         }
         
         @Shared var isPresentingExploringChannelView: Bool
+        @Shared var selectedChannel: StudyGroupChannel?
         var id: String?
         
         var channelList: [StudyGroupChannel] = []
-        var selectedChannel: StudyGroupChannel? = nil
         var isPresentingJoinAlert = false
     }
     
@@ -34,9 +35,9 @@ public struct ExploringChannelReducer {
         case getAllChannels // 현워크스페이스의 모든 채널 리스트 가져오기
         case getAllMyChannels([Channel]) // 현워크스페이스 내 내가 속한 모든 채널 리스트 가져오기
         case setAllChannels([StudyGroupChannel]) // 뷰를 위한 채널리스트 세팅
-        case toggleJoinAlert(selected: StudyGroupChannel)
-        case dismissJoinAlert
-        case dismissExploringChannelView
+        case toggleJoinAlert // 채널 참여 알림창 띄우거나 내리기
+        case dismissExploringChannelView // 채널 탐색뷰 내리기
+        case setSelectedChannel(StudyGroupChannel) // 선택한 채널 데이터 반영하기 
     }
     
     public var body: some Reducer<State, Action> {
@@ -50,13 +51,12 @@ public struct ExploringChannelReducer {
                 state.isPresentingExploringChannelView.toggle()
                 return .none
                 
-            case .toggleJoinAlert(let selectedChannel):
-                state.selectedChannel = selectedChannel
+            case .toggleJoinAlert:
                 state.isPresentingJoinAlert.toggle()
                 return .none
                 
-            case .dismissJoinAlert:
-                state.isPresentingJoinAlert.toggle()
+            case .setSelectedChannel(let channel):
+                state.selectedChannel = channel
                 return .none
                 
             case .getAllChannels:
