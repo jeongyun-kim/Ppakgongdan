@@ -67,6 +67,9 @@ extension HomeView {
             CreateChannelView(store: .init(initialState: CreateChannelReducer.State(id: store.group?.groupId), reducer: {
                 CreateChannelReducer()
             }))
+            .onDisappear {
+                store.send(.getAllMyChannels)
+            }
         }
         .fullScreenCover(isPresented: $store.isPresentingExploringChannelView) {
             exploringChannelView()
