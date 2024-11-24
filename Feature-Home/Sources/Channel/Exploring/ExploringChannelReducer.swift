@@ -36,6 +36,7 @@ public struct ExploringChannelReducer {
         case setAllChannels([StudyGroupChannel]) // 뷰를 위한 채널리스트 세팅
         case toggleJoinAlert(selected: StudyGroupChannel)
         case dismissJoinAlert
+        case dismissExploringChannelView
     }
     
     public var body: some Reducer<State, Action> {
@@ -43,6 +44,10 @@ public struct ExploringChannelReducer {
         Reduce { state, action in
             switch action {
             case .binding(_):
+                return .none
+                
+            case .dismissExploringChannelView:
+                state.isPresentingExploringChannelView.toggle()
                 return .none
                 
             case .toggleJoinAlert(let selectedChannel):

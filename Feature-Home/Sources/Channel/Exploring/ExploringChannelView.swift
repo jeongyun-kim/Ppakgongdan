@@ -11,11 +11,13 @@ import NetworkKit
 import ComposableArchitecture
 
 struct ExploringChannelView: View {
-    init(store: StoreOf<ExploringChannelReducer>) {
+    init(path: Binding<NavigationPath>, store: StoreOf<ExploringChannelReducer>) {
         self.store = store
+        _path = path
     }
-    
+
     @Bindable private var store: StoreOf<ExploringChannelReducer>
+    @Binding var path: NavigationPath
     
     var body: some View {
         NavigationStack {
@@ -36,12 +38,15 @@ extension ExploringChannelView {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 ForEach(store.channelList, id: \.channelId) { item in
-                    channelRowView(item)
-                        .onTapGesture {
-                            if !item.isContains {
-                                store.send(.toggleJoinAlert(selected: item))
-                            }
+                    Button {
+                        if !item.isContains {
+                            store.send(.toggleJoinAlert(selected: item))
+                        } else {
+                            dismissExploringViewAndPushChattingView()
                         }
+                    } label: {
+                        channelRowView(item)
+                    }
                 }
             }
             .padding(.horizontal)
@@ -80,12 +85,17 @@ extension ExploringChannelView {
                             store.send(.dismissJoinAlert)
                         }
                     nextButton("확인") {
-                        print("tapped")
+                        dismissExploringViewAndPushChattingView()
                     }
                 }
                 .padding(.horizontal)
                 .padding(.vertical)
             }
         }
+    }
+    
+    private func dismissExploringViewAndPushChattingView() {
+        store.send(.dismissExploringChannelView)
+        path.append(NavigationViewCase.channelChattingView)
     }
 }
