@@ -105,6 +105,9 @@ extension HomeView {
                 customDivider()
             }
             .listSectionSeparator(.hidden)
+            .onAppear {
+                store.send(.getWorkspaceDetail)
+            }
         } header: {
             headerView("다이렉트 메시지", isExpanded: store.isExpandedDms)
                 .asTappableHeaderView {
@@ -141,7 +144,7 @@ extension HomeView {
     // MARK: ChannelSectionView
     private func channelSectionView() -> some View {
         Section(isExpanded: $store.isExpandedChannels) {
-            LazyVStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 ForEach(store.studyGroupChannels, id: \.channelId) { item in
                     channelRowView(item)
                 }
@@ -151,6 +154,9 @@ extension HomeView {
                 customDivider()
             }
             .listSectionSeparator(.hidden)
+            .onAppear {
+                store.send(.getWorkspaceDetail)
+            }
         } header: {
             headerView("채널", isExpanded: store.isExpandedChannels)
                 .asTappableHeaderView {
