@@ -15,15 +15,21 @@ extension String {
     }
     
     public func toChattingDate() -> String {
-        let isoFormatter = ISO8601DateFormatter()
-        guard let date = isoFormatter.date(from: self) else {
-            return ""
-        }
-    
-        let timeFormatter = DateFormatter()
-        timeFormatter.locale = Locale(identifier: "ko_KR")
-        timeFormatter.dateFormat = "hh:mm a"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"
+        guard let date = dateFormatter.date(from: self) else { return "" }
         
-        return timeFormatter.string(from: date)
+        let dateString = date.formatted(date: .numeric, time: .omitted)
+        let todayString = Date().formatted(date: .numeric, time: .omitted)
+        
+        // 만약 비교하는 날짜가 오늘이 아니라면
+        if dateString == todayString {
+            dateFormatter.dateFormat = "hh:mm a"
+        } else { // 비교하는 날짜가 오늘이라면
+            dateFormatter.dateFormat = "M/d HH:mm a"
+        }
+
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        return dateFormatter.string(from: date)
     }
 }

@@ -47,7 +47,7 @@ public struct ChattingInputView: View {
                                   axis: .vertical)
                             .frame(width: 275)
                             .offset(y: -2)
-                            .lineLimit(nil)
+                            .lineLimit(3)
                             .fixedSize(horizontal: false, vertical: true)
                             .font(Resources.Fonts.body)
                             .foregroundStyle(Resources.Colors.textPrimary)
