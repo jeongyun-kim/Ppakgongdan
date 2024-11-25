@@ -59,9 +59,10 @@ extension HomeView {
             .navigationDestination(for: NavigationViewCase.self) { viewCase in
                 switch viewCase {
                 case .channelChattingView:
-                    ChannelChattingView(store: .init(initialState: ChannelChattingReducer.State(selectedChannel: store.$selectedChannel), reducer: {
-                        ChannelChattingReducer()
-                    }))
+                    ChannelChattingView(store: .init(
+                        initialState: ChannelChattingReducer.State(selectedChannel: store.$selectedChannel,
+                                                                   workspaceId: store.group?.groupId),
+                        reducer: { ChannelChattingReducer() }))
                 }
             }
         }
