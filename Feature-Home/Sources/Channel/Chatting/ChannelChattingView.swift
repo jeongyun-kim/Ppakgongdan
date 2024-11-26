@@ -22,7 +22,7 @@ struct ChannelChattingView: View {
             .scrollDismissesKeyboard(.immediately)
             
             ChattingInputView($store.text) {
-                print("tapped")
+                store.send(.sendMyChat)
             }
         }
         .navigationTitle("#\(store.selectedChannel?.name ?? "채널")")

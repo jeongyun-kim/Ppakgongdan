@@ -27,7 +27,9 @@ struct ChannelChattingReducer {
     
     enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case getChannelChats
+        case getChannelChats // 현 채널의 채팅 목록 받아오기
+        case sendMyChat // 채팅보내기
+        case sendedChat // 내 채팅 보낸 이후
     }
     
     var body: some Reducer<State, Action> {
@@ -47,6 +49,21 @@ struct ChannelChattingReducer {
                         print(error)
                     }
                 }
+                
+            case .sendMyChat:
+                return .run { [id = state.workspaceId, channel = state.selectedChannel, content = state.text] send in
+                    guard let id, let channel else { return }
+                    do {
+                        let result = try await NetworkService.shared.postMyChat(workspaceId: id, channelId: channel.channelId, content: content, files: [])
+                        await send(.sendedChat)
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+            case .sendedChat:
+                state.text = ""
+                return .none
             }
         }
     }
