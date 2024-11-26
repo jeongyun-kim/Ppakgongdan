@@ -15,4 +15,5 @@ protocol ChannelNetwork {
     func getAllMyChannels(workspaceId: String) async throws -> [Channel]
     func getUnreadChannels(workspaceId: String, channelId: String, after: String) async throws -> UnreadChannelDTO
     func getChannelChats(workspaceId: String, channelId: String, after: String) async throws -> [ChannelChattingDTO]
+    func postMyChat(workspaceId: String, channelId: String, content: String, files: [Data]) async throws -> ChannelChattingDTO
 }

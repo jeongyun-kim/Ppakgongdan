@@ -40,4 +40,10 @@ extension NetworkService: ChannelNetwork {
         let result = await channelProvider.request(.getChannelChats(query))
         return try decodeResults(result, modelType: [ChannelChattingDTO].self)
     }
+    
+    public func postMyChat(workspaceId: String, channelId: String, content: String, files: [Data]) async throws -> ChannelChattingDTO {
+        let query = MyChatQuery(channelId: channelId, workspaceId: workspaceId, content: content, files: files)
+        let result = await channelProvider.request(.postMyChat(query))
+        return try decodeResults(result, modelType: ChannelChattingDTO.self)
+    }
 }

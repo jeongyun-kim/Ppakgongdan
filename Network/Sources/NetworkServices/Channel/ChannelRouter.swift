@@ -14,7 +14,8 @@ enum ChannelRouter {
     case getAllChannels(id: String)
     case getAllMyChannels(id: String)
     case getUnreadChannels(UnreadChannelQuery)
-    case getChannelChats(GetChannelChats)
+    case getChannelChats(GetChannelChatsQuery)
+    case postMyChat(MyChatQuery)
 }
 
 extension ChannelRouter: TargetType {
@@ -34,6 +35,8 @@ extension ChannelRouter: TargetType {
             return "/v1/workspaces/\(query.workspaceId)/channels/\(query.channelId)/unreads"
         case .getChannelChats(let query):
             return "/v1/workspaces/\(query.workspaceId)/channels/\(query.channelId)/chats"
+        case .postMyChat(let query):
+            return "/v1/workspaces/\(query.workspaceId)/channels/\(query.channelId)/chats"
         }
     }
     
@@ -49,6 +52,8 @@ extension ChannelRouter: TargetType {
             return .get
         case .getChannelChats:
             return .get
+        case .postMyChat:
+            return .post
         }
     }
     
@@ -63,7 +68,18 @@ extension ChannelRouter: TargetType {
         case .getUnreadChannels(let query):
             return .requestParameters(parameters: ["after": query.after], encoding: URLEncoding.queryString)
         case .getChannelChats(let query):
-            return .requestParameters(parameters: ["cursor_date": query.cursor_date], encoding: URLEncoding.queryString)
+            return .requestParameters(parameters: ["cursor_date": query.cursorDate], encoding: URLEncoding.queryString)
+        case .postMyChat(let query):
+            var multipartformdatas: [MultipartFormData] = []
+            for image in query.files {
+                multipartformdatas.append(
+                    MultipartFormData(provider: .data(image),
+                                      name: "files",
+                                      fileName: "\(query.channelId).jpeg",
+                                      mimeType: "image/jpeg"))
+            }
+            multipartformdatas.append(MultipartFormData(provider: .data(query.content.data(using: .utf8)!), name: "content"))
+            return .uploadMultipart(multipartformdatas)
         }
     }
     
