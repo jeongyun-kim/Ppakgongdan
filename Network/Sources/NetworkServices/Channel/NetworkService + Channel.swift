@@ -36,7 +36,7 @@ extension NetworkService: ChannelNetwork {
     }
     
     public func getChannelChats(workspaceId: String, channelId: String, after: String) async throws -> [ChannelChattingDTO] {
-        let query = GetChannelChats(cursor_date: after, channelId: channelId, workspaceId: workspaceId)
+        let query = GetChannelChatsQuery(cursorDate: after, channelId: channelId, workspaceId: workspaceId)
         let result = await channelProvider.request(.getChannelChats(query))
         return try decodeResults(result, modelType: [ChannelChattingDTO].self)
     }

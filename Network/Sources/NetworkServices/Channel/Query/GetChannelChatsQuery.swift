@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct GetChannelChats: Encodable {
-    let cursor_date: String
+struct GetChannelChatsQuery: Encodable {
+    let cursorDate: String
     let channelId: String
     let workspaceId: String
 }
