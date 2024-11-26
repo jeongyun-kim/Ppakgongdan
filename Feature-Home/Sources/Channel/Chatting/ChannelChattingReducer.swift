@@ -27,7 +27,7 @@ struct ChannelChattingReducer {
     
     enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case writeMessage
+        case getChannelChats
     }
     
     var body: some Reducer<State, Action> {
@@ -37,9 +37,16 @@ struct ChannelChattingReducer {
             case .binding:
                 return .none
                 
-            case .writeMessage:
-                state.isEnabled = !state.text.isEmpty
-                return .none
+            case .getChannelChats:
+                return .run { [id = state.workspaceId, channel = state.selectedChannel] send in
+                    guard let id, let channel else { return }
+                    do {
+                        let result = try await NetworkService.shared.getChannelChats(workspaceId: id, channelId: channel.channelId, after: channel.createdAt)
+                        print(result)
+                    } catch {
+                        print(error)
+                    }
+                }
             }
         }
     }

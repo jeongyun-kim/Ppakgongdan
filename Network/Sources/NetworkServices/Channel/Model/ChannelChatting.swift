@@ -7,22 +7,22 @@
 
 import Foundation
 
-public struct ChannelChatting: Decodable {
-    let channelId: String
-    let channelName: String
-    let chatId: String
-    let content: String
-    let createdAt: String
-    let files: [String]
-    let user: Member
+public struct ChannelChatting: Equatable {
+    public let channelId: String
+    public let channelName: String
+    public let chatId: String
+    public let content: String
+    public let createdAt: String
+    public let files: [String]
+    public let user: StudyGroupMember
     
-    enum CodingKeys: String, CodingKey {
-        case channelId = "channel_id"
-        case channelName 
-        case chatId = "chat_id"
-        case content
-        case createdAt
-        case files
-        case user
+    public init(channelId: String, channelName: String, chatId: String, content: String, createdAt: String, files: [String], user: StudyGroupMember) {
+        self.channelId = channelId
+        self.channelName = channelName
+        self.chatId = chatId
+        self.content = content
+        self.createdAt = createdAt
+        self.files = files
+        self.user = user
     }
 }

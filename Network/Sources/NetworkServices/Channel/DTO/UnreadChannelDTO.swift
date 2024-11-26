@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct UnreadChannel: Decodable {
+public struct UnreadChannelDTO: Decodable {
     public let channelId: String
     public let name: String
     public let count: Int

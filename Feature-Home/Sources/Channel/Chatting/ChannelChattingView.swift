@@ -28,6 +28,9 @@ struct ChannelChattingView: View {
         .navigationTitle("#\(store.selectedChannel?.name ?? "채널")")
         .toolbarRole(.editor)
         .toolbar(.hidden, for: .tabBar)
+        .onAppear {
+            store.send(.getChannelChats)
+        }
     }
 }
 

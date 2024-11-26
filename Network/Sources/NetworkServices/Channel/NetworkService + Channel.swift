@@ -29,15 +29,15 @@ extension NetworkService: ChannelNetwork {
         return try decodeResults(result, modelType: [Channel].self)
     }
     
-    public func getUnreadChannels(workspaceId: String, channelId: String, after: String) async throws -> UnreadChannel {
+    public func getUnreadChannels(workspaceId: String, channelId: String, after: String) async throws -> UnreadChannelDTO {
         let query = UnreadChannelQuery(workspaceId: workspaceId, channelId: channelId, after: after)
         let result = await channelProvider.request(.getUnreadChannels(query))
-        return try decodeResults(result, modelType: UnreadChannel.self)
+        return try decodeResults(result, modelType: UnreadChannelDTO.self)
     }
     
-    public func getChannelChats(workspaceId: String, channelId: String, after: String) async throws -> [ChannelChatting] {
+    public func getChannelChats(workspaceId: String, channelId: String, after: String) async throws -> [ChannelChattingDTO] {
         let query = GetChannelChats(cursor_date: after, channelId: channelId, workspaceId: workspaceId)
         let result = await channelProvider.request(.getChannelChats(query))
-        return try decodeResults(result, modelType: [ChannelChatting].self)
+        return try decodeResults(result, modelType: [ChannelChattingDTO].self)
     }
 }
