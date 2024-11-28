@@ -33,18 +33,7 @@ public struct FriendChattingView: View {
                     
                     HStack(alignment: .bottom) {
                         VStack(alignment: .leading) {
-                            Text(message)
-                                .font(Resources.Fonts.body)
-                                .lineLimit(nil)
-                                .multilineTextAlignment(.leading)
-                                .frame(maxWidth: width, alignment: .leading)
-                                .fixedSize(horizontal: true, vertical: true)
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 8)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Resources.Colors.inActive, lineWidth: 1)
-                                }
+                            ChatView(message: message)
                             
                             if !images.isEmpty {
                                 Resources.Images.defaultGroupImage
