@@ -97,8 +97,7 @@ extension ExploringChannelView {
     
     // MARK: 채널채팅방으로 넘어가기
     private func dismissExploringViewAndPushChattingView(_ item: StudyGroupChannel) {
-        store.send(.setSelectedChannel(item))
-        store.send(.dismissExploringChannelView)
         path.append(NavigationViewCase.channelChattingView)
+        store.send(.setSelectedChannel(item))
     }
 }
