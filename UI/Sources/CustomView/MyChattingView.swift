@@ -31,7 +31,7 @@ public struct MyChattingView: View {
                         .font(.caption2)
                         .foregroundStyle(Resources.Colors.textSecondary)
                     
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .trailing) {
                         ChatView(message: message)
                         
                         if !images.isEmpty {

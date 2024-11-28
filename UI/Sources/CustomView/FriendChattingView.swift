@@ -8,11 +8,11 @@
 import SwiftUI
 
 public struct FriendChattingView: View {
-    public init(name: String, message: String, date: String, images: [String]) {
+    public init(name: String, message: String, images: [String], date: String) {
         self.name = name
         self.message = message
-        self.date = date
         self.images = images
+        self.date = date
     }
     
     private let name: String
