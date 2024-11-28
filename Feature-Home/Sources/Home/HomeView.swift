@@ -61,6 +61,7 @@ extension HomeView {
                 case .channelChattingView:
                     ChannelChattingView(store: .init(
                         initialState: ChannelChattingReducer.State(selectedChannel: store.$selectedChannel,
+                                                                   chatList: store.$channelChatList,
                                                                    workspaceId: store.group?.groupId),
                         reducer: { ChannelChattingReducer() }))
                 }
@@ -86,7 +87,8 @@ extension HomeView {
             store: .init(initialState: ExploringChannelReducer.State(
                 isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
                 id: store.group?.groupId,
-                selectedChannel: store.$selectedChannel),
+                selectedChannel: store.$selectedChannel,
+                chatList: store.$channelChatList),
             reducer: {
                     ExploringChannelReducer()
                 }))

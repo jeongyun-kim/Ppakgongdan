@@ -21,6 +21,7 @@ public struct HomeReducer: Reducer {
             _isPresentingSideMenu = Shared(false)
             _isPresentingExploringChannelView = Shared(false)
             _selectedChannel = Shared(nil)
+            _channelChatList = Shared([])
         }
         
         @Shared var isPresentingSideMenu: Bool
@@ -28,6 +29,7 @@ public struct HomeReducer: Reducer {
         @Shared var groupCount: Int
         @Shared var isPresentingExploringChannelView: Bool
         @Shared var selectedChannel: StudyGroupChannel?
+        @Shared var channelChatList: [ChannelChatting]
         
         var isPresentCreateView = false
         var isPresentingAlert = false
