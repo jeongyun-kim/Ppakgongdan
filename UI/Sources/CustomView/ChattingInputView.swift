@@ -8,12 +8,14 @@
 import SwiftUI
 
 public struct ChattingInputView: View {
-    public init(_ text: Binding<String>, sendAction: @escaping () -> Void) {
+    public init(_ text: Binding<String>, isFocused: FocusState<Bool>.Binding, sendAction: @escaping () -> Void) {
         _text = text
+        self.isFocused = isFocused
         self.sendAction = sendAction
     }
     
     @Binding private var text: String
+    private var isFocused: FocusState<Bool>.Binding
     @State private var height: CGFloat = 38
     private let sendAction: () -> Void
     
@@ -51,6 +53,7 @@ public struct ChattingInputView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .font(Resources.Fonts.body)
                             .foregroundStyle(Resources.Colors.textPrimary)
+                            .focused(isFocused)
                             .onReadSize { size in
                                 height = size.height + 22
                             }
