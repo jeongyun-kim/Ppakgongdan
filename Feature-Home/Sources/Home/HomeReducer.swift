@@ -5,6 +5,7 @@
 //  Created by 김정윤 on 11/4/24.
 //
 
+import Database
 import NetworkKit
 import Utils
 import ComposableArchitecture
@@ -154,9 +155,17 @@ public struct HomeReducer: Reducer {
                     guard let info else { return }
                     var studyGroupChannels: [StudyGroupChannel] = []
                     
+                    
                     for channel in channels {
+                        var lastReadDate = channel.createdAt
+                        
                         do {
-                            let result = try await NetworkService.shared.getUnreadChannels(workspaceId: info.workspaceId, channelId: channel.channelId, after: channel.createdAt)
+                            // Realm Incorrect Thread 해결위해 main에서 처리
+                            DispatchQueue.main.sync {
+                                lastReadDate = ChatRepository.shared.getChannelLastReadDate(channelId: channel.channelId, createdAt: channel.createdAt)
+                            }
+                
+                            let result = try await NetworkService.shared.getUnreadChannels(workspaceId: info.workspaceId, channelId: channel.channelId, after: lastReadDate)
                             var studyGroupChannel = channel.toStudyGroupChannel()
                             studyGroupChannel.unreadCount = result.count
                             studyGroupChannels.append(studyGroupChannel)
