@@ -17,7 +17,7 @@ public class User: Object, ObjectKeyIdentifiable {
         self.profileImage = profileImage
     }
 
-    @Persisted(primaryKey: true) public var id: String
+    @Persisted public var id: String
     @Persisted public var email: String
     @Persisted public var nickname: String
     @Persisted public var profileImage: String?

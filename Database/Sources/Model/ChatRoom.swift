@@ -13,8 +13,10 @@ public class ChatRoom: Object, ObjectKeyIdentifiable {
         self.init()
         self.id = id
         self.chats = chats
+        self.readDate = Date().toFormattedString()
     }
     
     @Persisted(primaryKey: true) public var id: String
     @Persisted public var chats: List<Chat>
+    @Persisted public var readDate: String
 }

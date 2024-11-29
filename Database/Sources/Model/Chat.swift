@@ -20,11 +20,11 @@ public class Chat: Object, ObjectKeyIdentifiable {
         self.user = user
     }
     
-    @Persisted(primaryKey: true) public var channelId: String
+    @Persisted public var channelId: String
     @Persisted public var channelName: String
     @Persisted public var chatId: String
     @Persisted public var content: String
     @Persisted public var createdAt: String
     @Persisted public var files: List<String>
-    @Persisted public var user: User
+    @Persisted public var user: User?
 }
