@@ -18,7 +18,10 @@ let project = Project(
             bundleId: "com.jeongyun.database",
             deploymentTargets: .iOS("17.0"), // 지원 최소 버전 설정,
             infoPlist: .extendingDefault(with: [:]),
-            sources: ["Sources/**"]
+            sources: ["Sources/**"],
+            dependencies: [
+                .project(target: "Utils", path: "../Utils")
+            ]
         )
     ]
 )
