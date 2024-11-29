@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Database
 import NetworkKit
 import Utils
 import ComposableArchitecture
@@ -35,6 +36,7 @@ struct ChannelChattingReducer {
         case connectSocket // 소켓 연결 등록
         case disconnectSocket // 소켓 연결 해제
         case appendChat(ChannelChatting) // 실시간으로 새로 받아온 채팅 반영
+        case saveChatList
     }
     
     var body: some Reducer<State, Action> {
@@ -62,6 +64,12 @@ struct ChannelChattingReducer {
                 
             case .disconnectSocket:
                 SocketService.shared.disconnectSocket()
+                return .send(.saveChatList)
+                
+            case .saveChatList:
+                guard let channel = state.selectedChannel else { return .none }
+                let chatList = state.chatList
+                ChatRepository.shared.saveChatRoom(roomId: channel.channelId, list: chatList)
                 return .none
                 
             case .sendMyChat:

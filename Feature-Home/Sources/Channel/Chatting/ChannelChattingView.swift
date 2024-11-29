@@ -11,7 +11,6 @@ import NetworkKit
 import Utils
 import ComposableArchitecture
 
-
 struct ChannelChattingView: View {
     @FocusState private var isFocused: Bool
     @Bindable var store: StoreOf<ChannelChattingReducer>
