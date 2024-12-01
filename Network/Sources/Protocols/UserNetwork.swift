@@ -12,4 +12,5 @@ protocol UserNetwork {
     var userProvider: MoyaProvider<UserRouter> { get }
     func postKakaoLogin(_ query: KakaoLoginQuery) async throws -> LoginModel
     func postAppleLogin(_ query: AppleLoginQuery) async throws -> LoginModel
+    func postEmailLogin(email: String, passworkd: String) async throws -> LoginModel
 }

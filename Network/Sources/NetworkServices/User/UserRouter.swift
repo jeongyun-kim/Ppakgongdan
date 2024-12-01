@@ -11,6 +11,7 @@ import Moya
 enum UserRouter {
     case kakaoLogin(query: KakaoLoginQuery)
     case appleLogin(query: AppleLoginQuery)
+    case emailLogin(query: EmailLoginQuery)
 }
 
 extension UserRouter: TargetType {
@@ -24,6 +25,8 @@ extension UserRouter: TargetType {
             return "/v1/users/login/kakao"
         case .appleLogin:
             return "/v1/users/login/apple"
+        case .emailLogin:
+            return "/v1/users/login"
         }
     }
     
@@ -33,6 +36,8 @@ extension UserRouter: TargetType {
             return .post
         case .appleLogin:
             return .post
+        case .emailLogin:
+            return .post
         }
     }
     
@@ -41,6 +46,8 @@ extension UserRouter: TargetType {
         case .kakaoLogin(let query):
             return .requestJSONEncodable(query)
         case .appleLogin(let query):
+            return .requestJSONEncodable(query)
+        case .emailLogin(let query):
             return .requestJSONEncodable(query)
         }
     }
