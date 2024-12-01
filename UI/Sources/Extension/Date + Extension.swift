@@ -1,8 +1,8 @@
 //
 //  Date + Extension.swift
-//  Utils
+//  UI
 //
-//  Created by 김정윤 on 11/20/24.
+//  Created by 김정윤 on 12/1/24.
 //
 
 import Foundation

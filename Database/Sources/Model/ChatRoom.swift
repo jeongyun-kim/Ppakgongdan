@@ -7,6 +7,7 @@
 
 import Foundation
 import RealmSwift
+import UI
 
 public class ChatRoom: Object, ObjectKeyIdentifiable {
     convenience init(id: String, chats: List<Chat>) {
