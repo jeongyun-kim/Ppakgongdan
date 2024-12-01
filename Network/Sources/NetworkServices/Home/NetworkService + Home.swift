@@ -67,4 +67,10 @@ extension NetworkService: HomeNetwork {
         let result = await homeProvider.request(.getUnreadDms(query))
         return try decodeResults(result, modelType: UnreadDM.self)
     }
+    
+    public func inviteWorkspaceMemeber(workspaceId: String, email: String) async throws -> Member {
+        let query = InviteMemberQuery(email: email)
+        let result = await homeProvider.request(.inviteWorkspaceMemeber(id: workspaceId, query: query))
+        return try decodeResults(result, modelType: Member.self)
+    }
 }

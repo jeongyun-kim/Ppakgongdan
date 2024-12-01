@@ -17,4 +17,5 @@ protocol HomeNetwork {
     func getWorkspaceDetail(workspaceId: String) async throws -> WorkspaceDetail
     func getDmList(workspaceId: String) async throws -> [DM]
     func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDM
+    func inviteWorkspaceMemeber(workspaceId: String, email: String) async throws -> Member
 }
