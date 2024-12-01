@@ -78,6 +78,9 @@ extension HomeView {
         .fullScreenCover(isPresented: $store.isPresentingExploringChannelView) {
             exploringChannelView()
         }
+        .sheet(isPresented: $store.isPresentingInviteMemeberView) {
+            inviteMemeberSheetView()
+        }
     }
     
     // MARK: ExploringChannelView
@@ -101,7 +104,9 @@ extension HomeView {
         List {
             channelSectionView()
             dmSectionView()
-            addRowView("팀원 추가")
+            addRowView("팀원 추가", action: {
+                store.send(.toggleInviteMemeberView)
+            })
                 .listRowSeparator(.hidden)
                 .listRowInsets(.init())
         }
@@ -262,6 +267,32 @@ extension HomeView {
             }
         }
         .background(Resources.Colors.white)
+    }
+    
+    // MARK: InviteMemeberSheetView
+    private func inviteMemeberSheetView() -> some View {
+        NavigationStack {
+            ZStack(alignment: .topLeading) {
+                VStack(spacing: 8) {
+                    TitleTextView("이메일")
+                    RoundedTextFieldView(placeHolder: "초대하려는 팀원의 이메일을 입력하세요.", text: $store.memberEmail)
+                    nextButton("초대 보내기", action: {
+                        store.send(.inviteMemeber)
+                    }, isDisabled: $store.isDisabledInviteMember)
+                    .padding(.top, 244)
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Resources.Colors.bgPrimary)
+            .navigationBarForPresent(title: "팀원 초대")
+            .scrollIndicators(.visible)
+            .onChange(of: store.memberEmail) { oldValue, newValue in
+                store.send(.changedMemberEmail)
+            }
+        }
     }
 }
 

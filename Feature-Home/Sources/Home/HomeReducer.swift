@@ -8,6 +8,7 @@
 import Database
 import NetworkKit
 import Utils
+import UI
 import ComposableArchitecture
 import Foundation
 
@@ -36,6 +37,7 @@ public struct HomeReducer: Reducer {
         var isPresentingAlert = false
         var isPresentingChannelActionView = false
         var isPresentingAddChannelView = false
+        var isPresentingInviteMemeberView = false
 
         var isExpandedChannels = false
         var isExpandedDms = false
@@ -44,6 +46,9 @@ public struct HomeReducer: Reducer {
         var studyGroupChannels: [StudyGroupChannel] = []
         var studyGroupMemebers: [StudyGroupMember] = []
         var dmList: [DirectMessage] = []
+        
+        var memberEmail = ""
+        var isDisabledInviteMember = true
     }
     
     public enum Action: BindableAction {
@@ -58,6 +63,9 @@ public struct HomeReducer: Reducer {
         case dismissSideMenu // 사이드메뉴 닫기
         case toggleExpandedChannels // 채널 열고닫기
         case toggleExpandedDms // DM 열고 닫기
+        case toggleInviteMemeberView // 멤버 초대 열고 닫기
+        case inviteMemeber // 멤버 초대하기
+        case changedMemberEmail // 멤버 이메일 변경 시마다 이메일유효성 증명
         case getWorkspaceDetail // 상세정보 받아오기
         case changedWorkspaceDetail(WorkspaceDetail) // 그룹 선택할 때마다 상세정보 받아오기
         case setStudyGroupInfos(StudyGroupDetail) // 스터디그룹 정보
@@ -116,6 +124,26 @@ public struct HomeReducer: Reducer {
                 
             case .toggleExpandedDms:
                 state.isExpandedDms.toggle()
+                return .none
+                
+            case .toggleInviteMemeberView:
+                state.isPresentingInviteMemeberView.toggle()
+                return .none
+                
+            case .inviteMemeber:
+                return .run { [email = state.memberEmail, group = state.group] send in
+                    guard let group else { return }
+                    do {
+                        let result = try await NetworkService.shared.inviteWorkspaceMemeber(workspaceId: group.groupId, email: email)
+                        await send(.toggleInviteMemeberView)
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+            case .changedMemberEmail:
+                let isValid = state.memberEmail.isValidEmail
+                state.isDisabledInviteMember = !isValid
                 return .none
                 
             case .getWorkspaceDetail: // 선택한 스터디그룹의 상세정보 조회
