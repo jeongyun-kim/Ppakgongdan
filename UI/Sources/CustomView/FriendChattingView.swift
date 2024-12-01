@@ -51,9 +51,7 @@ public struct FriendChattingView: View {
                 
                 Spacer()
             }
-            .padding(.vertical, 6)
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal)
     }
 }
