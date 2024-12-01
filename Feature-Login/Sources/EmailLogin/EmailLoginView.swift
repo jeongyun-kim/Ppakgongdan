@@ -21,7 +21,9 @@ struct EmailLoginView: View {
             VStack(alignment: .leading, spacing: 0) {
                 emailView()
                 passwordView()
-                nextButton("로그인", isDisabled: $store.isDisabled)
+                nextButton("로그인", action: {
+                    store.send(.login)
+                }, isDisabled: $store.isDisabled)
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

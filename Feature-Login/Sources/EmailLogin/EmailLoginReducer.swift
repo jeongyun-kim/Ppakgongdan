@@ -15,8 +15,8 @@ import Foundation
 struct EmailLoginReducer {
     @ObservableState
     struct State: Equatable {
-        var email = ""
-        var password = ""
+        var email = "unknown1@naver.com"
+        var password = "@Unknown1234"
         var isValidEmail = false
         var isValidPassword = false
         var isDisabled = true
@@ -26,6 +26,8 @@ struct EmailLoginReducer {
         case binding(BindingAction<State>)
         case validateEmail
         case validatePassword
+        case login
+        case loginSuccessful(LoginModel)
     }
     
     var body: some Reducer<State, Action> {
@@ -44,8 +46,31 @@ struct EmailLoginReducer {
                 state.isValidPassword = validatePassword(state.password)
                 state.isDisabled = !(state.isValidPassword && state.isValidEmail)
                 return .none
+                
+            case .login:
+                return .run { [email = state.email, pw = state.password] send in
+                    do {
+                        let result = try await NetworkService.shared.postEmailLogin(email: email, passworkd: pw)
+                        await send(.loginSuccessful(result))
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+            case .loginSuccessful(let data):
+                UserDefaultsManager.shared.accessToken = data.token.accessToken
+                UserDefaultsManager.shared.refreshToken = data.token.refreshToken
+                UserDefaultsManager.shared.isUser = true
+                UserDefaultsManager.shared.userId = data.userId
+                return .none
             }
         }
+    }
+    
+    private func validateEmail(_ email: String) -> Bool {
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: email)
     }
     
     private func validatePassword(_ pw: String) -> Bool {

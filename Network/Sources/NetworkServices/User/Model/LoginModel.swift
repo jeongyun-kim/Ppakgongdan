@@ -13,7 +13,7 @@ public struct LoginModel: Decodable {
     public let nickname: String
     public let profileImage: String?
     public let phone: String?
-    let provider: String
+    let provider: String?
     public let createdAt: String
     public let token: Token
     
