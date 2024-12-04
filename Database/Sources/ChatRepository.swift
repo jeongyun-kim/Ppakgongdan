@@ -72,7 +72,6 @@ extension ChatRepository {
         }
         
         let chatRoom = ChatRoom(id: roomId, chats: chats)
-        print(chatRoom)
         return chatRoom
     }
 }
