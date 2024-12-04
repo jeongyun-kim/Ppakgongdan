@@ -68,12 +68,10 @@ extension SideMenuView {
             }
             .frame(width: geometry.size.width * 0.8)
             .frame(maxHeight: .infinity)
-//            .sheet(isPresented: $store.isPresentingCreateView) {
-//                CreateStudyGroupView(
-//                    store: .init(initialState: CreateStudyGroupReducer.State(groupCount: store.$groupCount), reducer: {
-//                    CreateStudyGroupReducer()
-//                }))
-//            }
+            .sheet(isPresented: $store.isPresentingCreateView) {
+                CreateStudyGroupView(store: store.scope(state: \.createGroupReducerState,
+                                                        action: \.createGroupReducerAction))
+            }
         }
         .transition(.move(edge: .leading))
         .background(.clear)

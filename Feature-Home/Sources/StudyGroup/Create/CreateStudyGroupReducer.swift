@@ -17,13 +17,14 @@ public struct CreateStudyGroupReducer: Reducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(group: Shared<StudyGroup?> = Shared(nil), groupCount: Shared<Int>) {
+        public init(group: Shared<StudyGroup?>, groupCount: Shared<Int>) {
             _group = group
             _groupCount = groupCount
-        }
+         }
         
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
+        
         var studyGroupName = "" // 스터디그룹명
         var studyGroupDesc = "" // 스터디그룹 설명
         var isDisabled = true // 생성 버튼 활성화 여부
@@ -42,7 +43,7 @@ public struct CreateStudyGroupReducer: Reducer {
         case setImage(Image?, Data?)
         case createStudyGroup
         case toggleReloginAlert
-        case toggleCompleted
+        case toggleCompleted(StudyGroup?)
     }
     
     public var body: some Reducer<State, Actoin> {
@@ -90,8 +91,8 @@ public struct CreateStudyGroupReducer: Reducer {
                     guard let imageData else { return }
                     do {
                         let image = imageData
-                        let _ = try await NetworkService.shared.createWorkspace(name: name, desc: desc, image: image)
-                        await send(.toggleCompleted) // 생성 성공 시 complete 처리
+                        let result = try await NetworkService.shared.createWorkspace(name: name, desc: desc, image: image)
+                        await send(.toggleCompleted(result.toStudyGroup())) // 생성 성공 시 complete 처리
                     } catch {
                         guard let errorCode = error as? ErrorCodes else { return }
                         guard errorCode == .E05 else { return }
@@ -99,10 +100,14 @@ public struct CreateStudyGroupReducer: Reducer {
                     }
                 }
                 
-            case .toggleCompleted: // 그룹 생성 후 현재 뷰 내리도록 isCompleted 값 변경
+            case .toggleCompleted(let group): // 그룹 생성 후 현재 뷰 내리도록 isCompleted 값 변경
                 state.isCompleted.toggle()
                 UserDefaultsManager.shared.groupCount += 1
                 state.groupCount = UserDefaultsManager.shared.groupCount
+                // 그룹 생성 후 그룹이 하나라면 선택 그룹을 방금 생성한 그룹으로
+                if state.groupCount == 1 {
+                    state.group = group
+                }
                 return .none
             }
         }

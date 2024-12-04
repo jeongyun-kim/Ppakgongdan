@@ -21,7 +21,9 @@ public struct SideMenuReducer {
             _isPresentingSideMenu = isPresenting
             _group = group
             _groupCount = groupCount
+            
             alertReducerState = .init(group: _group, groupCount: _groupCount)
+            createGroupReducerState = .init(group: _group, groupCount: _groupCount)
         }
         
         @Shared var groupCount: Int  // 현재 사용자의 그룹 개수
@@ -34,11 +36,14 @@ public struct SideMenuReducer {
         var isPresentingSettingAlert = false // 스터디그룹 나가기 같은 설정뷰 표출 여부
         
         var alertReducerState: SettingAlertReducer.State
+        var createGroupReducerState: CreateStudyGroupReducer.State
     }
     
     @CasePathable
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case alertReducerAction(SettingAlertReducer.Action)
+        case createGroupReducerAction(CreateStudyGroupReducer.Action)
         case toggleReloginAlert
         case toggleCreateView
         case toggleSettingActionSheet
@@ -48,7 +53,6 @@ public struct SideMenuReducer {
         case changedStudyGroup(StudyGroup)
         case deleteStudyGroup(id: String)
         case toggleSettingAlert
-        case alertReducerAction(SettingAlertReducer.Action)
     }
     
     public var body: some Reducer<State, Action> {
@@ -58,11 +62,12 @@ public struct SideMenuReducer {
             SettingAlertReducer()
         }
         
+        Scope(state: \.createGroupReducerState, action: \.createGroupReducerAction) {
+            CreateStudyGroupReducer()
+        }
+        
         Reduce { state, action in
             switch action {
-            case .binding(_):
-                return .none
-                
             case .alertReducerAction:
                 return .none
                 
@@ -126,6 +131,9 @@ public struct SideMenuReducer {
                         await send(.toggleReloginAlert)
                     }
                 }
+                
+            default:
+                return .none
             }
         }
     }
