@@ -21,17 +21,27 @@ public struct HomeReducer: Reducer {
             _group = group
             _groupCount = groupCount
             _isPresentingSideMenu = Shared(false)
-            _isPresentingExploringChannelView = Shared(false)
-            _selectedChannel = Shared(nil)
-            _channelChatList = Shared([])
+            sideMenu = SideMenuReducer.State(present: _isPresentingSideMenu)
         }
+//        public init() {
+//            channelChatting = ChannelChattingReducer.State(selectedChannel: _selectedChannel, chatList: _channelChatList, workspaceId: group.wrappedValue?.groupId)
+//            sideMenu = SideMenuReducer.State(isPresenting: _isPresentingSideMenu, selectedGroup: _group, groupCount: _groupCount)
+//        }
         
         @Shared var isPresentingSideMenu: Bool
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
-        @Shared var isPresentingExploringChannelView: Bool
-        @Shared var selectedChannel: StudyGroupChannel?
-        @Shared var channelChatList: [ChannelChatting]
+//        @Shared var isPresentingExploringChannelView: Bool
+//        @Shared var selectedChannel: StudyGroupChannel?
+//        @Shared var channelChatList: [ChannelChatting]
+        
+//        var isPresentingSideMenu: Bool = false
+//        @Shared var group: StudyGroup?
+//        @Shared var groupCount: Int
+        var isPresentingExploringChannelView: Bool = false
+        var selectedChannel: StudyGroupChannel? = nil
+        var channelChatList: [ChannelChatting] = []
+        
         
         var isPresentCreateView = false
         var isPresentingAlert = false
@@ -49,10 +59,18 @@ public struct HomeReducer: Reducer {
         
         var memberEmail = ""
         var isDisabledInviteMember = true
+        
+        var sideMenu: SideMenuReducer.State
+//        var channelChatting: ChannelChattingReducer.State
     }
     
+    @CasePathable
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        
+        case sideMenu(SideMenuReducer.Action)
+//        case channelChatting(ChannelChattingReducer.Action)
+//        
         case presentCreateView // 그룹 생성뷰 띄울지 말지
         case toggleReloginAlert // 토큰 갱신 알림
         case viewDidDisappear // 뷰 사라짐
@@ -80,11 +98,26 @@ public struct HomeReducer: Reducer {
     
     public var body: some Reducer<State, Action> {
         BindingReducer()
+        
+//        Scope(state: \.channelChatting, action: \.channelChatting) {
+//            ChannelChattingReducer()
+//        }
+//        
+        Scope(state: \.sideMenu, action: \.sideMenu) {
+            SideMenuReducer()
+        }
+        
         Reduce { state, action in
             switch action {
             case .binding(_):
                 return .none
                 
+            case .sideMenu:
+                return .none
+//                
+//            case .channelChatting:
+//                return .none
+//                
             case .presentCreateView:
                 state.isPresentCreateView.toggle()
                 return .none

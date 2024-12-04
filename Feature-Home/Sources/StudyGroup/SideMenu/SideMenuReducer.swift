@@ -17,15 +17,18 @@ public struct SideMenuReducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(isPresenting: Shared<Bool>, selectedGroup: Shared<StudyGroup?>, groupCount: Shared<Int>) {
-            _isPresentingSideMenu = isPresenting
-            _group = selectedGroup
-            _groupCount = groupCount
+//        public init(isPresenting: Shared<Bool>, selectedGroup: Shared<StudyGroup?>, groupCount: Shared<Int>) {
+//            _isPresentingSideMenu = isPresenting
+//            _group = selectedGroup
+//            _groupCount = groupCount
+//        }
+        public init(present: Shared<Bool>) {
+            _isPresentingSideMenu = present
         }
         
-        @Shared var groupCount: Int // 현재 사용자의 그룹 개수
+        var groupCount: Int = 0 // 현재 사용자의 그룹 개수
         @Shared var isPresentingSideMenu: Bool // 사이드메뉴 표출 여부
-        @Shared var group: StudyGroup? // 현재 선택중인 그룹
+        var group: StudyGroup? = nil // 현재 선택중인 그룹
         var isPresentingCreateView = false // 생성뷰 표출 여부
         var isPresentingReloginAlert = false // 재로그인 알림 표출 여부
         var studyGroupList: [StudyGroup] = [] // 스터디그룹 목록

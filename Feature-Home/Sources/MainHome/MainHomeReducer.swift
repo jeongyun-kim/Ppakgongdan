@@ -16,15 +16,18 @@ public struct MainHomeReducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(group: StudyGroup? = nil, groupCount: Int = UserDefaultsManager.shared.groupCount) {
-            _group = Shared(group)
-            _groupCount = Shared(groupCount)
+        public init() {
+            _group = Shared(nil)
+            _groupCount = Shared(UserDefaultsManager.shared.groupCount)
+            homeReducer = .init(group: _group, groupCount: _groupCount)
         }
-
+        
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
         var isPresentingReloginAlert: Bool = false
         var isPresentingOnbaording: Bool = false
+        
+        var homeReducer: HomeReducer.State
     }
     
     public enum Action: BindableAction {
@@ -34,12 +37,21 @@ public struct MainHomeReducer {
         case viewDidDisappear
         case getMyWorkspaces
         case getWorkspace(group: StudyGroup)
+        case homeReducerAction(HomeReducer.Action)
     }
     
     public var body: some Reducer<State, Action> {
         BindingReducer()
+//        
+        Scope(state: \.homeReducer, action: \.homeReducerAction) {
+            HomeReducer()
+        }
+        
         Reduce { state, action in
             switch action {
+            case .homeReducerAction:
+                return .none
+                
             case .binding:
                 return .none
                 
@@ -86,6 +98,7 @@ public struct MainHomeReducer {
                 UserDefaultsManager.shared.recentGroupId = group.groupId
                 state.groupCount = UserDefaultsManager.shared.groupCount
                 state.group = group
+                state.homeReducer = HomeReducer.State(group: state.$group, groupCount: state.$groupCount)
                 return .none
             }
         }

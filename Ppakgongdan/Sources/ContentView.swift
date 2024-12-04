@@ -1,11 +1,14 @@
 import SwiftUI
 import Feature
+import Utils
 
 public struct ContentView: View {
     public init() {}
 
     public var body: some View {
-        FeatureView()
+        FeatureView(store: .init(initialState: FeatureReducer.State(), reducer: {
+            FeatureReducer()
+        }))
     }
 }
 

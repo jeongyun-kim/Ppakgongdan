@@ -14,17 +14,17 @@ import NetworkKit
 import UI
 
 public struct FeatureView: View {
-    public init() {
+    public init(store: StoreOf<FeatureReducer>) {
+        self.store = store
         UITabBar.appearance().backgroundColor = UIColor(Resources.Colors.white)
     }
     
+    private var store: StoreOf<FeatureReducer>
     @State private var selectedTab = 0
     
     public var body: some View {
         TabView(selection: $selectedTab) {
-            MainHomeView(store: .init(initialState: MainHomeReducer.State(), reducer: {
-                MainHomeReducer()
-            }))
+            MainHomeView(store: store.scope(state: \.featureHome, action: \.featureHome))
             .tabItem {
                 VStack {
                     selectedTab == 0 ? Resources.Images.homeActive : Resources.Images.home
