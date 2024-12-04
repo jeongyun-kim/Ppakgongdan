@@ -11,10 +11,12 @@ import ComposableArchitecture
 import NetworkKit
 
 @Reducer
-struct SettingAlertReducer {
+public struct SettingAlertReducer {
+    public init() { }
+    
     @ObservableState
-    struct State: Equatable {
-        init(group: Shared<StudyGroup?>, groupCount: Shared<Int>) {
+    public struct State: Equatable {
+        public init(group: Shared<StudyGroup?>, groupCount: Shared<Int>) {
             _group = group
             _groupCount = groupCount
         }
@@ -24,7 +26,7 @@ struct SettingAlertReducer {
         var isPresentingReloginAlert = false
     }
     
-    enum Action: BindableAction {
+    public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case exitWorkspace
         case toggleReloginAlert
@@ -32,7 +34,7 @@ struct SettingAlertReducer {
         case changeGroupCount(Int)
     }
     
-    var body: some Reducer<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce { state, action in
             switch action {

@@ -25,13 +25,14 @@ public struct HomeView: View {
             if let data = store.group {
                 defulatHomeView(item: data)
                 
-                SideMenuView(store: .init(
-                    initialState: SideMenuReducer.State(
-                        isPresenting: store.$isPresentingSideMenu,
-                        selectedGroup: store.$group,
-                        groupCount: store.$groupCount),
-                    reducer: { SideMenuReducer() })
-                )
+                SideMenuView(store: store.scope(state: \.sideMenu, action: \.sideMenu))
+//                SideMenuView(store: .init(
+//                    initialState: SideMenuReducer.State(
+//                        isPresenting: store.$isPresentingSideMenu,
+//                        selectedGroup: store.$group,
+//                        groupCount: store.$groupCount),
+//                    reducer: { SideMenuReducer() })
+//                )
             }
         }
         .onDisappear {
@@ -56,16 +57,16 @@ extension HomeView {
             .navigationBar(leadingImage: store.group?.coverImage, trailingImage: nil, title: item.groupName) {
                 store.send(.presentSideMenu)
             }
-            .navigationDestination(for: NavigationViewCase.self) { viewCase in
-                switch viewCase {
-                case .channelChattingView:
-                    ChannelChattingView(store: .init(
-                        initialState: ChannelChattingReducer.State(selectedChannel: store.$selectedChannel,
-                                                                   chatList: store.$channelChatList,
-                                                                   workspaceId: store.group?.groupId),
-                        reducer: { ChannelChattingReducer() }))
-                }
-            }
+//            .navigationDestination(for: NavigationViewCase.self) { viewCase in
+//                switch viewCase {
+//                case .channelChattingView:
+//                    ChannelChattingView(store: .init(
+//                        initialState: ChannelChattingReducer.State(selectedChannel: store.$selectedChannel,
+//                                                                   chatList: store.$channelChatList,
+//                                                                   workspaceId: store.group?.groupId),
+//                        reducer: { ChannelChattingReducer() }))
+//                }
+//            }
         }
         .sheet(isPresented: $store.isPresentingAddChannelView) {
             CreateChannelView(store: .init(initialState: CreateChannelReducer.State(id: store.group?.groupId), reducer: {
@@ -85,18 +86,19 @@ extension HomeView {
     
     // MARK: ExploringChannelView
     private func exploringChannelView() -> some View {
-        ExploringChannelView(
-            path: $path,
-            store: .init(initialState: ExploringChannelReducer.State(
-                isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
-                id: store.group?.groupId,
-                selectedChannel: store.$selectedChannel,
-                chatList: store.$channelChatList),
-            reducer: {
-                    ExploringChannelReducer()
-                }))
-        // 채널 탐색에서 AlertView에 viewAlpha를 주고있기 때문에 이곳에도 해당사항 적용안되게 white로 고정
-        .presentationBackground(Resources.Colors.white)
+//        ExploringChannelView(
+//            path: $path,
+//            store: .init(initialState: ExploringChannelReducer.State(
+//                isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
+//                id: store.group?.groupId,
+//                selectedChannel: store.$selectedChannel,
+//                chatList: store.$channelChatList),
+//            reducer: {
+//                    ExploringChannelReducer()
+//                }))
+//        // 채널 탐색에서 AlertView에 viewAlpha를 주고있기 때문에 이곳에도 해당사항 적용안되게 white로 고정
+//        .presentationBackground(Resources.Colors.white)
+        Text("dd")
     }
     
     // MARK: ListView

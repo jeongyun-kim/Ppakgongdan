@@ -17,25 +17,26 @@ public struct SideMenuReducer {
     
     @ObservableState
     public struct State: Equatable {
-//        public init(isPresenting: Shared<Bool>, selectedGroup: Shared<StudyGroup?>, groupCount: Shared<Int>) {
-//            _isPresentingSideMenu = isPresenting
-//            _group = selectedGroup
-//            _groupCount = groupCount
-//        }
-        public init(present: Shared<Bool>) {
-            _isPresentingSideMenu = present
+        public init(isPresenting: Shared<Bool>, group: Shared<StudyGroup?>, groupCount: Shared<Int>) {
+            _isPresentingSideMenu = isPresenting
+            _group = group
+            _groupCount = groupCount
+            alertReducerState = .init(group: _group, groupCount: _groupCount)
         }
         
-        var groupCount: Int = 0 // 현재 사용자의 그룹 개수
+        @Shared var groupCount: Int  // 현재 사용자의 그룹 개수
         @Shared var isPresentingSideMenu: Bool // 사이드메뉴 표출 여부
-        var group: StudyGroup? = nil // 현재 선택중인 그룹
+        @Shared var group: StudyGroup?  // 현재 선택중인 그룹
         var isPresentingCreateView = false // 생성뷰 표출 여부
         var isPresentingReloginAlert = false // 재로그인 알림 표출 여부
         var studyGroupList: [StudyGroup] = [] // 스터디그룹 목록
         var isPresentingSettingActionSheet = false // 스터디그룹 설정 액션시트 표출 여부
-        var isPresentingSettingAlert = false // 스터디그룹 나가기 같은 설정뷰 표출 여부 
+        var isPresentingSettingAlert = false // 스터디그룹 나가기 같은 설정뷰 표출 여부
+        
+        var alertReducerState: SettingAlertReducer.State
     }
     
+    @CasePathable
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case toggleReloginAlert
@@ -47,13 +48,22 @@ public struct SideMenuReducer {
         case changedStudyGroup(StudyGroup)
         case deleteStudyGroup(id: String)
         case toggleSettingAlert
+        case alertReducerAction(SettingAlertReducer.Action)
     }
     
     public var body: some Reducer<State, Action> {
         BindingReducer()
+        
+        Scope(state: \.alertReducerState, action: \.alertReducerAction) {
+            SettingAlertReducer()
+        }
+        
         Reduce { state, action in
             switch action {
             case .binding(_):
+                return .none
+                
+            case .alertReducerAction:
                 return .none
                 
             case .toggleReloginAlert:
@@ -92,6 +102,7 @@ public struct SideMenuReducer {
                 
             case .completed(let groups):
                 state.studyGroupList = groups
+                state.groupCount = groups.count
                 return .none
                 
             case .changedStudyGroup(let group):

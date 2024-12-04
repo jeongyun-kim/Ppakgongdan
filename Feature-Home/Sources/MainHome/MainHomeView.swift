@@ -23,13 +23,9 @@ public struct MainHomeView: View {
     public var body: some View {
         ZStack {
             if store.groupCount == 0 {
-                EmptyHomeView(store: .init(initialState: HomeReducer.State(group: store.$group, groupCount: store.$groupCount), reducer: {
-                    HomeReducer()
-                }))
+                EmptyHomeView(store: store.scope(state: \.homeReducer, action: \.homeReducerAction))
             } else {
-                HomeView(store: .init(initialState: HomeReducer.State(group: store.$group, groupCount: store.$groupCount), reducer: {
-                    HomeReducer()
-                }))
+                HomeView(store: store.scope(state: \.homeReducer, action: \.homeReducerAction))
             }
         }
         .showReloginAlert(isPresenting: $store.isPresentingReloginAlert, action: {

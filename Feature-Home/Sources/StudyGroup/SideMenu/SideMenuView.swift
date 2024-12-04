@@ -15,8 +15,7 @@ public struct SideMenuView: View {
     public init(store: StoreOf<SideMenuReducer>) {
         self.store = store
     }
-    
-    @State private var studyGroups: [StudyGroup] = []
+
     @Bindable private var store: StoreOf<SideMenuReducer>
     
     public var body: some View {
@@ -69,12 +68,12 @@ extension SideMenuView {
             }
             .frame(width: geometry.size.width * 0.8)
             .frame(maxHeight: .infinity)
-            .sheet(isPresented: $store.isPresentingCreateView) {
-                CreateStudyGroupView(
-                    store: .init(initialState: CreateStudyGroupReducer.State(groupCount: store.$groupCount), reducer: {
-                    CreateStudyGroupReducer()
-                }))
-            }
+//            .sheet(isPresented: $store.isPresentingCreateView) {
+//                CreateStudyGroupView(
+//                    store: .init(initialState: CreateStudyGroupReducer.State(groupCount: store.$groupCount), reducer: {
+//                    CreateStudyGroupReducer()
+//                }))
+//            }
         }
         .transition(.move(edge: .leading))
         .background(.clear)
@@ -106,12 +105,10 @@ extension SideMenuView {
     private func AlertView() -> some View {
         if let group = store.group, group.ownerId == UserDefaultsManager.shared.userId {
             SettingAlertView(alertCase: .owner,
-                          store: .init(initialState: SettingAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
-                                       reducer: { SettingAlertReducer() }))
+                             store: store.scope(state: \.alertReducerState, action: \.alertReducerAction))
         } else {
             SettingAlertView(alertCase: .nonOwner,
-                          store: .init(initialState: SettingAlertReducer.State(group: store.$group, groupCount: store.$groupCount),
-                                       reducer: { SettingAlertReducer() }))
+                             store: store.scope(state: \.alertReducerState, action: \.alertReducerAction))
         }
     }
     

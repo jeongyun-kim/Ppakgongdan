@@ -21,7 +21,7 @@ public struct HomeReducer: Reducer {
             _group = group
             _groupCount = groupCount
             _isPresentingSideMenu = Shared(false)
-            sideMenu = SideMenuReducer.State(present: _isPresentingSideMenu)
+            sideMenu = SideMenuReducer.State(isPresenting: _isPresentingSideMenu, group: _group, groupCount: _groupCount)
         }
 //        public init() {
 //            channelChatting = ChannelChattingReducer.State(selectedChannel: _selectedChannel, chatList: _channelChatList, workspaceId: group.wrappedValue?.groupId)
@@ -31,6 +31,7 @@ public struct HomeReducer: Reducer {
         @Shared var isPresentingSideMenu: Bool
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
+        
 //        @Shared var isPresentingExploringChannelView: Bool
 //        @Shared var selectedChannel: StudyGroupChannel?
 //        @Shared var channelChatList: [ChannelChatting]
