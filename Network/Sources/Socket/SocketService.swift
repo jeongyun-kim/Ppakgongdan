@@ -18,44 +18,42 @@ public final class SocketService: NSObject {
     
     private override init() {
         super.init()
+        print("INIT!!!!!!!!!!!!!!")
         self.manager = SocketManager(socketURL: baseURL, config: [.log(true), .compress])
         self.socket = self.manager.defaultSocket
     }
     
     // 각 이벤트마다의 액션 정의 및 등록
-    private func addEventHandlers(completionHandler: @escaping ((ChannelChattingDTO) -> Void)) {
-        socket.on(clientEvent: .connect) { data, ack in
+    private func addEventHandlers() {
+        socket.once(clientEvent: .connect) { data, ack in
             print("👏 Socket is connected", data, ack)
         }
         
-        socket.on(clientEvent: .error) { data, ack in
+        socket.once(clientEvent: .error) { data, ack in
             print("⚠️ Socket connection failed", data, ack)
         }
         
-        socket.on(eventName) { dataArr, ack in
+        socket.once(eventName) { dataArr, ack in
             print("🟢 Channel Recieved")
             if let data = dataArr.first as? [String: Any] {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
                     let result = try JSONDecoder().decode(ChannelChattingDTO.self, from: jsonData)
-                    completionHandler(result)
                 } catch {
                     print("Error parsing channel data: \(error)")
                 }
             }
         }
         
-        socket.on(clientEvent: .disconnect) { data, ack in
-            print("❌ Socket is disconnected", data, ack)
+        socket.once(clientEvent: .disconnect) { data, ack in
+            print("❌ Socket is disconnected")
         }
     }
     
     // 소켓 통신 연결 등록 
-    public func estabilishConnection(channelId: String, compleetionHandler: @escaping ((ChannelChattingDTO) -> Void)) {
+    public func estabilishConnection(channelId: String) {
         socket = self.manager.socket(forNamespace: "\(APIKey.socketChanelPath)\(channelId)")
-        addEventHandlers { value in
-            compleetionHandler(value)
-        }
+        addEventHandlers()
         socket.connect()
     }
     
