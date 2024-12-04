@@ -9,8 +9,10 @@ import Foundation
 import Moya
 
 protocol UserNetwork {
+    typealias model = LoginDTO
+    
     var userProvider: MoyaProvider<UserRouter> { get }
-    func postKakaoLogin(_ query: KakaoLoginQuery) async throws -> LoginModel
-    func postAppleLogin(_ query: AppleLoginQuery) async throws -> LoginModel
-    func postEmailLogin(email: String, passworkd: String) async throws -> LoginModel
+    func postKakaoLogin(_ query: KakaoLoginQuery) async throws -> model
+    func postAppleLogin(_ query: AppleLoginQuery) async throws -> model
+    func postEmailLogin(email: String, passworkd: String) async throws -> model
 }

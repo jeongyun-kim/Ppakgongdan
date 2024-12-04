@@ -35,7 +35,7 @@ public struct ExploringChannelReducer {
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case getAllChannels // 현워크스페이스의 모든 채널 리스트 가져오기
-        case getAllMyChannels([Channel]) // 현워크스페이스 내 내가 속한 모든 채널 리스트 가져오기
+        case getAllMyChannels([ChannelDTO]) // 현워크스페이스 내 내가 속한 모든 채널 리스트 가져오기
         case setAllChannels([StudyGroupChannel]) // 뷰를 위한 채널리스트 세팅
         case toggleJoinAlert // 채널 참여 알림창 띄우거나 내리기
         case dismissExploringChannelView // 채널 탐색뷰 내리기

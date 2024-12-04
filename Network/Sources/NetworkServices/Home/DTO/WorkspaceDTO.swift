@@ -1,13 +1,13 @@
 //
-//  Workspace.swift
+//  WorkspaceDTO.swift
 //  NetworkKit
 //
-//  Created by 김정윤 on 11/4/24.
+//  Created by 김정윤 on 12/4/24.
 //
 
 import Foundation
 
-public struct Workspace: Decodable {
+public struct WorkspaceDTO: Decodable {
     public let workspaceId: String
     public let name: String
     public let description: String?
@@ -25,7 +25,7 @@ public struct Workspace: Decodable {
     }
 }
 
-extension Workspace {
+extension WorkspaceDTO {
     public func toStudyGroup() -> StudyGroup {
         return StudyGroup(groupId: self.workspaceId,
                           groupName: self.name,
@@ -35,22 +35,3 @@ extension Workspace {
                           createdAt: self.createdAt)
     }
 }
-
-public struct StudyGroup: Equatable {
-    public init(groupId: String, groupName: String, groupDesc: String, coverImage: String, ownerId: String, createdAt: String) {
-        self.groupId = groupId
-        self.groupName = groupName
-        self.groupDesc = groupDesc
-        self.coverImage = coverImage
-        self.ownerId = ownerId
-        self.createdAt = createdAt
-    }
-    
-    public let groupId: String
-    public let groupName: String
-    public let groupDesc: String
-    public let coverImage: String
-    public let ownerId: String
-    public let createdAt: String
-}
-

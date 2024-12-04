@@ -15,15 +15,15 @@ extension NetworkService: HomeNetwork {
         return MoyaProvider<HomeRouter>(session: Session(interceptor: AuthInterceptor.shared))
     }
     
-    public func getMyWorkspaces() async throws -> [Workspace] {
+    public func getMyWorkspaces() async throws -> [WorkspaceDTO] {
         let result = await homeProvider.request(.getMyWorkspaces)
-        return try decodeResults(result, modelType: [Workspace].self)
+        return try decodeResults(result, modelType: [WorkspaceDTO].self)
     }
     
-    public func createWorkspace(name: String, desc: String, image: Data) async throws -> Workspace {
+    public func createWorkspace(name: String, desc: String, image: Data) async throws -> WorkspaceDTO {
         let query = CreateWorkSpace(name: name, description: desc, image: image)
         let result = await homeProvider.request(.createWorkspace(query))
-        return try decodeResults(result, modelType: Workspace.self)
+        return try decodeResults(result, modelType: WorkspaceDTO.self)
     }
     
     public func deleteWorkspace(groupId: String) async throws {
@@ -47,30 +47,30 @@ extension NetworkService: HomeNetwork {
         }
     }
     
-    public func exitWorkspace(groupId: String) async throws -> [Workspace] {
+    public func exitWorkspace(groupId: String) async throws -> [WorkspaceDTO] {
         let result = await homeProvider.request(.exitWorkspace(id: groupId))
-        return try decodeResults(result, modelType: [Workspace].self)
+        return try decodeResults(result, modelType: [WorkspaceDTO].self)
     }
     
-    public func getWorkspaceDetail(workspaceId: String) async throws -> WorkspaceDetail {
+    public func getWorkspaceDetail(workspaceId: String) async throws -> WorkspaceDetailDTO {
         let result = await homeProvider.request(.getWorkspaceDetail(id: workspaceId))
-        return try decodeResults(result, modelType: WorkspaceDetail.self)
+        return try decodeResults(result, modelType: WorkspaceDetailDTO.self)
     }
     
-    public func getDmList(workspaceId: String) async throws -> [DM] {
+    public func getDmList(workspaceId: String) async throws -> [DMDTO] {
         let result = await homeProvider.request(.getDmList(id: workspaceId))
-        return try decodeResults(result, modelType: [DM].self)
+        return try decodeResults(result, modelType: [DMDTO].self)
     }
     
-    public func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDM {
+    public func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDMDTO {
         let query = UnreadDmQuery(roomId: roomlId, workspaceId: workspaceId, after: after)
         let result = await homeProvider.request(.getUnreadDms(query))
-        return try decodeResults(result, modelType: UnreadDM.self)
+        return try decodeResults(result, modelType: UnreadDMDTO.self)
     }
     
-    public func inviteWorkspaceMemeber(workspaceId: String, email: String) async throws -> Member {
+    public func inviteWorkspaceMemeber(workspaceId: String, email: String) async throws -> MemberDTO {
         let query = InviteMemberQuery(email: email)
         let result = await homeProvider.request(.inviteWorkspaceMemeber(id: workspaceId, query: query))
-        return try decodeResults(result, modelType: Member.self)
+        return try decodeResults(result, modelType: MemberDTO.self)
     }
 }

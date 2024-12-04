@@ -7,15 +7,15 @@
 
 import Foundation
 
-public struct WorkspaceDetail: Decodable {
+public struct WorkspaceDetailDTO: Decodable {
     public let workspaceId: String
     public let name: String
     public let description: String?
     public let coverImage: String?
     public let owenrId: String
     public let createdAt: String
-    public let channels: [Channel]
-    public let workspaceMembers: [Member]
+    public let channels: [ChannelDTO]
+    public let workspaceMembers: [MemberDTO]
     
     enum CodingKeys: String, CodingKey {
         case workspaceId = "workspace_id"
@@ -38,7 +38,7 @@ public struct WorkspaceDetail: Decodable {
     }
 }
 
-public struct Channel: Decodable {
+public struct ChannelDTO: Decodable {
     public let channelId: String
     public let name: String
     public let description: String?
@@ -65,7 +65,7 @@ public struct Channel: Decodable {
     }
 }
 
-public struct Member: Decodable {
+public struct MemberDTO: Decodable {
     public let userId: String
     public let email: String
     public let nickname: String

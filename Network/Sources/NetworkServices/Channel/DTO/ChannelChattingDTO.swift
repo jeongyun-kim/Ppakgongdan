@@ -14,7 +14,7 @@ public struct ChannelChattingDTO: Decodable {
     let content: String
     let createdAt: String
     let files: [String]
-    let user: Member
+    let user: MemberDTO
     
     enum CodingKeys: String, CodingKey {
         case channelId = "channel_id"

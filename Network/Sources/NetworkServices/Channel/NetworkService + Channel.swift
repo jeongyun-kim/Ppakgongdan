@@ -13,20 +13,20 @@ extension NetworkService: ChannelNetwork {
         return MoyaProvider<ChannelRouter>(session: Session(interceptor: AuthInterceptor.shared))
     }
     
-    public func createNewChannel(workspaceId: String, name: String, desc: String?) async throws -> Channel {
+    public func createNewChannel(workspaceId: String, name: String, desc: String?) async throws -> ChannelDTO {
         let query = CreateChannelQuery(name: name, description: desc)
         let result = await channelProvider.request(.createNewChannel(id: workspaceId, query: query))
-        return try decodeResults(result, modelType: Channel.self)
+        return try decodeResults(result, modelType: ChannelDTO.self)
     }
     
-    public func getAllChannels(workspaceId: String) async throws -> [Channel] {
+    public func getAllChannels(workspaceId: String) async throws -> [ChannelDTO] {
         let result = await channelProvider.request(.getAllChannels(id: workspaceId))
-        return try decodeResults(result, modelType: [Channel].self)
+        return try decodeResults(result, modelType: [ChannelDTO].self)
     }
     
-    public func getAllMyChannels(workspaceId: String) async throws -> [Channel] {
+    public func getAllMyChannels(workspaceId: String) async throws -> [ChannelDTO] {
         let result = await channelProvider.request(.getAllMyChannels(id: workspaceId))
-        return try decodeResults(result, modelType: [Channel].self)
+        return try decodeResults(result, modelType: [ChannelDTO].self)
     }
     
     public func getUnreadChannels(workspaceId: String, channelId: String, after: String) async throws -> UnreadChannelDTO {

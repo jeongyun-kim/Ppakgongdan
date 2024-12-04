@@ -80,14 +80,14 @@ public struct HomeReducer: Reducer {
         case inviteMemeber // 멤버 초대하기
         case changedMemberEmail // 멤버 이메일 변경 시마다 이메일유효성 증명
         case getWorkspaceDetail // 상세정보 받아오기
-        case changedWorkspaceDetail(WorkspaceDetail) // 그룹 선택할 때마다 상세정보 받아오기
+        case changedWorkspaceDetail(WorkspaceDetailDTO) // 그룹 선택할 때마다 상세정보 받아오기
         case setStudyGroupInfos(StudyGroupDetail) // 스터디그룹 정보
         case setStudyGroupChannels([StudyGroupChannel]) // 스터디그룹 채널 정보
         case setStudyGroupMembers([StudyGroupMember]) // 스터디그룹 멤버 정보
         case getAllMyChannels // 내가 속한 모든 채널 가져오기
-        case getUnreadChannelsCount([Channel]) // 채널의 안 읽은 메시지 개수 가져오기
+        case getUnreadChannelsCount([ChannelDTO]) // 채널의 안 읽은 메시지 개수 가져오기
         case getDmList // DM 조회하기
-        case getUnreadDmCounts([DM]) // 안 읽은 DM 개수 조회
+        case getUnreadDmCounts([DMDTO]) // 안 읽은 DM 개수 조회
         case setDmList([DirectMessage]) // 조회한 DM 내역 보여주기
     }
     

@@ -1,13 +1,13 @@
 //
-//  LoginModel.swift
+//  LoginDTO.swift
 //  NetworkKit
 //
-//  Created by 김정윤 on 11/3/24.
+//  Created by 김정윤 on 12/4/24.
 //
 
 import Foundation
 
-public struct LoginModel: Decodable {
+public struct LoginDTO: Decodable {
     public let userId: String
     public let email: String
     public let nickname: String
