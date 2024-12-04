@@ -12,9 +12,12 @@ import NetworkKit
 import Foundation
 
 @Reducer
-struct EmailLoginReducer {
+public struct EmailLoginReducer {
+    public init() { }
+    
     @ObservableState
-    struct State: Equatable {
+    public struct State: Equatable {
+        public init() { }
         var email = "unknown1@naver.com"
         var password = "@Unknown1234"
         var isValidEmail = false
@@ -22,15 +25,15 @@ struct EmailLoginReducer {
         var isDisabled = true
     }
     
-    enum Action: BindableAction {
+    public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case validateEmail
         case validatePassword
         case login
-        case loginSuccessful(LoginModel)
+        case loginSuccessful(LoginDTO)
     }
     
-    var body: some Reducer<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce { state, action in
             switch action {
@@ -65,12 +68,6 @@ struct EmailLoginReducer {
                 return .none
             }
         }
-    }
-    
-    private func validateEmail(_ email: String) -> Bool {
-        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
-        return emailPredicate.evaluate(with: email)
     }
     
     private func validatePassword(_ pw: String) -> Bool {

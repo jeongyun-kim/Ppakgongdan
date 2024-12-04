@@ -20,11 +20,15 @@ public struct OnboardingReducer {
     public struct State: Equatable {
         public init() { }
         var isPresentingSheet = false
+        var isPresentingEmailLoginView = false
+        var emailLoginReducerState = EmailLoginReducer.State()
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case emailLoginReducerAction(EmailLoginReducer.Action)
         case togglePresentingSheet
+        case togglePresentingEmailLoginView
         case appleLoginBtnTapped(Result<ASAuthorization, any Error>)
         case kakaoLoginBtnTapped
         case loginFailed
@@ -32,13 +36,19 @@ public struct OnboardingReducer {
     
     public var body: some Reducer<State, Action> {
         BindingReducer()
+        
+        Scope(state: \.emailLoginReducerState, action: \.emailLoginReducerAction) {
+            EmailLoginReducer()
+        }
+        
         Reduce { state, action in
             switch action {
             case .togglePresentingSheet:
-                state.isPresentingSheet = true
+                state.isPresentingSheet.toggle()
                 return .none
-            
-            case .binding(_):
+                
+            case .togglePresentingEmailLoginView:
+                state.isPresentingEmailLoginView.toggle()
                 return .none
                 
             case .loginFailed:
@@ -95,11 +105,14 @@ public struct OnboardingReducer {
                     }
                 }
                 return .send(.togglePresentingSheet)
+                
+            default:
+                return .none
             }
         }
     }
     
-    private func saveAppleDatas(email: String, data: LoginModel) {
+    private func saveAppleDatas(email: String, data: LoginDTO) {
         ud.isApple = true
         ud.isUser = true
         ud.email = email
@@ -108,7 +121,7 @@ public struct OnboardingReducer {
         ud.userId = data.userId
     }
     
-    private func saveKakaoDatas(data: LoginModel) {
+    private func saveKakaoDatas(data: LoginDTO) {
         ud.accessToken = data.token.accessToken
         ud.refreshToken = data.token.refreshToken
         ud.userId = data.userId

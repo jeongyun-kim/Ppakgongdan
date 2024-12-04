@@ -15,7 +15,6 @@ public struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(UDKey.isUser.rawValue) var isUser = UserDefaults.standard.bool(forKey: UDKey.isUser.rawValue)
     @Bindable private var store: StoreOf<OnboardingReducer>
-    @State private var presentingSheet: Bool = false
     
     public init(store: StoreOf<OnboardingReducer>) {
         self.store = store
@@ -42,13 +41,11 @@ public struct OnboardingView: View {
         }
         .sheet(isPresented: $store.isPresentingSheet) {
             sheetLoginView()
-                .sheet(isPresented: $presentingSheet, content: {
-                    EmailLoginView(store: .init(initialState: EmailLoginReducer.State(), reducer: {
-                        EmailLoginReducer()
-                    }))
+                .sheet(isPresented: $store.isPresentingEmailLoginView, content: {
+                    EmailLoginView(store: store.scope(state: \.emailLoginReducerState,
+                                                      action: \.emailLoginReducerAction))
                 })
         }
-        
         .onChange(of: isUser) { oldValue, newValue in
             if newValue {
                 dismiss()
@@ -83,7 +80,7 @@ extension OnboardingView {
                     Resources.Images.emailLogin
                         .resizable()
                         .onTapGesture {
-                            presentingSheet.toggle()
+                            store.send(.togglePresentingEmailLoginView)
                         }
                 }
                 
