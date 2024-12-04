@@ -8,7 +8,7 @@
 import Utils
 import NetworkKit
 import ComposableArchitecture
-import Foundation
+import Feature_Login
 
 @Reducer
 public struct MainHomeReducer {
@@ -19,43 +19,46 @@ public struct MainHomeReducer {
         public init() {
             _group = Shared(nil)
             _groupCount = Shared(UserDefaultsManager.shared.groupCount)
-            homeReducer = .init(group: _group, groupCount: _groupCount)
+            homeReducerState = .init(group: _group, groupCount: _groupCount)
+            onboardingReducerState = .init()
         }
         
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
+        
         var isPresentingReloginAlert: Bool = false
         var isPresentingOnbaording: Bool = false
         
-        var homeReducer: HomeReducer.State
+        var homeReducerState: HomeReducer.State
+        var onboardingReducerState: OnboardingReducer.State
     }
     
+    @CasePathable
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case toggleOnbaording
+        case homeReducerAction(HomeReducer.Action)
+        case onboardingReducerAction(OnboardingReducer.Action)
+        case toggleOnboarding
         case toggleReloginAlert
         case viewDidDisappear
         case getMyWorkspaces
         case getWorkspace(group: StudyGroup)
-        case homeReducerAction(HomeReducer.Action)
     }
     
     public var body: some Reducer<State, Action> {
         BindingReducer()
-//        
-        Scope(state: \.homeReducer, action: \.homeReducerAction) {
+
+        Scope(state: \.homeReducerState, action: \.homeReducerAction) {
             HomeReducer()
+        }
+        
+        Scope(state: \.onboardingReducerState, action: \.onboardingReducerAction) {
+            OnboardingReducer()
         }
         
         Reduce { state, action in
             switch action {
-            case .homeReducerAction:
-                return .none
-                
-            case .binding:
-                return .none
-                
-            case .toggleOnbaording:
+            case .toggleOnboarding:
                 state.isPresentingOnbaording.toggle()
                 return .none
                 
@@ -98,7 +101,10 @@ public struct MainHomeReducer {
                 UserDefaultsManager.shared.recentGroupId = group.groupId
                 state.groupCount = UserDefaultsManager.shared.groupCount
                 state.group = group
-                state.homeReducer = HomeReducer.State(group: state.$group, groupCount: state.$groupCount)
+                state.homeReducerState = HomeReducer.State(group: state.$group, groupCount: state.$groupCount)
+                return .none
+                
+            default:
                 return .none
             }
         }

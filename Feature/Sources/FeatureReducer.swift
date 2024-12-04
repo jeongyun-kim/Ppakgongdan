@@ -23,6 +23,7 @@ public struct FeatureReducer {
         var featureHome: MainHomeReducer.State
     }
 
+    @CasePathable
     public enum Action {
         case featureHome(MainHomeReducer.Action)
     }

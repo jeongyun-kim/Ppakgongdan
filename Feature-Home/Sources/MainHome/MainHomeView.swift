@@ -23,13 +23,13 @@ public struct MainHomeView: View {
     public var body: some View {
         ZStack {
             if store.groupCount == 0 {
-                EmptyHomeView(store: store.scope(state: \.homeReducer, action: \.homeReducerAction))
+                EmptyHomeView(store: store.scope(state: \.homeReducerState, action: \.homeReducerAction))
             } else {
-                HomeView(store: store.scope(state: \.homeReducer, action: \.homeReducerAction))
+                HomeView(store: store.scope(state: \.homeReducerState, action: \.homeReducerAction))
             }
         }
         .showReloginAlert(isPresenting: $store.isPresentingReloginAlert, action: {
-            store.send(.toggleOnbaording)
+            store.send(.toggleOnboarding)
         })
         .onChange(of: UserDefaultsManager.shared.isUser, { oldValue, newValue in
             // 여기서 shared 통해 Onboarding과 공유하는 isUser를 만들고 싶었으나, 카카오 로그인 같은 경우 async가 불가능 -> 해결방법을 찾지못한 타협..
@@ -53,15 +53,14 @@ public struct MainHomeView: View {
         .onAppear {
             print("⚡️ MainView OnAppear")
             guard UserDefaultsManager.shared.isUser else {
-                store.send(.toggleOnbaording)
+                store.send(.toggleOnboarding)
                 return
             }
             store.send(.getMyWorkspaces)
         }
         .fullScreenCover(isPresented: $store.isPresentingOnbaording) {
-            OnboardingView(store: .init(initialState: OnboardingReducer.State(), reducer: {
-                OnboardingReducer()
-            }))
+            OnboardingView(store: store.scope(state: \.onboardingReducerState,
+                                              action: \.onboardingReducerAction))
         }
     }
 }
