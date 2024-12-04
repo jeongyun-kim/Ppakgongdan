@@ -55,7 +55,8 @@ public struct HomeReducer: Reducer {
         
         var sideMenuReducerState: SideMenuReducer.State
         var exploreChannelReducerState: ExploringChannelReducer.State!
-//        var channelChatting: ChannelChattingReducer.State
+        var channelChattingReducerState: ChannelChattingReducer.State!
+        var createChannelReducerState: CreateChannelReducer.State!
     }
     
     @CasePathable
@@ -63,8 +64,8 @@ public struct HomeReducer: Reducer {
         case binding(BindingAction<State>)
         case exploreChannelReducerAction(ExploringChannelReducer.Action)
         case sideMenuRedcuerAction(SideMenuReducer.Action)
-//        case channelChatting(ChannelChattingReducer.Action)
-//        
+        case channelChattingReducerAction(ChannelChattingReducer.Action)
+        case createChannelReducerAction(CreateChannelReducer.Action)
         case presentCreateView // 그룹 생성뷰 띄울지 말지
         case toggleReloginAlert // 토큰 갱신 알림
         case viewDidDisappear // 뷰 사라짐
@@ -93,10 +94,10 @@ public struct HomeReducer: Reducer {
     public var body: some Reducer<State, Action> {
         BindingReducer()
         
-//        Scope(state: \.channelChatting, action: \.channelChatting) {
-//            ChannelChattingReducer()
-//        }
-//        
+        Scope(state: \.channelChattingReducerState, action: \.channelChattingReducerAction) {
+            ChannelChattingReducer()
+        }
+ 
         Scope(state: \.exploreChannelReducerState, action: \.exploreChannelReducerAction) {
             ExploringChannelReducer()
         }
@@ -105,8 +106,18 @@ public struct HomeReducer: Reducer {
             SideMenuReducer()
         }
         
+        Scope(state: \.createChannelReducerState, action: \.createChannelReducerAction) {
+            CreateChannelReducer()
+        }
+        
         Reduce { state, action in
             switch action {
+            case .exploreChannelReducerAction(.setSelectedChannel(_)):
+                state.channelChattingReducerState = .init(selectedChannel: state.$selectedChannel,
+                                                          chatList: state.$channelChatList,
+                                                          workspaceId: state.group?.groupId)
+                return .none
+                
             case .presentCreateView:
                 state.isPresentCreateView.toggle()
                 return .none
@@ -121,6 +132,7 @@ public struct HomeReducer: Reducer {
                 return .none
                 
             case .presentAddChannelView:
+                state.createChannelReducerState = .init(id: state.group?.groupId)
                 state.isPresentingAddChannelView.toggle()
                 return .none
                 
@@ -129,7 +141,10 @@ public struct HomeReducer: Reducer {
                 return .none
                 
             case .presentExploringChannelView:
-                state.exploreChannelReducerState = .init(isPresentingExploringChannelView: state.$isPresentingExploringChannelView, id: state.group?.groupId, selectedChannel: state.$selectedChannel, chatList: state.$channelChatList)
+                state.exploreChannelReducerState = .init(isPresentingExploringChannelView: state.$isPresentingExploringChannelView,
+                                                         id: state.group?.groupId,
+                                                         selectedChannel: state.$selectedChannel,
+                                                         chatList: state.$channelChatList)
                 state.isPresentingExploringChannelView.toggle()
                 return .none
                 
@@ -157,7 +172,7 @@ public struct HomeReducer: Reducer {
                 return .run { [email = state.memberEmail, group = state.group] send in
                     guard let group else { return }
                     do {
-                        let result = try await NetworkService.shared.inviteWorkspaceMemeber(workspaceId: group.groupId, email: email)
+                        let _ = try await NetworkService.shared.inviteWorkspaceMemeber(workspaceId: group.groupId, email: email)
                         await send(.toggleInviteMemeberView)
                     } catch {
                         print(error)
@@ -205,7 +220,6 @@ public struct HomeReducer: Reducer {
                 return .run { [info = state.studyGroupInfos] send in
                     guard let info else { return }
                     var studyGroupChannels: [StudyGroupChannel] = []
-                    
                     
                     for channel in channels {
                         var lastReadDate = channel.createdAt

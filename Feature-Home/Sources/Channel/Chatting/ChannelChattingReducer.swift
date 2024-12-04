@@ -12,9 +12,11 @@ import Utils
 import ComposableArchitecture
 
 @Reducer
-struct ChannelChattingReducer {
+public struct ChannelChattingReducer {
+    public init() { }
+    
     @ObservableState
-    struct State: Equatable {
+    public struct State: Equatable {
         init(selectedChannel: Shared<StudyGroupChannel?>, chatList: Shared<[ChannelChatting]>, workspaceId: String?) {
             _selectedChannel = selectedChannel
             _chatList = chatList
@@ -29,7 +31,7 @@ struct ChannelChattingReducer {
         var isFocused = false
     }
     
-    enum Action: BindableAction {
+    public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case sendMyChat // 채팅보내기
         case sendedChat // 내 채팅 보낸 이후
@@ -39,7 +41,7 @@ struct ChannelChattingReducer {
         case saveChatList
     }
     
-    var body: some Reducer<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce { state, action in
             switch action {
@@ -58,7 +60,6 @@ struct ChannelChattingReducer {
                 }
                 
             case .appendChat(let chat):
-                print(state.chatList)
                 state.chatList.append(chat)
                 return .none
                 

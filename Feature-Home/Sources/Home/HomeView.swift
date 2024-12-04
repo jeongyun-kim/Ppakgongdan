@@ -24,7 +24,8 @@ public struct HomeView: View {
         ZStack(alignment: .top) {
             if let data = store.group {
                 defulatHomeView(item: data)
-                SideMenuView(store: store.scope(state: \.sideMenuReducerState, action: \.sideMenuRedcuerAction))
+                SideMenuView(store: store.scope(state: \.sideMenuReducerState,
+                                                action: \.sideMenuRedcuerAction))
             }
         }
         .onDisappear {
@@ -49,25 +50,20 @@ extension HomeView {
             .navigationBar(leadingImage: store.group?.coverImage, trailingImage: nil, title: item.groupName) {
                 store.send(.presentSideMenu)
             }
-//            .navigationDestination(for: NavigationViewCase.self) { viewCase in
-//                switch viewCase {
-//                case .channelChattingView:
-//                    ChannelChattingView(store: .init(
-//                        initialState: ChannelChattingReducer.State(selectedChannel: store.$selectedChannel,
-//                                                                   chatList: store.$channelChatList,
-//                                                                   workspaceId: store.group?.groupId),
-//                        reducer: { ChannelChattingReducer() }))
-//                }
-//            }
-        }
-        .sheet(isPresented: $store.isPresentingAddChannelView) {
-            CreateChannelView(store: .init(initialState: CreateChannelReducer.State(id: store.group?.groupId), reducer: {
-                CreateChannelReducer()
-            }))
-            .onDisappear {
-                store.send(.getAllMyChannels)
+            .navigationDestination(for: NavigationViewCase.self) { viewCase in
+                switch viewCase {
+                case .channelChattingView:
+                    ChannelChattingView(store: store.scope(state: \.channelChattingReducerState,
+                                                           action: \.channelChattingReducerAction))
+                }
             }
         }
+        .sheet(isPresented: $store.isPresentingAddChannelView, onDismiss: {
+            store.send(.getAllMyChannels)
+        }, content: {
+            CreateChannelView(store: store.scope(state: \.createChannelReducerState,
+                                                 action: \.createChannelReducerAction))
+        })
         .fullScreenCover(isPresented: $store.isPresentingExploringChannelView) {
             exploringChannelView()
         }
@@ -79,7 +75,8 @@ extension HomeView {
     // MARK: ExploringChannelView
     private func exploringChannelView() -> some View {
         // 채널 탐색에서 AlertView에 viewAlpha를 주고있기 때문에 이곳에도 해당사항 적용안되게 white로 고정
-        ExploringChannelView(path: $path, store: store.scope(state: \.exploreChannelReducerState, action: \.exploreChannelReducerAction))
+        ExploringChannelView(path: $path, store: store.scope(state: \.exploreChannelReducerState,
+                                                             action: \.exploreChannelReducerAction))
             .presentationBackground(Resources.Colors.white)
     }
     
@@ -113,9 +110,6 @@ extension HomeView {
                 customDivider()
             }
             .listSectionSeparator(.hidden)
-            .onAppear {
-                store.send(.getWorkspaceDetail)
-            }
         } header: {
             headerView("다이렉트 메시지", isExpanded: store.isExpandedDms)
                 .asTappableHeaderView {
@@ -158,9 +152,6 @@ extension HomeView {
                 customDivider()
             }
             .listSectionSeparator(.hidden)
-            .onAppear {
-                store.send(.getWorkspaceDetail)
-            }
         } header: {
             headerView("채널", isExpanded: store.isExpandedChannels)
                 .asTappableHeaderView {
