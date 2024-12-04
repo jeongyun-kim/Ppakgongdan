@@ -24,15 +24,7 @@ public struct HomeView: View {
         ZStack(alignment: .top) {
             if let data = store.group {
                 defulatHomeView(item: data)
-                
-                SideMenuView(store: store.scope(state: \.sideMenu, action: \.sideMenu))
-//                SideMenuView(store: .init(
-//                    initialState: SideMenuReducer.State(
-//                        isPresenting: store.$isPresentingSideMenu,
-//                        selectedGroup: store.$group,
-//                        groupCount: store.$groupCount),
-//                    reducer: { SideMenuReducer() })
-//                )
+                SideMenuView(store: store.scope(state: \.sideMenuReducerState, action: \.sideMenuRedcuerAction))
             }
         }
         .onDisappear {
@@ -86,19 +78,9 @@ extension HomeView {
     
     // MARK: ExploringChannelView
     private func exploringChannelView() -> some View {
-//        ExploringChannelView(
-//            path: $path,
-//            store: .init(initialState: ExploringChannelReducer.State(
-//                isPresentingExploringChannelView: store.$isPresentingExploringChannelView,
-//                id: store.group?.groupId,
-//                selectedChannel: store.$selectedChannel,
-//                chatList: store.$channelChatList),
-//            reducer: {
-//                    ExploringChannelReducer()
-//                }))
-//        // 채널 탐색에서 AlertView에 viewAlpha를 주고있기 때문에 이곳에도 해당사항 적용안되게 white로 고정
-//        .presentationBackground(Resources.Colors.white)
-        Text("dd")
+        // 채널 탐색에서 AlertView에 viewAlpha를 주고있기 때문에 이곳에도 해당사항 적용안되게 white로 고정
+        ExploringChannelView(path: $path, store: store.scope(state: \.exploreChannelReducerState, action: \.exploreChannelReducerAction))
+            .presentationBackground(Resources.Colors.white)
     }
     
     // MARK: ListView

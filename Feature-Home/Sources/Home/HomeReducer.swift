@@ -21,29 +21,21 @@ public struct HomeReducer: Reducer {
             _group = group
             _groupCount = groupCount
             _isPresentingSideMenu = Shared(false)
-            sideMenu = SideMenuReducer.State(isPresenting: _isPresentingSideMenu, group: _group, groupCount: _groupCount)
+            _isPresentingExploringChannelView = Shared(false)
+            _selectedChannel = Shared<StudyGroupChannel?>(nil)
+            _channelChatList = Shared([])
+            
+            sideMenuReducerState = SideMenuReducer.State(isPresenting: _isPresentingSideMenu, group: _group, groupCount: _groupCount)
         }
-//        public init() {
-//            channelChatting = ChannelChattingReducer.State(selectedChannel: _selectedChannel, chatList: _channelChatList, workspaceId: group.wrappedValue?.groupId)
-//            sideMenu = SideMenuReducer.State(isPresenting: _isPresentingSideMenu, selectedGroup: _group, groupCount: _groupCount)
-//        }
         
         @Shared var isPresentingSideMenu: Bool
         @Shared var group: StudyGroup?
         @Shared var groupCount: Int
         
-//        @Shared var isPresentingExploringChannelView: Bool
-//        @Shared var selectedChannel: StudyGroupChannel?
-//        @Shared var channelChatList: [ChannelChatting]
-        
-//        var isPresentingSideMenu: Bool = false
-//        @Shared var group: StudyGroup?
-//        @Shared var groupCount: Int
-        var isPresentingExploringChannelView: Bool = false
-        var selectedChannel: StudyGroupChannel? = nil
-        var channelChatList: [ChannelChatting] = []
-        
-        
+        @Shared var isPresentingExploringChannelView: Bool
+        @Shared var selectedChannel: StudyGroupChannel?
+        @Shared var channelChatList: [ChannelChatting]
+
         var isPresentCreateView = false
         var isPresentingAlert = false
         var isPresentingChannelActionView = false
@@ -61,15 +53,16 @@ public struct HomeReducer: Reducer {
         var memberEmail = ""
         var isDisabledInviteMember = true
         
-        var sideMenu: SideMenuReducer.State
+        var sideMenuReducerState: SideMenuReducer.State
+        var exploreChannelReducerState: ExploringChannelReducer.State!
 //        var channelChatting: ChannelChattingReducer.State
     }
     
     @CasePathable
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        
-        case sideMenu(SideMenuReducer.Action)
+        case exploreChannelReducerAction(ExploringChannelReducer.Action)
+        case sideMenuRedcuerAction(SideMenuReducer.Action)
 //        case channelChatting(ChannelChattingReducer.Action)
 //        
         case presentCreateView // 그룹 생성뷰 띄울지 말지
@@ -104,21 +97,16 @@ public struct HomeReducer: Reducer {
 //            ChannelChattingReducer()
 //        }
 //        
-        Scope(state: \.sideMenu, action: \.sideMenu) {
+        Scope(state: \.exploreChannelReducerState, action: \.exploreChannelReducerAction) {
+            ExploringChannelReducer()
+        }
+
+        Scope(state: \.sideMenuReducerState, action: \.sideMenuRedcuerAction) {
             SideMenuReducer()
         }
         
         Reduce { state, action in
             switch action {
-            case .binding(_):
-                return .none
-                
-            case .sideMenu:
-                return .none
-//                
-//            case .channelChatting:
-//                return .none
-//                
             case .presentCreateView:
                 state.isPresentCreateView.toggle()
                 return .none
@@ -141,6 +129,7 @@ public struct HomeReducer: Reducer {
                 return .none
                 
             case .presentExploringChannelView:
+                state.exploreChannelReducerState = .init(isPresentingExploringChannelView: state.$isPresentingExploringChannelView, id: state.group?.groupId, selectedChannel: state.$selectedChannel, chatList: state.$channelChatList)
                 state.isPresentingExploringChannelView.toggle()
                 return .none
                 
@@ -283,6 +272,9 @@ public struct HomeReducer: Reducer {
                 
             case .setDmList(let dms): // dmList 세팅
                 state.dmList = dms
+                return .none
+                
+            default:
                 return .none
             }
         }
