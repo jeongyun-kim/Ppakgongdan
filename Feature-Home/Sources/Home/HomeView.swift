@@ -24,8 +24,6 @@ public struct HomeView: View {
         ZStack(alignment: .top) {
             if let data = store.group {
                 defulatHomeView(item: data)
-                SideMenuView(store: store.scope(state: \.sideMenuReducerState,
-                                                action: \.sideMenuRedcuerAction))
             }
         }
         .onDisappear {

@@ -53,7 +53,7 @@ public struct HomeReducer: Reducer {
         var memberEmail = ""
         var isDisabledInviteMember = true
         
-        var sideMenuReducerState: SideMenuReducer.State
+        public var sideMenuReducerState: SideMenuReducer.State
         var exploreChannelReducerState: ExploringChannelReducer.State!
         var channelChattingReducerState: ChannelChattingReducer.State!
         var createChannelReducerState: CreateChannelReducer.State!

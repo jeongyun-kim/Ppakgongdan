@@ -23,16 +23,23 @@ public struct FeatureView: View {
     @State private var selectedTab = 0
     
     public var body: some View {
-        TabView(selection: $selectedTab) {
-            MainHomeView(store: store.scope(state: \.featureHome, action: \.featureHome))
-            .tabItem {
-                VStack {
-                    selectedTab == 0 ? Resources.Images.homeActive : Resources.Images.home
-                    Text("홈")
+        ZStack {
+            TabView(selection: $selectedTab) {
+                Group {
+                    NavigationStack {
+                        MainHomeView(store: store.scope(state: \.featureHome, action: \.featureHome))
+                    }
+                    .tabItem {
+                        VStack {
+                            selectedTab == 0 ? Resources.Images.homeActive : Resources.Images.home
+                            Text("홈")
+                        }
+                    }
+                    .tag(0)
                 }
             }
-            .tag(0)
+            
+            SideMenuView(store: store.scope(state: \.featureHome.homeReducerState.sideMenuReducerState, action: \.featureHome.homeReducerAction.sideMenuRedcuerAction))
         }
-        .tint(Resources.Colors.black)
     }
 }

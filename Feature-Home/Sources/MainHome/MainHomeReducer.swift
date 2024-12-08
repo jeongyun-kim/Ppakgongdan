@@ -29,7 +29,7 @@ public struct MainHomeReducer {
         var isPresentingReloginAlert: Bool = false
         var isPresentingOnbaording: Bool = false
         
-        var homeReducerState: HomeReducer.State
+        public var homeReducerState: HomeReducer.State
         var onboardingReducerState: OnboardingReducer.State
     }
     
