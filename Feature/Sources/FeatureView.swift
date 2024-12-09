@@ -8,6 +8,7 @@
 import SwiftUI
 import Feature_Login
 import Feature_Home
+import Feature_DM
 import ComposableArchitecture
 import Utils
 import NetworkKit
@@ -36,6 +37,17 @@ public struct FeatureView: View {
                         }
                     }
                     .tag(0)
+                    
+                    NavigationStack {
+                        DirectMessageView(store: store.scope(state: \.featureDM, action: \.featureDM))
+                    }
+                    .tabItem {
+                        VStack {
+                            selectedTab == 1 ? Resources.Images.messageActive : Resources.Images.message
+                            Text("DM")
+                        }
+                    }
+                    .tag(1)
                 }
             }
             
