@@ -121,7 +121,7 @@ extension HomeView {
     // MARK: DmRowView
     private func dmRowView(_ item: DirectMessage) -> some View {
         return HStack(spacing: 11) {
-            RoundedImageView(imageViewCase: .verticalDmListProfile, imagePath: item.user.profileImage)
+            RoundedImageView(imageViewCase: .chattingProfile, imagePath: item.user.profileImage)
             
             Text(item.user.nickname)
                 .font(Resources.Fonts.body)
