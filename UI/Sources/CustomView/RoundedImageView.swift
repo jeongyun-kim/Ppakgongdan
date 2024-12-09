@@ -11,17 +11,11 @@ import Kingfisher
 public struct RoundedImageView: View {
     public enum ImageViewCase: CGFloat {
         case groupCoverImage = 32
-        case verticalDmListProfile = 24
         case horizontaldDmListProfile = 44
         case chattingProfile = 34
         
         var radius: CGFloat {
-            switch self {
-            case .verticalDmListProfile:
-                return 4
-            default:
-                return Resources.Corners.normal
-            }
+            return Resources.Corners.normal
         }
         
         var defaultImage: Image {
