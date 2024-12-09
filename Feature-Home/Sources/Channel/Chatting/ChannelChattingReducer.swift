@@ -25,6 +25,7 @@ public struct ChannelChattingReducer {
         
         @Shared var selectedChannel: StudyGroupChannel?
         @Shared var chatList: [ChannelChatting]
+        
         var workspaceId: String?
         var text: String = ""
         var isEnabled = false
@@ -49,15 +50,9 @@ public struct ChannelChattingReducer {
                 return .none
                 
             case .connectSocket:
-                return .run { [channel = state.selectedChannel] send in
-                    guard let channel else { return }
-                    let continuation = await withCheckedContinuation { continuation in
-                        SocketService.shared.estabilishConnection(channelId: channel.channelId) { data in
-                            continuation.resume(returning: data)
-                        }
-                    }
-                    await send(.appendChat(continuation.toChannelChatting()))
-                }
+                guard let channel = state.selectedChannel else { return .none }
+                SocketService.shared.estabilishConnection(channelId: channel.channelId)
+                return .none
                 
             case .appendChat(let chat):
                 state.chatList.append(chat)

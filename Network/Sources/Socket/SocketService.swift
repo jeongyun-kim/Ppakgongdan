@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import Combine
 import SocketIO
 
 public final class SocketService: NSObject {
     public static let shared = SocketService()
     var manager: SocketManager!
     var socket: SocketIOClient!
-   
+    public let chatPublisher = CurrentValueSubject<ChannelChatting?, Never>(nil)
     private let baseURL = APIKey.baseURL
     private let eventName = "channel"
     
@@ -33,12 +34,13 @@ public final class SocketService: NSObject {
             print("⚠️ Socket connection failed", data, ack)
         }
         
-        socket.once(eventName) { dataArr, ack in
+        socket.on(eventName) { dataArr, ack in
             print("🟢 Channel Recieved")
             if let data = dataArr.first as? [String: Any] {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
                     let result = try JSONDecoder().decode(ChannelChattingDTO.self, from: jsonData)
+                    self.chatPublisher.send(result.toChannelChatting())
                 } catch {
                     print("Error parsing channel data: \(error)")
                 }

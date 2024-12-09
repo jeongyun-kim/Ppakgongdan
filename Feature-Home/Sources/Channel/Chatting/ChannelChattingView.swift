@@ -10,10 +10,12 @@ import UI
 import NetworkKit
 import Utils
 import ComposableArchitecture
+import Combine
 
 struct ChannelChattingView: View {
     @FocusState private var isFocused: Bool
     @Bindable var store: StoreOf<ChannelChattingReducer>
+    @State private var subscriptions = Set<AnyCancellable>()
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -41,6 +43,14 @@ struct ChannelChattingView: View {
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
             store.send(.connectSocket)
+            
+            SocketService.shared.chatPublisher
+                .receive(on: DispatchQueue.main)
+                .compactMap { $0 }
+                .sink { value in
+                    store.send(.appendChat(value))
+                }
+                .store(in: &subscriptions)
         }
         .onDisappear {
             store.send(.disconnectSocket)
