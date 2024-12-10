@@ -15,8 +15,6 @@ enum HomeRouter {
     case deleteWorkspace(id: String)
     case exitWorkspace(id: String)
     case getWorkspaceDetail(id: String)
-    case getDmList(id: String)
-    case getUnreadDms(UnreadDmQuery)
     case inviteWorkspaceMemeber(id: String, query: InviteMemberQuery)
 }
 
@@ -37,10 +35,6 @@ extension HomeRouter: TargetType {
             return "/v1/workspaces/\(id)/exit"
         case .getWorkspaceDetail(let id):
             return "/v1/workspaces/\(id)"
-        case .getDmList(let id):
-            return "/v1/workspaces/\(id)/dms"
-        case .getUnreadDms(let query):
-            return "/v1/workspaces/\(query.workspaceId)/dms/\(query.roomId)/unreads"
         case .inviteWorkspaceMemeber(let id, _):
             return "/v1/workspaces/\(id)/members"
         }
@@ -57,10 +51,6 @@ extension HomeRouter: TargetType {
         case .exitWorkspace:
             return .get
         case .getWorkspaceDetail:
-            return .get
-        case .getDmList:
-            return .get
-        case .getUnreadDms:
             return .get
         case .inviteWorkspaceMemeber:
             return .post
@@ -82,10 +72,6 @@ extension HomeRouter: TargetType {
         case .exitWorkspace:
             return .requestPlain
         case .getWorkspaceDetail:
-            return .requestPlain
-        case .getDmList:
-            return .requestPlain
-        case .getUnreadDms:
             return .requestPlain
         case .inviteWorkspaceMemeber(_, let query):
             return .requestJSONEncodable(query)

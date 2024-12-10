@@ -57,17 +57,6 @@ extension NetworkService: HomeNetwork {
         return try decodeResults(result, modelType: WorkspaceDetailDTO.self)
     }
     
-    public func getDmList(workspaceId: String) async throws -> [DMDTO] {
-        let result = await homeProvider.request(.getDmList(id: workspaceId))
-        return try decodeResults(result, modelType: [DMDTO].self)
-    }
-    
-    public func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDMDTO {
-        let query = UnreadDmQuery(roomId: roomlId, workspaceId: workspaceId, after: after)
-        let result = await homeProvider.request(.getUnreadDms(query))
-        return try decodeResults(result, modelType: UnreadDMDTO.self)
-    }
-    
     public func inviteWorkspaceMemeber(workspaceId: String, email: String) async throws -> MemberDTO {
         let query = InviteMemberQuery(email: email)
         let result = await homeProvider.request(.inviteWorkspaceMemeber(id: workspaceId, query: query))
