@@ -28,4 +28,10 @@ extension NetworkService: DmNetwork {
         let result = await dmProvider.request(.getUnreadDms(query))
         return try decodeResults(result, modelType: UnreadDMDTO.self)
     }
+    
+    public func getDmChattings(workspaceId: String, roomId: String, after: String) async throws -> [DmChattingDTO] {
+        let query = DmChattingQuery(roomId: roomId, workspaceId: workspaceId, cursorDate: after)
+        let result = await dmProvider.request(.getDmChattings(query))
+        return try decodeResults(result, modelType: [DmChattingDTO].self)
+    }
 }

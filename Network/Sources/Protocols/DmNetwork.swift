@@ -12,5 +12,6 @@ protocol DmNetwork {
     var dmProvider: MoyaProvider<DmRouter> { get }
     func getDmList(workspaceId: String) async throws -> [DMDTO]
     func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDMDTO
+    func getDmChattings(workspaceId: String, roomId: String, after: String) async throws -> [DmChattingDTO]
 }
 
