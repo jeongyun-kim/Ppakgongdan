@@ -1,25 +1,30 @@
 //
-//  DirectMessageReducer.swift
+//  DirectMessageChattingReducer.swift
 //  Feature-DM
 //
-//  Created by 김정윤 on 12/9/24.
+//  Created by 김정윤 on 12/10/24.
 //
 
-import NetworkKit
 import Utils
+import NetworkKit
 import ComposableArchitecture
 
 @Reducer
-public struct DirectMessageReducer {
+public struct DirectMessageChattingReducer {
     public init() { }
     
     @ObservableState
     public struct State: Equatable {
-        public init() { }
+//        var roomId: String
+        var chatList: [DmChatting] = []
+        var text: String = ""
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case connectSocket
+        case disconnectSocket
+        case appendChat(DmChatting)
     }
     
     public var body: some Reducer<State, Action> {

@@ -14,6 +14,7 @@ enum DmRouter {
     case getDmList(id: String)
     case getUnreadDms(UnreadDmQuery)
     case getDmChattings(DmChattingQuery)
+    case createDmChatRoom(groupId: String, CreateDmChatRoomQuery)
 }
 
 extension DmRouter: TargetType {
@@ -31,6 +32,8 @@ extension DmRouter: TargetType {
             return "/v1/workspaces/\(query.workspaceId)/dms/\(query.roomId)/unreads"
         case .getDmChattings(let query):
             return "/v1/workspaces/\(query.workspaceId)/dms/\(query.roomId)/chats"
+        case .createDmChatRoom(let id, _):
+            return "/v1/workspaces/\(id)/dms"
         }
     }
     
@@ -44,6 +47,8 @@ extension DmRouter: TargetType {
             return .get
         case .getDmChattings:
             return .get
+        case .createDmChatRoom:
+            return .post
         }
     }
     
@@ -57,6 +62,8 @@ extension DmRouter: TargetType {
             return .requestPlain
         case .getDmChattings(let query):
             return .requestParameters(parameters: ["cursor_date": query.cursorDate], encoding: URLEncoding.queryString)
+        case .createDmChatRoom(_, let query):
+            return .requestJSONEncodable(query)
         }
     }
     

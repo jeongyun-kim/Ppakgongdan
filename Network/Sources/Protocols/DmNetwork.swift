@@ -10,8 +10,9 @@ import Moya
 
 protocol DmNetwork {
     var dmProvider: MoyaProvider<DmRouter> { get }
-    func getDmList(workspaceId: String) async throws -> [DMDTO]
-    func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDMDTO
+    func getDmList(workspaceId: String) async throws -> [DmDTO]
+    func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDmDTO
     func getDmChattings(workspaceId: String, roomId: String, after: String) async throws -> [DmChattingDTO]
+    func createDmChatRoom(workspaceId: String, opponentId: String) async throws -> DmDTO
 }
 

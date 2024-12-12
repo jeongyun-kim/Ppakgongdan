@@ -8,6 +8,7 @@
 import SwiftUI
 import UI
 import ComposableArchitecture
+import NetworkKit
 
 public struct DirectMessageView: View {
     public init(store: StoreOf<DirectMessageReducer>) {
@@ -20,27 +21,30 @@ public struct DirectMessageView: View {
         VStack {
             dmHorizontalView()
             List {
-                ForEach(0..<3) {_ in
-                    dmListRowView()
+                ForEach(store.dmList, id: \.roomId) { item in
+                    dmListRowView(item)
                 }
             }
             .asPlainList()
         }
         .navigationBar(title: "Direct Message")
+        .onAppear {
+            store.send(.viewOnAppear)
+        }
     }
 }
 
 extension DirectMessageView {
     // MARK: DmListRowView
-    private func dmListRowView() -> some View {
+    private func dmListRowView(_ item: DmChatting) -> some View {
         ZStack(alignment: .topLeading) {
             HStack(alignment: .top, spacing: 8) {
                 RoundedImageView(imageViewCase: .chattingProfile)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("닉네임")
+                    Text(item.user.nickname)
                         .font(Resources.Fonts.body)
-                    Text("내용ㄹㅇ므링므리ㅏ믕리므일믱르미ㅏ으리마ㅡ리므리ㅏ므리믕리믜ㅏㄹ의므리마ㅡㅇ리므리믜르미아르마ㅣ릐마으라ㅣㅁㅇ라ㅣ믕라미ㅡㅇ라ㅣㅁ느리ㅏ므ㅏ리ㅡㅁ아ㅣㄹ마이르미ㅏㅇ르ㅏㅣㅁ으라ㅣ믕라므아ㅣ르미ㅏ을미ㅏ으리ㅏㅁㅇ라ㅣ믕라ㅣ믕라ㅣㅡㅁ아ㅣ름아ㅣ르마ㅣㅇㄹ")
+                    Text(item.content)
                         .font(Resources.Fonts.caption)
                         .foregroundStyle(Resources.Colors.textSecondary)
                         .lineLimit(2)
@@ -49,7 +53,7 @@ extension DirectMessageView {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("PM 10:23")
+                    Text(item.createdAt.toChattingDate())
                         .font(Resources.Fonts.caption)
                         .foregroundStyle(Resources.Colors.textSecondary)
                     
@@ -68,8 +72,8 @@ extension DirectMessageView {
             customDivider()
             ScrollView(.horizontal) {
                 LazyHStack {
-                    ForEach(0..<3) { _ in
-                        dmHorizontalRowView()
+                    ForEach(store.memberList, id: \.userId) { item in
+                        dmHorizontalRowView(item)
                     }
                 }
                 .frame(height: 98)
@@ -80,12 +84,22 @@ extension DirectMessageView {
     }
     
     // MARK: DmHorizontalRowView
-    private func dmHorizontalRowView() -> some View {
-        VStack {
-            RoundedImageView(imageViewCase: .horizontaldDmListProfile)
-            Text("닉네임")
-                .font(Resources.Fonts.body)
+    private func dmHorizontalRowView(_ item: StudyGroupMember) -> some View {
+        NavigationLink {
+            LazyNavigationViewWrapper(
+                DirectMessageChattingView(store: store.scope(state: \.directMessageReducerState,
+                                                             action: \.directMessageReducerAction)))
+        } label: {
+            VStack {
+                RoundedImageView(imageViewCase: .horizontaldDmListProfile)
+                Text(item.nickname)
+                    .font(Resources.Fonts.body)
+                    .foregroundStyle(Resources.Colors.textPrimary)
+            }
+            .frame(width: 76)
         }
-        .frame(width: 76)
+        .simultaneousGesture(TapGesture().onEnded {
+            store.send(.createDmChatRoom(item.userId))
+        })
     }
 }
