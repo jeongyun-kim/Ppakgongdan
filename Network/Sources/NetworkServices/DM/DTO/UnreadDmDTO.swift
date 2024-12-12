@@ -7,14 +7,12 @@
 
 import Foundation
 
-public struct UnreadDMDTO: Decodable {
-    public let channelId: String
-    public let name: String
+public struct UnreadDmDTO: Decodable {
+    public let roomlId: String
     public let count: Int
     
     enum CodingKeys: String, CodingKey {
-        case channelId = "channel_id"
-        case name
+        case roomlId = "room_id"
         case count
     }
 }
