@@ -87,7 +87,7 @@ public struct HomeReducer: Reducer {
         case getAllMyChannels // 내가 속한 모든 채널 가져오기
         case getUnreadChannelsCount([ChannelDTO]) // 채널의 안 읽은 메시지 개수 가져오기
         case getDmList // DM 조회하기
-        case getUnreadDmCounts([DMDTO]) // 안 읽은 DM 개수 조회
+        case getUnreadDmCounts([DmDTO]) // 안 읽은 DM 개수 조회
         case setDmList([DirectMessage]) // 조회한 DM 내역 보여주기
     }
     

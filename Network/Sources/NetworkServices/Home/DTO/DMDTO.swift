@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct DMDTO: Decodable {
+public struct DmDTO: Decodable {
     public let roomId: String
     public let createdAt: String
     public let user: MemberDTO
