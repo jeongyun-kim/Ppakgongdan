@@ -27,14 +27,15 @@ public struct DirectMessageReducer {
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case directMessageReducerAction(DirectMessageChattingReducer.Action)
-        case viewOnAppear
-        case getAllMembers
-        case setAllMembers([MemberDTO])
-        case getDmList
-        case getUnreadDmCounts([DmDTO])
-        case getDmChattings([DirectMessage])
-        case setDmChattings([DmChattingDTO])
-        case createDmChatRoom(String)
+        case viewOnAppear // viewOnAppear
+        case getAllMembers // 그룹 내 모든 멤버 리스트 가져오기
+        case setAllMembers([MemberDTO]) // 가져온 멤버 리스트 반영하기
+        case getDmList // 디엠 리스트 가져오기
+        case getUnreadDmCounts([DmDTO]) // 디엠 안 읽은 개수 가져오기
+        case getDmChattings([DirectMessage]) // 디엠 채팅 가져오기 
+        case setDmChattings([DmChatting]) // 디엠 채팅 반영하기 (= 마지막 채팅 보여주기)
+        case createDmChatRoom(String) // 채팅방 생성
+        case setDmChatRoomInfo(DirectMessage) // 하위 Reducer에 채팅방 정보 넘겨주기 
     }
     
     public var body: some Reducer<State, Action> {
@@ -58,11 +59,11 @@ public struct DirectMessageReducer {
                         let result = try await NetworkService.shared.getAllMembers(id: id)
                         await send(.setAllMembers(result))
                     } catch {
-                        print("1", error)
+                        print(error)
                     }
                 }
                 
-            case .setAllMembers(let list):
+            case .setAllMembers(let list): // 모든 멤버 읽어오기
                 state.memberList = list.filter { $0.userId != UserDefaultsManager.shared.userId }.map { $0.toStudyGroupMember() }
                 return .none
                 
@@ -72,7 +73,7 @@ public struct DirectMessageReducer {
                         let result = try await NetworkService.shared.getDmList(workspaceId: id)
                         await send(.getUnreadDmCounts(result))
                     } catch {
-                        print("2", error)
+                        print(error)
                     }
                 }
                 
@@ -87,43 +88,50 @@ public struct DirectMessageReducer {
                             directMessage.unreadCount = result.count
                             directMessages.append(directMessage)
                         } catch {
-                            print("3", error)
+                            print(error)
                         }
                     }
                     
                     await send(.getDmChattings(directMessages))
                 }
                 
-            case .getDmChattings(let dms):
+            case .getDmChattings(let dms): // 디엠 마지막 채팅 가져오기
                 return .run { [groupId = UserDefaultsManager.shared.recentGroupId] send in
-                    var lastDms: [DmChattingDTO] = []
+                    var lastDms: [DmChatting] = []
                     
                     for dm in dms {
                         do {
                             let result = try await NetworkService.shared.getDmChattings(workspaceId: groupId, roomId: dm.roomId, after: "")
-                            guard let lastDm = result.last else { continue }
+                            guard let last = result.last else { continue }
+                            var lastDm = last.toDmChatting()
+                            lastDm.unreadCount = dm.unreadCount
                             lastDms.append(lastDm)
                         } catch {
-                            print("4", error)
+                            print(error)
                         }
                     }
                     
                     await send(.setDmChattings(lastDms))
                 }
                 
-            case .setDmChattings(let dms):
-                state.dmList = dms.map { $0.toDmChatting() }
+            case .setDmChattings(let dms): // 채팅 반영
+                state.dmList = dms
                 return .none
                 
-            case .createDmChatRoom(let opponentId):
+            case .createDmChatRoom(let opponentId): // 디엠 채팅방 생성
                 return .run { [groupId = UserDefaultsManager.shared.recentGroupId]send in
                     do {
                         let result = try await NetworkService.shared.createDmChatRoom(workspaceId: groupId, opponentId: opponentId)
-                        print(result)
+                        await send(.setDmChatRoomInfo(result.toDirectMessage()))
                     } catch {
                         print(error)
                     }
                 }
+                
+            case .setDmChatRoomInfo(let info): // 디엠 채팅방 정보 세팅
+                state.directMessageReducerState.chatRoomInfo = info
+                return .none
+                
             default:
                 return .none
             }

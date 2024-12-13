@@ -57,7 +57,9 @@ extension DirectMessageView {
                         .font(Resources.Fonts.caption)
                         .foregroundStyle(Resources.Colors.textSecondary)
                     
-                    UnreadCountView("1")
+                    if item.unreadCount > 0 {
+                        UnreadCountView("\(item.unreadCount)")
+                    }
                 }
             }
         }
