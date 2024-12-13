@@ -22,17 +22,14 @@ extension String {
     
     public func toChattingDate() -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         guard let date = dateFormatter.date(from: self) else { return "" }
-        
-        let dateString = date.formatted(date: .numeric, time: .omitted)
-        let todayString = Date().formatted(date: .numeric, time: .omitted)
-        
+  
         // 만약 비교하는 날짜가 오늘이 아니라면
-        if dateString == todayString {
+        if date.isToday {
             dateFormatter.dateFormat = "hh:mm a"
         } else { // 비교하는 날짜가 오늘이라면
-            dateFormatter.dateFormat = "M/d HH:mm a"
+            dateFormatter.dateFormat = "M/d"
         }
 
         dateFormatter.locale = Locale(identifier: "ko_KR")

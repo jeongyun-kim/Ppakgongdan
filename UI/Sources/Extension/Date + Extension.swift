@@ -8,6 +8,12 @@
 import Foundation
 
 extension Date {
+    var isToday: Bool {
+        let dateString = self.formatted(date: .numeric, time: .omitted)
+        let todayString = Date().formatted(date: .numeric, time: .omitted)
+        return dateString == todayString
+    }
+    
     public func toFormattedString() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"
