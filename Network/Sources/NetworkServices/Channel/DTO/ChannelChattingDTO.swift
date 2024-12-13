@@ -31,7 +31,7 @@ public struct ChannelChattingDTO: Decodable {
                                channelName: self.channelName,
                                chatId: self.chatId,
                                content: self.content,
-                               createdAt: self.content,
+                               createdAt: self.createdAt,
                                files: self.files,
                                user: self.user.toStudyGroupMember())
     }
