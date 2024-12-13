@@ -15,6 +15,7 @@ public struct DmChatting: Equatable {
         self.createdAt = createdAt
         self.files = files
         self.user = user.toStudyGroupMember()
+        self.unreadCount = 0
     }
     
     public let dmId: String
@@ -23,13 +24,5 @@ public struct DmChatting: Equatable {
     public let createdAt: String
     public let files: [String]
     public let user: StudyGroupMember
-    
-    enum CodingKeys: String, CodingKey {
-        case dmId = "dm_id"
-        case roomId = "room_id"
-        case content
-        case createdAt
-        case files
-        case user
-    }
+    public var unreadCount: Int
 }

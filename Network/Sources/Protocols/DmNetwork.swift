@@ -14,5 +14,6 @@ protocol DmNetwork {
     func getUnreadDms(workspaceId: String, roomlId: String, after: String) async throws -> UnreadDmDTO
     func getDmChattings(workspaceId: String, roomId: String, after: String) async throws -> [DmChattingDTO]
     func createDmChatRoom(workspaceId: String, opponentId: String) async throws -> DmDTO
+    func sendDmChat(workspaceId: String, roomId: String, message: String) async throws -> DmChattingDTO
 }
 

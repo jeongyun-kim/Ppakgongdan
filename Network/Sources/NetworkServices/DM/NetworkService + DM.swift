@@ -40,4 +40,10 @@ extension NetworkService: DmNetwork {
         let result = await dmProvider.request(.createDmChatRoom(groupId: workspaceId, query))
         return try decodeResults(result, modelType: DmDTO.self)
     }
+    
+    public func sendDmChat(workspaceId: String, roomId: String, message: String) async throws -> DmChattingDTO {
+        let query = MyDmChatQuery(roomId: roomId, workspaceId: workspaceId, content: message)
+        let result = await dmProvider.request(.sendMyDmChat(query))
+        return try decodeResults(result, modelType: DmChattingDTO.self)
+    }
 }
