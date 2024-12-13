@@ -53,7 +53,7 @@ extension DirectMessageView {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text(item.createdAt.toChattingDate())
+                    Text(item.createdAt.toDmListDate())
                         .font(Resources.Fonts.caption)
                         .foregroundStyle(Resources.Colors.textSecondary)
                     
