@@ -13,40 +13,10 @@ public final class ChatRepository {
     public static let shared = ChatRepository()
     private let realm = try! Realm()
     
-    // MARK: SaveChatRoom
-    public func saveChatRoom(roomId: String, list: [ChannelChatting]) {
-        do {
-            // 이미 존재한다면 삭제부터
-            if let _ = readChatRoom(roomId: roomId) {
-                deleteChatRoom(roomId: roomId)
-            }
-            
-            try realm.write {
-                let chatRoom = channelChattingToChatRoom(roomId: roomId, list: list)
-                realm.add(chatRoom)
-            }
-        } catch {
-            print("save chat error!")
-        }
-    }
-
-    // MARK: GetChannelLastReadDate
-    public func getChannelLastReadDate(channelId: String, createdAt: String) -> String {
-        guard let chatRoom = readChatRoom(roomId: channelId) else { return createdAt }
-        return chatRoom.readDate
-    }
-    
-    // MARK: ReadChatRoom
-    public func readChatRoom(roomId: String) -> ChatRoom? {
-        return realm.object(ofType: ChatRoom.self, forPrimaryKey: roomId)
-    }
-    
-    // MARK: DeleteChatRoom
-    private func deleteChatRoom(roomId: String) {
+    private func deleteChatRoom<T: Object>(room: T) {
         do {
             try realm.write {
-                guard let existChatRoom = readChatRoom(roomId: roomId) else { return }
-                realm.delete(existChatRoom)
+                realm.delete(room)
             }
         } catch {
             print("delete chat error!")
@@ -54,10 +24,10 @@ public final class ChatRepository {
     }
 }
 
+// MARK: Channel
 extension ChatRepository {
-    // MARK: ChannelChattingToChatRoom
-    private func channelChattingToChatRoom(roomId: String, list: [ChannelChatting]) -> ChatRoom {
-        var chats = List<Chat>()
+    private func channelChattingToChatRoom(roomId: String, list: [ChannelChatting]) -> ChannelChatRoom {
+        var chats = List<ChannelChat>()
         
         for chatting in list {
             var files: List<String> = List()
@@ -67,11 +37,86 @@ extension ChatRepository {
             
             let chatUser = chatting.user
             let user = User(id: chatUser.userId, email: chatUser.email, nickname: chatUser.nickname, profileImage: chatUser.profileImage)
-            let chat = Chat(channelId: chatting.chatId, channelName: chatting.channelName, chatId: chatting.chatId, content: chatting.content, createdAt: chatting.createdAt, files: files, user: user)
+            let chat = ChannelChat(channelId: chatting.chatId, channelName: chatting.channelName, chatId: chatting.chatId, content: chatting.content, createdAt: chatting.createdAt, files: files, user: user)
             chats.append(chat)
         }
         
-        let chatRoom = ChatRoom(id: roomId, chats: chats)
+        let chatRoom = ChannelChatRoom(id: roomId, chats: chats)
         return chatRoom
+    }
+    
+    // MARK: SaveChannelChatRoom
+    public func saveChannelChatRoom(roomId: String, list: [ChannelChatting]) {
+        do {
+            // 이미 존재한다면 삭제부터
+            if let existChannelChatRoom = readChannelChatRoom(roomId: roomId) {
+                deleteChatRoom(room: existChannelChatRoom)
+            }
+            
+            try realm.write {
+                let channelChatRoom = channelChattingToChatRoom(roomId: roomId, list: list)
+                realm.add(channelChatRoom)
+            }
+        } catch {
+            print("save channel chat error!")
+        }
+    }
+    
+    // MARK: GetChannelLastReadDate
+    public func getChannelLastReadDate(channelId: String, createdAt: String) -> String {
+        guard let chatRoom = readChannelChatRoom(roomId: channelId) else { return createdAt }
+        return chatRoom.readDate
+    }
+    
+    // MARK: ReadChannelChatRoom
+    public func readChannelChatRoom(roomId: String) -> ChannelChatRoom? {
+        return realm.object(ofType: ChannelChatRoom.self, forPrimaryKey: roomId)
+    }
+}
+
+// MARK: Dm
+extension ChatRepository {
+    // MARK: ChannelChattingToChatRoom
+    private func dmChattingToChatRoom(roomId: String, list: [DmChatting]) -> DmChatRoom {
+        var chats = List<DmChat>()
+        
+        for chatting in list {
+            let chatUser = chatting.user
+            let user = User(id: chatUser.userId, email: chatUser.email, nickname: chatUser.nickname, profileImage: chatUser.profileImage)
+            let dmChat = DmChat(roomId: chatting.roomId, dmId: chatting.dmId, content: chatting.content, createdAt: chatting.createdAt, user: user)
+            chats.append(dmChat)
+        }
+        
+        let dmChatRoom = DmChatRoom(roomId: roomId, chats: chats)
+        return dmChatRoom
+    }
+    
+    // MARK: SaveDmChatRoom
+    public func saveDmChatRoom(roomId: String, list: [DmChatting]) {
+        do {
+            if let existDmChatRoom = readDmChatRoom(roomId: roomId) {
+                //                deleteDmChatRoom(roomId: roomId)
+                deleteChatRoom(room: existDmChatRoom)
+            }
+            
+            try realm.write {
+                let dmChatRoom = dmChattingToChatRoom(roomId: roomId, list: list)
+                realm.add(dmChatRoom)
+            }
+        } catch {
+            print("save dm chat error!")
+        }
+    }
+    
+    // MARK: ReadDmChatRoom
+    public func readDmChatRoom(roomId: String) -> DmChatRoom? {
+        return realm.object(ofType: DmChatRoom.self, forPrimaryKey: roomId)
+        
+    }
+    
+    // MARK: GetDmLastReadDate
+    public func getDmLastReadDate(roomId: String, createdAt: String) -> String {
+        guard let chatRoom = readDmChatRoom(roomId: roomId) else { return createdAt }
+        return chatRoom.readDate
     }
 }
