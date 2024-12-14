@@ -20,7 +20,7 @@ struct DirectMessageChattingView: View {
     var body: some View {
         ScrollViewReader { proxy in
             VStack {
-                List(store.chatList, id: \.roomId) { item in
+                List(store.chatList, id: \.dmId) { item in
                     chattingRowView(item)
                         .listRowSeparator(.hidden)
                 }
@@ -37,12 +37,25 @@ struct DirectMessageChattingView: View {
                 guard let last = newValue.last else { return }
                 proxy.scrollTo(last.dmId)
             }
+            .onChange(of: store.chatRoomInfo) { oldValue, newValue in
+                guard let newValue else { return }
+                store.send(.connectSocket)
+            }
+            .onChange(of: isFocused) { oldValue, newValue in
+                guard newValue else { return }
+                guard let last = store.chatList.last else { return }
+                print("⭐️", last)
+                proxy.scrollTo(last.dmId)
+            }
         }
         .navigationTitle(store.chatRoomInfo?.user.nickname ?? "")
         .toolbarRole(.editor)
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
-            store.send(.connectSocket)
+            SocketService.shared.bindChat { value in
+                guard let chat = value as? DmChatting else { return }
+                store.send(.appendChat(chat))
+            }
         }
         .onDisappear {
             store.send(.disconnectSocket)
