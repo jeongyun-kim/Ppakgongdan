@@ -16,7 +16,7 @@ extension Date {
     
     public func toFormattedString() -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
         return dateFormatter.string(from: self)
     }
