@@ -29,7 +29,7 @@ struct DirectMessageChattingView: View {
                 .scrollDismissesKeyboard(.immediately)
                 
                 ChattingInputView($store.text, isFocused: $isFocused) {
-//                    store.send(.sendMyChat)
+                    store.send(.sendMyChat)
                 }
             }
             .onChange(of: store.chatList) { oldValue, newValue in
@@ -38,19 +38,11 @@ struct DirectMessageChattingView: View {
                 proxy.scrollTo(last.dmId)
             }
         }
-        .navigationTitle("")
+        .navigationTitle(store.chatRoomInfo?.user.nickname ?? "")
         .toolbarRole(.editor)
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
             store.send(.connectSocket)
-            
-//            SocketService.shared.chatPublisher
-//                .receive(on: DispatchQueue.main)
-//                .compactMap { $0 }
-//                .sink { value in
-//                    store.send(.appendChat(value))
-//                }
-//                .store(in: &subscriptions)
         }
         .onDisappear {
             store.send(.disconnectSocket)

@@ -15,7 +15,7 @@ public struct DirectMessageChattingReducer {
     
     @ObservableState
     public struct State: Equatable {
-//        var roomId: String
+        var chatRoomInfo: DirectMessage? = nil
         var chatList: [DmChatting] = []
         var text: String = ""
     }
@@ -25,12 +25,29 @@ public struct DirectMessageChattingReducer {
         case connectSocket
         case disconnectSocket
         case appendChat(DmChatting)
+        case sendMyChat
+        case sendedChat
     }
     
     public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce { state, action in
             switch action {
+            case .sendMyChat:
+                return .run { [info = state.chatRoomInfo, id = UserDefaultsManager.shared.recentGroupId, message = state.text] send in
+                    guard let info else { return }
+                    do {
+                        let _ = try await NetworkService.shared.sendDmChat(workspaceId: id, roomId: info.roomId, message: message)
+                        await send(.sendedChat)
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+            case .sendedChat:
+                state.text = ""
+                return .none
+                
             default:
                 return .none
             }
