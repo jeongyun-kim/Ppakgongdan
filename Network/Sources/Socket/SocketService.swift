@@ -13,9 +13,9 @@ public final class SocketService: NSObject {
     public static let shared = SocketService()
     var manager: SocketManager!
     var socket: SocketIOClient!
-    public let chatPublisher = CurrentValueSubject<ChannelChatting?, Never>(nil)
+    public let chatPublisher = CurrentValueSubject<(any Equatable)?, Never>(nil)
     private let baseURL = APIKey.baseURL
-    private let eventName = "channel"
+    private var subscriptions = Set<AnyCancellable>()
     
     private override init() {
         super.init()
@@ -25,7 +25,7 @@ public final class SocketService: NSObject {
     }
     
     // 각 이벤트마다의 액션 정의 및 등록
-    private func addEventHandlers() {
+    private func addEventHandlers(_ router: SocketRouter) {
         socket.once(clientEvent: .connect) { data, ack in
             print("👏 Socket is connected", data, ack)
         }
@@ -34,13 +34,19 @@ public final class SocketService: NSObject {
             print("⚠️ Socket connection failed", data, ack)
         }
         
-        socket.on(eventName) { dataArr, ack in
+        socket.on(router.eventName) { dataArr, ack in
             print("🟢 Channel Recieved")
             if let data = dataArr.first as? [String: Any] {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                    let result = try JSONDecoder().decode(ChannelChattingDTO.self, from: jsonData)
-                    self.chatPublisher.send(result.toChannelChatting())
+                    switch router {
+                    case .channel:
+                        let result = try JSONDecoder().decode(ChannelChattingDTO.self, from: jsonData)
+                        self.chatPublisher.send(result.toChannelChatting())
+                    case .dm:
+                        let result = try JSONDecoder().decode(DmChattingDTO.self, from: jsonData)
+                        self.chatPublisher.send(result.toDmChatting())
+                    }
                 } catch {
                     print("Error parsing channel data: \(error)")
                 }
@@ -52,15 +58,25 @@ public final class SocketService: NSObject {
         }
     }
     
-    // 소켓 통신 연결 등록 
-    public func estabilishConnection(channelId: String) {
-        socket = self.manager.socket(forNamespace: "\(APIKey.socketChanelPath)\(channelId)")
-        addEventHandlers()
+    // 소켓 통신 연결 등록
+    public func establishConnection(router: SocketRouter) {
+        socket = self.manager.socket(forNamespace: router.path)
+        addEventHandlers(router)
         socket.connect()
     }
     
     // 소켓 통신 연결 해제
     public func disconnectSocket() {
         socket.disconnect()
+    }
+
+    public func bindChat(completionHandler: @escaping (any Equatable) -> Void) {
+        chatPublisher
+            .receive(on: DispatchQueue.main)
+            .compactMap { $0 }
+            .sink { value in
+                completionHandler(value)
+            }
+            .store(in: &subscriptions)
     }
 }
