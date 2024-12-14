@@ -8,13 +8,13 @@
 import Foundation
 
 public struct DmChatting: Equatable {
-    public init(dmId: String, roomId: String, content: String, createdAt: String, files: [String], user: MemberDTO) {
+    public init(dmId: String, roomId: String, content: String, createdAt: String, files: [String], user: StudyGroupMember) {
         self.dmId = dmId
         self.roomId = roomId
         self.content = content
         self.createdAt = createdAt
         self.files = files
-        self.user = user.toStudyGroupMember()
+        self.user = user
         self.unreadCount = 0
     }
     

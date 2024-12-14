@@ -25,6 +25,11 @@ public struct DmChattingDTO: Decodable {
     }
     
     public func toDmChatting() -> DmChatting {
-        return DmChatting(dmId: self.dmId, roomId: self.roomId, content: self.content, createdAt: self.createdAt, files: self.files, user: self.user)
+        return DmChatting(dmId: self.dmId,
+                          roomId: self.roomId,
+                          content: self.content,
+                          createdAt: self.createdAt,
+                          files: self.files,
+                          user: self.user.toStudyGroupMember())
     }
 }
