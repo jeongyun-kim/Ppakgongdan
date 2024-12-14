@@ -7,8 +7,9 @@
 
 import Foundation
 import RealmSwift
+import NetworkKit
 
-public class Chat: Object, ObjectKeyIdentifiable {
+public class ChannelChat: Object, ObjectKeyIdentifiable {
     convenience init(channelId: String, channelName: String, chatId: String, content: String, createdAt: String, files: List<String>, user: User) {
         self.init()
         self.channelId = channelId
@@ -27,4 +28,18 @@ public class Chat: Object, ObjectKeyIdentifiable {
     @Persisted public var createdAt: String
     @Persisted public var files: List<String>
     @Persisted public var user: User?
+    
+    public func toChannelChatting() -> ChannelChatting? {
+        if let user = self.user {
+            return ChannelChatting(channelId: self.channelId,
+                                   channelName: self.channelName,
+                                   chatId: self.chatId,
+                                   content: self.content,
+                                   createdAt: self.createdAt,
+                                   files: Array(self.files),
+                                   user: user.toStudyGroupMember())
+        } else {
+            return nil
+        }
+    }
 }
