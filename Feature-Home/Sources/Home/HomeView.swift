@@ -26,6 +26,9 @@ public struct HomeView: View {
                 defulatHomeView(item: data)
             }
         }
+        .onAppear {
+            store.send(.getWorkspaceDetail)
+        }
         .onDisappear {
             store.send(.viewDidDisappear)
         }
