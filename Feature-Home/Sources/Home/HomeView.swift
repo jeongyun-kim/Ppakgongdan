@@ -48,7 +48,7 @@ extension HomeView {
                 customDivider()
                 listView()
             }
-            .navigationBar(leadingImage: store.group?.coverImage, trailingImage: nil, title: item.groupName) {
+            .navigationBar(leadingImage: store.group?.coverImage, trailingImage: "/static/profiles/1734272811016.png", title: item.groupName) {
                 store.send(.presentSideMenu)
             }
             .navigationDestination(for: NavigationViewCase.self) { viewCase in
