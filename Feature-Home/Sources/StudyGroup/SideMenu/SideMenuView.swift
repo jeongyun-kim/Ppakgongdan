@@ -122,7 +122,7 @@ extension SideMenuView {
                 RoundedRectangle(cornerRadius: Resources.Corners.normal)
                     .frame(width: 44, height: 44)
                     .overlay {
-                        Resources.Images.dummy
+                        Resources.Images.defaultGroupImage
                             .resizable()
                             .clipShape(RoundedRectangle(cornerRadius: Resources.Corners.normal))
                     }
@@ -130,7 +130,7 @@ extension SideMenuView {
                     Text(item.groupName)
                         .font(Resources.Fonts.bodyBold)
                         .frame(height: 18)
-                    Text(item.createdAt)
+                    Text(item.createdAt.toSideMenuDate())
                         .font(Resources.Fonts.body)
                         .foregroundStyle(Resources.Colors.textSecondary)
                         .frame(height: 18)
