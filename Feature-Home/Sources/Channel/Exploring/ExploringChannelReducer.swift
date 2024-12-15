@@ -41,9 +41,9 @@ public struct ExploringChannelReducer {
         case toggleJoinAlert // 채널 참여 알림창 띄우거나 내리기
         case dismissExploringChannelView // 채널 탐색뷰 내리기
         case setSelectedChannel(StudyGroupChannel) // 선택한 채널 데이터 반영하기
-        case getSelectedChannelChatList // 선택한 채널의 채팅 리스트 받아오기
+        case getSelectedChannelChatListFromServer(String) // 선택한 채널의 채팅 리스트 받아오기
         case setChannelChatList([ChannelChatting]) // 받아온 채팅 리스트 반영하기
-        case setDBChannelChatList // DB로부터 받아온 채팅 리스트 반영
+        case setSelectedChannelChatListFromDB // DB로부터 받아온 채팅 리스트 반영
     }
     
     public var body: some Reducer<State, Action> {
@@ -97,25 +97,19 @@ public struct ExploringChannelReducer {
                 
             case .setSelectedChannel(let channel):
                 state.selectedChannel = channel
-                return .send(.setDBChannelChatList)
+                return .send(.setSelectedChannelChatListFromDB)
                 
-            case .setDBChannelChatList:
+            case .setSelectedChannelChatListFromDB:
                 guard let channel = state.selectedChannel else { return .none }
                 guard let channelChatRoom = ChatRepository.shared.readChannelChatRoom(roomId: channel.channelId) else {
-                    return .send(.getSelectedChannelChatList)
+                    return .send(.getSelectedChannelChatListFromServer(channel.createdAt))
                 }
                 state.chatList = Array(channelChatRoom.chats).compactMap { $0.toChannelChatting() }
-                return .send(.getSelectedChannelChatList)
+                return .send(.getSelectedChannelChatListFromServer(channelChatRoom.lastReadDate))
                 
-            case .getSelectedChannelChatList:
+            case .getSelectedChannelChatListFromServer(let after):
                 return .run { [id = state.id, channel = state.selectedChannel] send in
                     guard let id, let channel else { return }
-                    var after = ""
-                    
-                    DispatchQueue.main.sync {
-                        after = ChatRepository.shared.getChannelLastReadDate(channelId: channel.channelId, createdAt: channel.createdAt)
-                    }
-                    
                     do {
                         let result = try await NetworkService.shared.getChannelChats(workspaceId: id, channelId: channel.channelId, after: after)
                         await send(.setChannelChatList(result.map { $0.toChannelChatting() }))
