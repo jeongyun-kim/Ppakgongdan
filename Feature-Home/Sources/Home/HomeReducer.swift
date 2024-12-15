@@ -26,6 +26,12 @@ public struct HomeReducer: Reducer {
             _channelChatList = Shared([])
             
             sideMenuReducerState = SideMenuReducer.State(isPresenting: _isPresentingSideMenu, group: _group, groupCount: _groupCount)
+            exploreChannelReducerState = ExploringChannelReducer.State(isPresentingExploringChannelView: _isPresentingExploringChannelView,
+                                                                       group: _group,
+                                                                       selectedChannel: _selectedChannel,
+                                                                       chatList: _channelChatList)
+            channelChattingReducerState = .init(selectedChannel: _selectedChannel,
+                                                chatList: _channelChatList)
         }
         
         @Shared var isPresentingSideMenu: Bool
@@ -54,8 +60,8 @@ public struct HomeReducer: Reducer {
         var isDisabledInviteMember = true
         
         public var sideMenuReducerState: SideMenuReducer.State
-        var exploreChannelReducerState: ExploringChannelReducer.State!
-        var channelChattingReducerState: ChannelChattingReducer.State!
+        var exploreChannelReducerState: ExploringChannelReducer.State
+        var channelChattingReducerState: ChannelChattingReducer.State
         var createChannelReducerState: CreateChannelReducer.State!
     }
     
@@ -114,8 +120,7 @@ public struct HomeReducer: Reducer {
             switch action {
             case .exploreChannelReducerAction(.setSelectedChannel(_)):
                 state.channelChattingReducerState = .init(selectedChannel: state.$selectedChannel,
-                                                          chatList: state.$channelChatList,
-                                                          workspaceId: state.group?.groupId)
+                                                          chatList: state.$channelChatList)
                 return .none
                 
             case .presentCreateView:
@@ -142,7 +147,7 @@ public struct HomeReducer: Reducer {
                 
             case .presentExploringChannelView:
                 state.exploreChannelReducerState = .init(isPresentingExploringChannelView: state.$isPresentingExploringChannelView,
-                                                         id: state.group?.groupId,
+                                                         group: state.$group,
                                                          selectedChannel: state.$selectedChannel,
                                                          chatList: state.$channelChatList)
                 state.isPresentingExploringChannelView.toggle()

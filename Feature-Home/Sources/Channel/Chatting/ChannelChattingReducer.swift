@@ -17,16 +17,14 @@ public struct ChannelChattingReducer {
     
     @ObservableState
     public struct State: Equatable {
-        init(selectedChannel: Shared<StudyGroupChannel?>, chatList: Shared<[ChannelChatting]>, workspaceId: String?) {
+        init(selectedChannel: Shared<StudyGroupChannel?>, chatList: Shared<[ChannelChatting]>) {
             _selectedChannel = selectedChannel
             _chatList = chatList
-            self.workspaceId = workspaceId
         }
         
         @Shared var selectedChannel: StudyGroupChannel?
         @Shared var chatList: [ChannelChatting]
         
-        var workspaceId: String?
         var text: String = ""
         var isEnabled = false
         var isFocused = false
@@ -39,7 +37,7 @@ public struct ChannelChattingReducer {
         case connectSocket // 소켓 연결 등록
         case disconnectSocket // 소켓 연결 해제
         case appendChat(ChannelChatting) // 실시간으로 새로 받아온 채팅 반영
-        case saveChatList
+        case saveChatList(String) // 채팅 리스트 저장
     }
     
     public var body: some Reducer<State, Action> {
@@ -56,21 +54,21 @@ public struct ChannelChattingReducer {
                 
             case .appendChat(let chat):
                 state.chatList.append(chat)
-                return .none
+                guard let channel = state.selectedChannel else { return .none }
+                return .send(.saveChatList(channel.channelId))
                 
             case .disconnectSocket:
                 SocketService.shared.disconnectSocket()
-                return .send(.saveChatList)
+                return .none
                 
-            case .saveChatList:
-                guard let channel = state.selectedChannel else { return .none }
+            case .saveChatList(let id):
                 let chatList = state.chatList
-                ChatRepository.shared.saveChannelChatRoom(roomId: channel.channelId, list: chatList)
+                ChatRepository.shared.saveChannelChatRoom(roomId: id, list: chatList)
                 return .none
                 
             case .sendMyChat:
-                return .run { [id = state.workspaceId, channel = state.selectedChannel, content = state.text] send in
-                    guard let id, let channel else { return }
+                return .run { [id = UserDefaultsManager.shared.recentGroupId, channel = state.selectedChannel, content = state.text] send in
+                    guard let channel else { return }
                     do {
                         let _ = try await NetworkService.shared.postMyChat(workspaceId: id, channelId: channel.channelId, content: content, files: [])
                         await send(.sendedChat)
@@ -81,7 +79,8 @@ public struct ChannelChattingReducer {
                 
             case .sendedChat:
                 state.text = ""
-                return .none
+                guard let channel = state.selectedChannel else { return .none }
+                return .send(.saveChatList(channel.channelId))
             }
         }
     }

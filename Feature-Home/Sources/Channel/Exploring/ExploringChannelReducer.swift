@@ -17,17 +17,17 @@ public struct ExploringChannelReducer {
     
     @ObservableState
     public struct State: Equatable {
-        public init(isPresentingExploringChannelView: Shared<Bool>, id: String?, selectedChannel: Shared<StudyGroupChannel?>, chatList: Shared<[ChannelChatting]>) {
+        public init(isPresentingExploringChannelView: Shared<Bool>, group: Shared<StudyGroup?>, selectedChannel: Shared<StudyGroupChannel?>, chatList: Shared<[ChannelChatting]>) {
             _isPresentingExploringChannelView = isPresentingExploringChannelView
             _selectedChannel = selectedChannel
             _chatList = chatList
-            self.id = id
+            _group = group
         }
         
         @Shared var chatList: [ChannelChatting]
         @Shared var isPresentingExploringChannelView: Bool
         @Shared var selectedChannel: StudyGroupChannel?
-        var id: String?
+        @Shared var group: StudyGroup?
         
         var channelList: [StudyGroupChannel] = []
         var isPresentingJoinAlert = false
@@ -62,10 +62,10 @@ public struct ExploringChannelReducer {
                 return .none
                 
             case .getAllChannels:
-                return .run { [id = state.id] send in
-                    guard let id else { return }
+                return .run { [group = state.group] send in
+                    guard let group else { return }
                     do {
-                        let result = try await NetworkService.shared.getAllChannels(workspaceId: id)
+                        let result = try await NetworkService.shared.getAllChannels(workspaceId: group.groupId)
                         await send(.getAllMyChannels(result))
                     } catch {
                         print(error)
@@ -77,12 +77,12 @@ public struct ExploringChannelReducer {
                 return .none
                 
             case .getAllMyChannels(let channels):
-                return .run { [id = state.id] send in
+                return .run { [group = state.group] send in
+                    guard let group else { return }
                     var studyGroupChannelList = channels.map { $0.toStudyGroupChannel() }
-                    guard let id else { return }
                     
                     do {
-                        let result = try await NetworkService.shared.getAllMyChannels(workspaceId: id)
+                        let result = try await NetworkService.shared.getAllMyChannels(workspaceId: group.groupId)
                         let studyGroupChannelsFromResult = result.map { $0.toStudyGroupChannel() }
                         
                         for idx in (0..<studyGroupChannelList.count) {
@@ -108,10 +108,10 @@ public struct ExploringChannelReducer {
                 return .send(.getSelectedChannelChatListFromServer(channelChatRoom.lastReadDate))
                 
             case .getSelectedChannelChatListFromServer(let after):
-                return .run { [id = state.id, channel = state.selectedChannel] send in
-                    guard let id, let channel else { return }
+                return .run { [group = state.group, channel = state.selectedChannel] send in
+                    guard let group, let channel else { return }
                     do {
-                        let result = try await NetworkService.shared.getChannelChats(workspaceId: id, channelId: channel.channelId, after: after)
+                        let result = try await NetworkService.shared.getChannelChats(workspaceId: group.groupId, channelId: channel.channelId, after: after)
                         await send(.setChannelChatList(result.map { $0.toChannelChatting() }))
                     } catch {
                         print(error)
@@ -120,7 +120,8 @@ public struct ExploringChannelReducer {
                 
             case .setChannelChatList(let list):
                 state.chatList.append(contentsOf: list)
-                guard let channel = state.selectedChannel else { return .none }
+                guard let channel = state.selectedChannel else { return .send(.dismissExploringChannelView) }
+                ChatRepository.shared.saveChannelChatRoom(roomId: channel.channelId, list: state.chatList)
                 return .send(.dismissExploringChannelView)
             }
         }
