@@ -39,13 +39,19 @@ struct DirectMessageChattingView: View {
             }
             .onChange(of: store.chatRoomInfo) { oldValue, newValue in
                 guard let newValue else { return }
-                store.send(.connectSocket)
+                store.send(.getAllChatsFromDB)
             }
             .onChange(of: isFocused) { oldValue, newValue in
+                store.send(.setFocus(newValue))
+            }
+            .onChange(of: store.isFocused) { oldValue, newValue in
                 guard newValue else { return }
                 guard let last = store.chatList.last else { return }
-                print("⭐️", last)
-                proxy.scrollTo(last.dmId)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+                    withAnimation {
+                        proxy.scrollTo(last.dmId, anchor: .top)
+                    }
+                }
             }
         }
         .navigationTitle(store.chatRoomInfo?.user.nickname ?? "")
