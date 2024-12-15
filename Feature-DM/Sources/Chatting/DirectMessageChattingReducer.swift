@@ -60,11 +60,14 @@ public struct DirectMessageChattingReducer {
                 
             case .saveChatRoom:
                 guard let info = state.chatRoomInfo else { return .none }
-                ChatRepository.shared.saveDmChatRoom(roomId: info.roomId, list: state.chatList)
+                if !state.chatList.isEmpty {
+                    ChatRepository.shared.saveDmChatRoom(roomId: info.roomId, list: state.chatList)
+                }
                 return .none
                 
             case .getAllChatsFromDB:
                 guard let info = state.chatRoomInfo else { return .none }
+                print(info, ChatRepository.shared.readDmChatRoom(roomId: info.roomId))
                 guard let dmChatRoom = ChatRepository.shared.readDmChatRoom(roomId: info.roomId) else {
                     return .send(.getAllChatsFromServer(after: info.createdAt))
                 }
