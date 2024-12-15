@@ -38,6 +38,7 @@ public struct ChannelChattingReducer {
         case disconnectSocket // 소켓 연결 해제
         case appendChat(ChannelChatting) // 실시간으로 새로 받아온 채팅 반영
         case saveChatList(String) // 채팅 리스트 저장
+        case setFocus(Bool) // FocusState 반영
     }
     
     public var body: some Reducer<State, Action> {
@@ -45,6 +46,10 @@ public struct ChannelChattingReducer {
         Reduce { state, action in
             switch action {
             case .binding:
+                return .none
+                
+            case .setFocus(let isFocused):
+                state.isFocused = isFocused
                 return .none
                   
             case .connectSocket:

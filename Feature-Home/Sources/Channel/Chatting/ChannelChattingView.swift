@@ -37,6 +37,18 @@ struct ChannelChattingView: View {
                 guard let last = newValue.last else { return }
                 proxy.scrollTo(last.chatId)
             }
+            .onChange(of: isFocused) { oldValue, newValue in
+                store.send(.setFocus(newValue))
+            }
+            .onChange(of: store.isFocused) { oldValue, newValue in
+                guard newValue else { return }
+                guard let last = store.chatList.last else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+                    withAnimation {
+                        proxy.scrollTo(last.chatId, anchor: .top)
+                    }
+                }
+            }
         }
         .navigationTitle("#\(store.selectedChannel?.name ?? "채널")")
         .toolbarRole(.editor)
