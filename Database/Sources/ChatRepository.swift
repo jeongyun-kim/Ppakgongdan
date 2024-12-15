@@ -65,7 +65,7 @@ extension ChatRepository {
     // MARK: GetChannelLastReadDate
     public func getChannelLastReadDate(channelId: String, createdAt: String) -> String {
         guard let chatRoom = readChannelChatRoom(roomId: channelId) else { return createdAt }
-        return chatRoom.readDate
+        return chatRoom.lastReadDate
     }
     
     // MARK: ReadChannelChatRoom
@@ -112,11 +112,5 @@ extension ChatRepository {
     public func readDmChatRoom(roomId: String) -> DmChatRoom? {
         return realm.object(ofType: DmChatRoom.self, forPrimaryKey: roomId)
         
-    }
-    
-    // MARK: GetDmLastReadDate
-    public func getDmLastReadDate(roomId: String, createdAt: String) -> String {
-        guard let chatRoom = readDmChatRoom(roomId: roomId) else { return createdAt }
-        return chatRoom.readDate
     }
 }

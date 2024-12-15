@@ -14,11 +14,11 @@ public class DmChatRoom: Object, ObjectKeyIdentifiable {
         self.init()
         self.roomId = roomId
         self.chats = chats
-        self.readDate = Date().toFormattedString()
+        self.lastReadDate = Date().toFormattedString()
     }
     
     @Persisted(primaryKey: true) public var roomId: String
     @Persisted public var chats: List<DmChat>
-    @Persisted public var readDate: String
+    @Persisted public var lastReadDate: String
 }
 

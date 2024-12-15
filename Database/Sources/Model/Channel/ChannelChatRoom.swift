@@ -14,10 +14,10 @@ public class ChannelChatRoom: Object, ObjectKeyIdentifiable {
         self.init()
         self.id = id
         self.chats = chats
-        self.readDate = Date().toFormattedString()
+        self.lastReadDate = Date().toFormattedString()
     }
     
     @Persisted(primaryKey: true) public var id: String
     @Persisted public var chats: List<ChannelChat>
-    @Persisted public var readDate: String
+    @Persisted public var lastReadDate: String
 }
