@@ -43,14 +43,11 @@ struct ChannelChattingView: View {
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
             store.send(.connectSocket)
-            
-            SocketService.shared.chatPublisher
-                .receive(on: DispatchQueue.main)
-                .compactMap { $0 }
-                .sink { value in
-                    store.send(.appendChat(value))
-                }
-                .store(in: &subscriptions)
+
+            SocketService.shared.bindChat { value in
+                guard let chat = value as? ChannelChatting else { return }
+                store.send(.appendChat(chat))
+            }
         }
         .onDisappear {
             store.send(.disconnectSocket)

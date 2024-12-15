@@ -48,10 +48,10 @@ public struct ChannelChattingReducer {
             switch action {
             case .binding:
                 return .none
-                
+                  
             case .connectSocket:
                 guard let channel = state.selectedChannel else { return .none }
-                SocketService.shared.estabilishConnection(channelId: channel.channelId)
+                SocketService.shared.establishConnection(router: .channel(id: channel.channelId))
                 return .none
                 
             case .appendChat(let chat):
@@ -65,7 +65,7 @@ public struct ChannelChattingReducer {
             case .saveChatList:
                 guard let channel = state.selectedChannel else { return .none }
                 let chatList = state.chatList
-                ChatRepository.shared.saveChatRoom(roomId: channel.channelId, list: chatList)
+                ChatRepository.shared.saveChannelChatRoom(roomId: channel.channelId, list: chatList)
                 return .none
                 
             case .sendMyChat:
