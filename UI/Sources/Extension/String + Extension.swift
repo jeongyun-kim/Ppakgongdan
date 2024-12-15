@@ -25,11 +25,11 @@ extension String {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         guard let date = dateFormatter.date(from: self) else { return "" }
   
-        // 만약 비교하는 날짜가 오늘이 아니라면
+        // 만약 비교하는 날짜가 오늘이라면
         if date.isToday {
             dateFormatter.dateFormat = "hh:mm a"
-        } else { // 비교하는 날짜가 오늘이라면
-            dateFormatter.dateFormat = "M/d"
+        } else { // 비교하는 날짜가 오늘이 아니라면
+            dateFormatter.dateFormat = "M/d hh:mm a"
         }
 
         dateFormatter.locale = Locale(identifier: "ko_KR")
