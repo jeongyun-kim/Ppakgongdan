@@ -9,6 +9,7 @@ import Foundation
 import NetworkKit
 import Utils
 import ComposableArchitecture
+import Database
 
 @Reducer
 public struct ExploringChannelReducer {
@@ -41,7 +42,8 @@ public struct ExploringChannelReducer {
         case dismissExploringChannelView // 채널 탐색뷰 내리기
         case setSelectedChannel(StudyGroupChannel) // 선택한 채널 데이터 반영하기
         case getSelectedChannelChatList // 선택한 채널의 채팅 리스트 받아오기
-        case setChannelChatList([ChannelChatting]) // 받아온 채팅 리스트 반영하기 
+        case setChannelChatList([ChannelChatting]) // 받아온 채팅 리스트 반영하기
+        case setDBChannelChatList // DB로부터 받아온 채팅 리스트 반영
     }
     
     public var body: some Reducer<State, Action> {
@@ -59,10 +61,6 @@ public struct ExploringChannelReducer {
                 state.isPresentingJoinAlert.toggle()
                 return .none
                 
-            case .setSelectedChannel(let channel):
-                state.selectedChannel = channel
-                return .send(.getSelectedChannelChatList)
-                
             case .getAllChannels:
                 return .run { [id = state.id] send in
                     guard let id else { return }
@@ -73,6 +71,10 @@ public struct ExploringChannelReducer {
                         print(error)
                     }
                 }
+                
+            case .setAllChannels(let channels):
+                state.channelList = channels
+                return .none
                 
             case .getAllMyChannels(let channels):
                 return .run { [id = state.id] send in
@@ -93,15 +95,29 @@ public struct ExploringChannelReducer {
                     }
                 }
                 
-            case .setAllChannels(let channels):
-                state.channelList = channels
-                return .none
+            case .setSelectedChannel(let channel):
+                state.selectedChannel = channel
+                return .send(.setDBChannelChatList)
+                
+            case .setDBChannelChatList:
+                guard let channel = state.selectedChannel else { return .none }
+                guard let channelChatRoom = ChatRepository.shared.readChannelChatRoom(roomId: channel.channelId) else {
+                    return .send(.getSelectedChannelChatList)
+                }
+                state.chatList = Array(channelChatRoom.chats).compactMap { $0.toChannelChatting() }
+                return .send(.getSelectedChannelChatList)
                 
             case .getSelectedChannelChatList:
                 return .run { [id = state.id, channel = state.selectedChannel] send in
                     guard let id, let channel else { return }
+                    var after = ""
+                    
+                    DispatchQueue.main.sync {
+                        after = ChatRepository.shared.getChannelLastReadDate(channelId: channel.channelId, createdAt: channel.createdAt)
+                    }
+                    
                     do {
-                        let result = try await NetworkService.shared.getChannelChats(workspaceId: id, channelId: channel.channelId, after: channel.createdAt)
+                        let result = try await NetworkService.shared.getChannelChats(workspaceId: id, channelId: channel.channelId, after: after)
                         await send(.setChannelChatList(result.map { $0.toChannelChatting() }))
                     } catch {
                         print(error)
@@ -109,7 +125,8 @@ public struct ExploringChannelReducer {
                 }
                 
             case .setChannelChatList(let list):
-                state.chatList = list
+                state.chatList.append(contentsOf: list)
+                guard let channel = state.selectedChannel else { return .none }
                 return .send(.dismissExploringChannelView)
             }
         }
