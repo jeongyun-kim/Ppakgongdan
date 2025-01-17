@@ -36,6 +36,7 @@
 - Architecture : ```TCA```, ```Modular Architecture```
 - Design Pattern : ```Repository Pattern```, ```Router Pattern```, ```DTO```
 - etc : ```Tuist```, ```SocketIO```, ```KakaoSDK```, ```Swift Concurrency```, ```Combine```, ```GCD```
+- managing : ```Confluence```, ```Swagger```, ```Figma``` 
 
 ---
 
