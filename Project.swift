@@ -34,8 +34,7 @@ let project = Project(
             ]),
             dependencies: [
                 .project(target: "Feature", path: "Feature"),
-                .project(target: "UI", path: "UI"),
-                .project(target: "Database", path: "Database")
+                .project(target: "UI", path: "UI")
             ]
         )
     ]

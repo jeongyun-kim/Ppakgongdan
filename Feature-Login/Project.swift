@@ -20,7 +20,8 @@ let project = Project(
             infoPlist: .extendingDefault(with: ["NSAppTransportSecurity":["NSAllowsArbitraryLoads":true]]),
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "NetworkKit", path: "../Network")
+                .project(target: "NetworkKit", path: "../Network"),
+                .project(target: "Database", path: "../Database")
             ]
         )
     ]

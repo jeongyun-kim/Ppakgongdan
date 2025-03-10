@@ -19,7 +19,8 @@ let project = Project(
             deploymentTargets: .iOS("17.0"), // 지원 최소 버전 설정,
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "NetworkKit", path: "../Network")
+                .project(target: "NetworkKit", path: "../Network"),
+                .project(target: "Database", path: "../Database")
             ]
         )
     ]
